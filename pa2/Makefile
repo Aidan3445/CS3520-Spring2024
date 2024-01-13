@@ -22,7 +22,7 @@ pa2: $(OBJ)
 
 clean:
 	rm -f *~ core $(INCDIR)/*~ 
-	rm -f hello
+	rm -f pa2
 	rm -f *.o
 
 etags: 
