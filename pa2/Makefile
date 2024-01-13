@@ -9,13 +9,13 @@ LIBS=-lncurses
 _DEPS = 
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = hello.o
+_OBJ = pa2.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: %.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-hello: $(OBJ)
+pa2: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean
