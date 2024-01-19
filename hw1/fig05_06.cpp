@@ -5,28 +5,59 @@
 #include <cmath> // standard math library
 using namespace std;
 
-int main()
-{
-   double amount; // amount on deposit at end of each year
-   double principal = 1000.0; // initial amount before interest
-   double rate = .05; // annual interest rate
 
-   // display headers
-   cout << "Year" << setw( 21 ) << "Amount on deposit" << endl;
+double investment(double principal, double rate, int years) {
+   // double principal: initial amount before interest
+   // double rate: annual interest rate
+   // int years: number of years invested
 
-   // set floating-point number format
-   cout << fixed << setprecision( 2 );
-
+   double amount;
+  
    // calculate amount on deposit for each of ten years
-   for ( unsigned int year = 1; year <= 10; ++year ) 
+   for ( unsigned int year = 1; year <= years; ++year ) 
    {
       // calculate new amount for specified year
       amount = principal * pow( 1.0 + rate, year );
-
-      // display the year and the amount
-      cout << setw( 4 ) << year << setw( 21 ) << amount << endl;
    } // end for 
-} // end main
+
+   return amount;
+}
+
+
+int main()
+{
+   double monaLisaValue = 860000000;
+   int monaLisaYear = 1626;
+   int currentYear = 2024;
+   int investmentAmount = 11;
+
+   // display the value of the Mona Lisa painting in 2024
+   cout << "The Mona Lisa painting is worth $" << monaLisaValue << " in " << currentYear << endl;
+   
+   // calcuate the value of an $11 investment at the bank with 5% in 1626
+   double bankInvestment = investment(investmentAmount, 0.05, currentYear - monaLisaYear);
+   cout << "An $11 investment at the bank with 5% in 1626 is worth $" << bankInvestment << " in " << currentYear << endl;
+
+   // calculate the value of an $11 investment into NYSE with 10.17% in 1626
+   double nyseInvestment = investment(investmentAmount, 0.1017, currentYear - monaLisaYear);
+   cout << "An $11 investment into NYSE with 10.17% in 1626 is worth $" << nyseInvestment << " in " << currentYear << endl;
+   cout << endl;
+
+   // display headers
+   cout << "Investment" << setw(30) << "Value Today" << endl;
+
+   // set floating-point number format
+   cout << fixed << setprecision(2);
+
+   // display amounts
+   cout << setw(10) << "None" << setw(30) << monaLisaValue << endl;
+   cout << setw(10) << "Bank" << setw(30) << bankInvestment << endl;
+   cout << setw(10) << "NYSE" << setw(30) << nyseInvestment << endl;
+   
+   for (float rate = 2; rate <= 12; rate += 0.5) {
+      cout << setw(10) << rate << setw(30) << investment(investmentAmount, rate / 100, currentYear - monaLisaYear) << endl;
+   }
+}
 
 
 /**************************************************************************
