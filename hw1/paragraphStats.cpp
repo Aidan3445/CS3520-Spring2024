@@ -44,11 +44,37 @@ ParagraphStats parseParagraph(string &paragraph, int maxLineLength) {
          lineLength = 0;
       }
 
+      
+      // if the current character is a vowel increment the number of vowels
+      // also increment the number of word vowels
+      if(stats.vowelChars.find(current) != string::npos) {
+         stats.vowels++;
+         wordVowelCount++;
+      }
+      // if the current character is a punctuation increment the number of punctuation
+      else if(stats.punctuationChars.find(current) != string::npos) {
+         hasPunc = true;
+      }
+      // if the current character is a consonant increment the number of consonants
+      else if (stats.consonantChars.find(current) != string::npos){
+         stats.consonants++;
+      }
+
       // check if the current character is a space update the index
       // also increment the number of words
       if (current == ' ' || i == paragraph.length() - 1) {
-         lastSpace = i;
-         stats.words++;
+         // only add word if the last character was not a space
+         if (lastSpace != i - 1) {
+            stats.words++;
+            lastSpace = i;
+         }
+         else {
+            // erase the space
+            paragraph.erase(i, 1);
+            // decrement the index becase a char was removed
+            i--;
+            continue;
+         }
 
          // check if the previous word had 3 or more vowels
          if (wordVowelCount >= 3) {
@@ -62,20 +88,6 @@ ParagraphStats parseParagraph(string &paragraph, int maxLineLength) {
          // reset the word vowel count and punctuation flag
          wordVowelCount = 0;
          hasPunc = false;
-      }
-      // if the current character is a vowel increment the number of vowels
-      // also increment the number of word vowels
-      else if(stats.vowelChars.find(current) != string::npos) {
-         stats.vowels++;
-         wordVowelCount++;
-      }
-      // if the current character is a punctuation increment the number of punctuation
-      else if(stats.punctuationChars.find(current) != string::npos) {
-         hasPunc = true;
-      }
-      // if the current character is a consonant increment the number of consonants
-      else if (stats.consonantChars.find(current) != string::npos){
-         stats.consonants++;
       }
 
       // increment the line length
@@ -101,7 +113,7 @@ ParagraphStats parseParagraph(string &paragraph, int maxLineLength) {
 
 
 // helper function to check if string is all digits
-bool areDigits(const std::string &str)
+bool areDigits(string &str)
 {
    for (char c : str)
    {
@@ -109,8 +121,6 @@ bool areDigits(const std::string &str)
          return false;
    }
 
-   // clear the buffer
-   std::cin.ignore(std::numeric_limits<int>::max(), '\n');
    return true;
 }
 
@@ -139,11 +149,11 @@ ParagraphStats parseWordLength(string &paragraph, ParagraphStats &stats) {
       // check if the current character is a space
       if (paragraph[i] == ' ' || paragraph[i] == '\n' || i == paragraph.length() - 1) {
          // check if the word length is shorter than the shorter number
-         if (wordLengthNoPunc <= userLen) {
+         if (wordLengthNoPunc <= userLen && wordLengthNoPunc > 0) {
             stats.shorterUserWords++;
          }
          // check if the word length is longer than the longer number
-         if (wordLengthWithPunc <= computerLen) {
+         if (wordLengthWithPunc <= computerLen && wordLengthWithPunc > 0) {
             stats.shorterCpuWords++;
          }
 
@@ -164,8 +174,8 @@ ParagraphStats parseWordLength(string &paragraph, ParagraphStats &stats) {
    }
 
    // print the stats
-   cout << "Words at least User Len(" << userLen << ") chars long -- ignoring punctiation: " << stats.shorterUserWords << endl;
-   cout << "Words at least CPU Len(" << computerLen << ") chars long -- with punctuation: " << stats.shorterCpuWords << endl;
+   cout << "Words at most " << userLen << " chars long -- ignoring punctiation: " << stats.shorterUserWords << endl;
+   cout << "Words at most " << computerLen << " chars long -- with punctuation: " << stats.shorterCpuWords << endl;
 
    return stats;
 }
@@ -176,10 +186,11 @@ int main() {
    string paragraph;
    cout << "Enter a paragraph of text: ";
    getline(cin, paragraph);
-
    cout << endl;
-   // print formatted paragraph
+
+   // print formatted paragraph and basic stats
    ParagraphStats stats = parseParagraph(paragraph, 80);
+   // print stats about word length with user input
    parseWordLength(paragraph, stats);
 
    return 0;

@@ -11,11 +11,12 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _OBJ1 = fig05_06.o
 _OBJ2 = paragraphStats.o
+_OBJ3 = FindAndReplace.o
 
 $(ODIR)/%.o: %.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-all: fig05_06 paragraphStats
+all: fig05_06 paragraphStats FindAndReplace
 
 	
 fig05_06: $(_OBJ1)
@@ -27,6 +28,7 @@ clean:
 	rm -f *~ core $(INCDIR)/*~ 
 	rm -f fig05_06
 	rm -f paragraphStats
+	rm -f FindAndReplace
 	rm -f *.o
 
 etags: 

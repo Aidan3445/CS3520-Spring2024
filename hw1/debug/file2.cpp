@@ -31,8 +31,6 @@ bool areDigits(const std::string &str)
             return false;
     }
 
-    // clear the buffer
-    std::cin.ignore(std::numeric_limits<int>::max(), '\n');
     return true;
 }
 
