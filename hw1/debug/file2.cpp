@@ -20,6 +20,7 @@ Output :
 
 // use # for include statements
 #include<iostream>
+#include<limits>
 
 // helper function to check if string is all digits
 bool areDigits(const std::string &str)
@@ -29,6 +30,9 @@ bool areDigits(const std::string &str)
         if (!std::isdigit(c))
             return false;
     }
+
+    // clear the buffer
+    std::cin.ignore(std::numeric_limits<int>::max(), '\n');
     return true;
 }
 

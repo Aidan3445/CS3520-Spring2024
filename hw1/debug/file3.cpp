@@ -1,4 +1,4 @@
-
+// Take an integer input and check if it is negative, prime, composite or neither.
 #include <iostream>
 // use namespace to avoid std::
 using namespace std;
