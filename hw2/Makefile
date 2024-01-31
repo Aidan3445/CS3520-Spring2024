@@ -9,22 +9,22 @@ LIBS=-lncurses
 _DEPS = 
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ1 = fig05_06.o
+_OBJ1 = reservationSystem.o
 
 $(ODIR)/%.o: %.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-all: fig05_06 
+all: reservationSystem
 
 	
-fig05_06: $(_OBJ1)
+reservationSystem: $(_OBJ1)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean
 
 clean:
 	rm -f *~ core $(INCDIR)/*~ 
-	rm -f fig05_06
+	rm -f reservationSystem
 	rm -f *.o
 
 etags: 
