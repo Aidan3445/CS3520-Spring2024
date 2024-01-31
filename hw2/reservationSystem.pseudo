@@ -1,0 +1,361 @@
+// User struct to represent a passenger or employee
+struct User:
+    string passengerName;
+    string employeeID;
+    string employeePassword;
+
+enum loginStatus:
+    none,
+    passenger,
+    employee
+
+// global variables
+// user to store the current user
+User currentUser;
+// enum to store the current login status
+loginStatus currentLoginStatus = none;
+// 1D and 2D to store the seating chart and passenger manifest
+string[] passengerManifest;
+string[][] seatingChart;
+
+function main()
+    // load seating chart from file or create new one
+    if fileExists(flightInfo.txt):
+        loadPrevious()
+    else:
+        // create new seating chart
+        // there are 12 rows and 6 seats per row: AB DEF H
+        seatingChart = new string[12][6]
+        saveSeatingChart()
+    // handle user input
+    while true:
+        // welcome message
+        cout: "Welcome, would you like to login as a passenger or employee? (p/e) Or type 'q' to quit."
+        cin: userType
+        if userType == "p":
+            currentLoginStatus = passengerLogin(currentUser)
+            break
+        else if userType == "e":
+            currentLoginStatus = employeeLogin(currentUser)
+            break
+        else if userType == "q":
+            currentLoginStatus = none
+            break
+        else:
+            cout: "Invalid input, please try again."
+
+    // serve menus based on login status
+    while true:
+        if loggedInPassenger:
+            passengerMenu()
+        else if loggedInEmployee:
+            employeeMenu()
+        else:
+            break
+
+    // logout message
+    cout: "Thank you for using the system, goodbye!"
+end function main
+
+
+function passengerLogin()
+    // prompt for passenger.passengerName
+    cout: "Enter your.passengerName: "
+    // all user input is assumed to be valid
+    cin: currentUser.passengerName
+    // passanger login successful
+    return loginStatus.passenger
+end function passengerLogin
+
+
+function employeeLogin()
+    // load employee data from file
+    string[] employeeData = readEmployeeData(employeeData.txt)
+    // handle user input
+    while true:
+        // prompt for employee ID
+        cout: "Enter your employee ID: "
+        cin: id
+        // prompt for employee password
+        cout: "Enter your password: "
+        cin: password
+        // check if employee ID and password match
+        if (id, password) in employeeData:
+            // employee login successful
+            return loginStatus.employee
+        else:
+            // handle incorrect login
+            while true:
+                cout: "ID or password incorrect, would you like to try again, 
+                      "login as a passenger or quit? (t/p/q) "
+                cin: choice
+                if choice == "t":
+                    break
+                else if choice == "p":
+                    return passengerLogin()
+                else if choice == "q":
+                    return loginStatus.none
+                else:
+                    cout: "Invalid input, please enter 't', 'p' or 'q'."
+end function employeeLogin
+
+
+function passengerMenu()
+    // handle user input
+    while true:
+        // display menu
+        cout: "Welcome " + currentUser.passengerName + ", what would you like to do?"
+        cout: "1. Seating Chart (1 or s)"
+        cout: "2. Automatic Seat Assignment (2 or a)"
+        cout: "3. Manual Seat Assignment (3 or m)"
+        cout: "4. Change or Cancel Reservation (4 or c)"
+        cout: "5. Boarding Pass (5 or b)"
+        cout: "6. Quit (6 or q)"
+        
+        cin: choice
+        if choice == "1" or "s":
+            displaySeatingChart()
+        else if choice == "2" or "a":
+            automaticAssignment(currentUser.passengerName)
+        else if choice == "3" or "m":
+            manualAssignment(currentUser.passengerName)
+        else if choice == "4" or "c":
+            changeCancel(currentUser.passengerName)
+        else if choice == "5" or "b":
+            boardingPass(currentUser.passengerName)
+        else if choice == "6" or "q":
+            return
+        else:
+            cout: "Invalid input, please try again."
+end function passengerMenu
+
+
+function employeeMenu()
+    // handle user input
+    while true:
+        // display menu
+        cout: "Welcome " + currentUser.employeeID + ", what would you like to do?"
+        cout: "1. Display Seating Chart (1 or s)"
+        cout: "2. Print Passenger Manifest (2 or p)"
+        cout: "3. Load Previous Seat Assignment and Passenger Manifest (3 or l)"
+        cout: "4. Save Current Seat Assignment and Passenger Manifest (4 or v)"
+        cout: "5. Re-assign or Cancel a Seat Assignment (5 or r)"
+        cout: "6. Quit (6 or q)"
+
+        cin: choice
+        if choice == "1" or "s":
+            displaySeatingChart()
+        else if choice == "2" or "p":
+            printPassengerManifest()
+        else if choice == "3" or "l":
+            loadPrevious()
+        else if choice == "4" or "v":
+            saveCurrent()
+        else if choice == "5" or "r":
+            changeAssignment()
+        else if choice == "6" or "q":
+            return
+        else:
+            cout: "Invalid input, please try again."
+end function employeeMenu
+
+
+function displaySeatingChart()
+    // display seating chart
+    cout: "Seating Chart:"
+    cout: **PRETTY FORMATTED SEATING CHART**
+end function displaySeatingChart
+
+
+function automaticAssignment()
+    // check if passenger already has a seat
+    if passengerName in passengerManifest:
+        cout: "You already have a seat assignment."
+        return
+    if noSeatsAvailable:
+        cout: "Sorry, there are no seats available."
+        return
+    // prompt for seat class
+    while true:
+        cout: "Would you like to sit in first class, business class, or economy class? (f/b/e)"
+        cin: seatClass
+        if seatClass == "f":
+            // assign first class seat
+            seat = randomSeat(rows = 1-1)
+            saveSeatAssignment(passengerName, seat)
+            return
+        else if seatClass == "b":
+            // assign business class seat
+            seat = randomSeat(rows = 2-4)
+            saveSeatAssignment(passengerName, seat)
+            return
+        else if seatClass == "e":
+            // assign economy class seat
+            seat = randomSeat(rows = 5-12)
+            saveSeatAssignment(passengerName, seat)
+            return
+        else:
+            cout: "Invalid input, please try again."
+end function automaticAssignment
+
+
+// use & to pass by reference
+function randomSeat(&rows)
+    // generate random seat
+    // there are six seats per row: AB DEF H
+    seat = random(rows, 6)
+    // check if seat is available
+    if seat in seatingChart:
+        return seat
+    else:
+        // try again
+        return randomSeat(rows)
+end function randomSeat
+
+
+// use & to pass by reference
+function saveSeatAssignment(&seat)
+    // save seat assignment
+    passengerManifest[passengerName] = seat
+    // update seating chart
+    seatingChart[seat.row][seat.letter] = currentUser.passengerName
+    // display seat assignment
+    cout: "Your seat assignment is: " + seat
+end function saveSeatAssignment
+
+
+function manualAssignment()
+    // check if passenger already has a seat
+    if currentUser.passengerName in passengerManifest:
+        cout: "You already have a seat assignment."
+        return
+    if noSeatsAvailable:
+        cout: "Sorry, there are no seats available."
+        return
+    displaySeatingChart()
+    // prompt for seat
+    while true:
+        cout: "Enter the row number (1-12) and seat letter "
+              "(A, B, D, E, F, H) of the seat you would like to reserve."
+        cin: seat
+        // check if seat is available
+        if seat in seatingChart:
+            // save seat assignment
+            passengerManifest[currentUser.passengerName] = seat
+            // update seating chart
+            seatingChart[seat.row][seat.letter] = currentUser.passengerName
+            // display seat assignment
+            cout: "Your seat assignment is: " + seat
+            return
+        else:
+            cout: "That seat is not available, please try again."
+end function manualAssignment
+
+
+function changeCancel()
+    // check if passenger has a seat
+    if currentUser.passengerName not in passengerManifest:
+        cout: "You do not have a seat assignment."
+        return
+    // prompt for change or cancel
+    while true:
+        cout: "Would you like to update or cancel your seat assignment? (u/c) "
+        cin: choice
+        if choice == "u":
+            // update seat assignment
+            manualAssignment()
+            return
+        else if choice == "c":
+            // cancel seat assignment
+            cancelSeatAssignment()
+            return
+        else:
+            cout: "Invalid input, please try again."
+end function changeCancel
+
+
+function cancelSeatAssignment()
+    seat = passengerManifest[currentUser.passengerName]
+    // remove seat assignment
+    passengerManifest[currentUser.passengerName] = null
+    // update seating chart
+    seatingChart[seat.row][seat.letter] = null
+    cout: "Your seat assignment has been cancelled."
+end function cancelSeatAssignment
+
+
+function boardingPass()
+    while true:
+        // prompt for passenger name
+        cout: "Enter your name: "
+        cin: name
+        // check if passenger has a seat
+        seats[] = passengerManifest[name]
+        // handle seat(s) found
+        if seats.length == 0:
+            cout: "You do not have a reservation."
+            break
+        else if seats.length == 1:
+            cout: **PRETTY FORMATTED BOARDING PASS**
+            break
+        else:
+            cout: "Multiple seat assignments under " + name + "."
+            cout: "Please enter your seat number: "
+            cin: seat
+            if seat in seats:
+                cout: **PRETTY FORMATTED BOARDING PASS**
+                break
+            else:
+                cout: "No reservation found under " + name + " for seat " + seat + "."
+                return
+end function boardingPass
+
+
+function printPassengerManifest()
+    // display passenger manifest
+    cout: "Passenger Manifest:"
+    cout: **PRETTY FORMATTED PASSENGER MANIFEST**
+end function printPassengerManifest
+
+
+function loadPrevious()
+    // load seating chart from file
+    seatingChart = readSeatingChart(flightInfo.txt)
+    // load passenger manifest from file
+    passengerManifest = readPassengerManifest(flightInfo.txt)
+    cout: "Seating chart and passenger manifest loaded."
+end function loadPrevious
+
+
+function saveCurrent()
+    // save seating chart to file
+    writeSeatingChart(flightInfo.txt, seatingChart)
+    // save passenger manifest to file
+    writePassengerManifest(flightInfo.txt, passengerManifest)
+    cout: "Seating chart and passenger manifest saved."
+end function saveCurrent
+
+
+function changeAssignment()
+    // prompt for passenger name
+    cout: "Enter the name of the passenger whose seat assignment you would like to change: "
+    cin: name
+    // check if passenger has a seat
+    if name not in passengerManifest:
+        cout: "No seat assignment found for " + name + "."
+        return
+    // prompt for change or cancel
+    while true:
+        cout: "Would you like to update or cancel " + name + "'s seat assignment? (u/c) "
+        cin: choice
+        if choice == "u":
+            // update seat assignment
+            manualAssignment(name)
+            return
+        else if choice == "c":
+            // cancel seat assignment
+            cancelSeatAssignment(name)
+            return
+        else:
+            cout: "Invalid input, please try again."
+end function changeAssignment
