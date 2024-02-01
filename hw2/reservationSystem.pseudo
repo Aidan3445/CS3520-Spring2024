@@ -86,7 +86,7 @@ function employeeLogin()
         else:
             // handle incorrect login
             while true:
-                cout: "ID or password incorrect, would you like to try again, 
+            cout: "ID or password incorrect, would you like to try again, 
                       "login as a passenger or quit? (t/p/q) "
                 cin: choice
                 if choice == "t":
