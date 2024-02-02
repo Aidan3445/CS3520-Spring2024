@@ -13,14 +13,68 @@ array<array<array< double, 3>, 3>, 3> read_3d_array();
 void write_2d_vector(const vector<vector<double>> &vec);
 void write_3d_array(const array<array<array<double, 3>, 3>, 3> );
 
+// helper functions
+vector<string> readFile();
+string removeTrailingZeros(double num);
+
+string input_file = "input.txt";
+
 int main() {
+    cout << "Reading from file: " << input_file << endl;
+    char response;
+    while (true) {
+        // handle user input
+        cout << "Would you like to read from a different file? (y/n)" << endl;
+        cin >> response;
+        if (response == 'y') {
+            cout << "Enter the name of the file: " << endl;
+            // write input to file var
+            cin >> input_file;
+            break;
+        } else if (response == 'n') {
+            break;
+        } else {
+            cout << "Invalid response, please enter 'y' or 'n'" << endl;
+            cin.clear();
+        }
+    }
+
+    // read file into 2D vector
     vector<vector<double>> vec = read_2d_vector();
+    // write 2D vector to file
     write_2d_vector(vec);
 
+    // read file into 3D array
     array<array<array<double, 3>, 3>, 3> arr3d = read_3d_array();
+    // write 3D array to file
     write_3d_array(arr3d);
+
+    // sum all numbers
+    int sum = 0;
+    for (int i = 0; i < vec.size(); i++) {
+        for (int j = 0; j < vec[i].size(); j++) {
+            sum += vec[i][j];
+        }
+    }
+    cout << "Sum: " << sum << endl;
+    return 0;
 }
 
+/*
+// Read file function
+Open file
+create vector of strings
+For each line in file:
+    Read line
+    numberAsString = ""
+    For each char in line:
+        If char is a comma:
+            Add numberAsString to vector
+            numberAsString = ""
+        Else:
+            Append char to numberAsString
+return vector
+*/
 vector<string> readFile() {
     // list of numbers
     // we will store numbers in a string and then convert to double
@@ -28,7 +82,7 @@ vector<string> readFile() {
 
     // open the file
     ifstream file;
-    file.open("input.txt");
+    file.open(input_file);
 
     // make sure file is open
     if (!file.is_open()) {
@@ -65,7 +119,6 @@ vector<string> readFile() {
 }
 
 /*
-// numbers are separated by commas, rows by newlines
 // 2D vector reading function
 For each line in file:
     Read line
@@ -102,6 +155,7 @@ vector<vector<double>> read_2d_vector() {
 
 
 /*
+// 2D vector writing function
 For each column in 2D Vector
     Find the max number of characters in the column
 For each row in 2D Vector
@@ -118,7 +172,7 @@ void write_2d_vector(const vector<vector<double>> &vec) {
         // save the max
         int max = 0;
         for (int row = 0; row < vec.size(); row++) {
-            int num_chars = to_string(vec[row][col]).size();
+            int num_chars = removeTrailingZeros(vec[row][col]).size();
             if (num_chars > max) {
                 // update the max
                 max = num_chars;
@@ -144,11 +198,14 @@ void write_2d_vector(const vector<vector<double>> &vec) {
         }
         file << endl;
     }
+
+    file.close();
+
+    cout << "2D Vector written to 2DVector.txt" << endl;
 } 
 
 
 /*
-// numbers are separated by commas, rows by newlines
 // 3D vector reading function
 // this method takes in an array and fills it with the numbers from the file
 // rather than returning a 3D array
@@ -182,6 +239,7 @@ array<array<array<double, 3>, 3>, 3> read_3d_array() {
 
 
 /*
+// 3D vector writing function
 For each column in 3D Array
     Find the max number of characters in the column
 For each row in 3D Array
@@ -194,22 +252,21 @@ For each row in 3D Array
 void write_3d_array(const array<array<array< double, 3>, 3>, 3> arr) {
     // iterate through all numbers and count the max characters
     // in each column, use that for setting width when writing
-    vector<vector<int>> max_chars;
-    for (int dim = 0; dim < 3; dim++) {
-        vector<int> max_chars_dim;
-        for (int col = 0; col < 3; col++) {
-            // save the max
-            int max = 0;
+    vector<int> max_chars;
+    // iterate column first
+    for (int col = 0; col < 3; col++) {
+        // save the max
+        int max = 0;
+        for (int dim = 0; dim < 3; dim++) {
             for (int row = 0; row < 3; row++) {
-                int num_chars = to_string(arr[row][col][dim]).size();
+                int num_chars = removeTrailingZeros(arr[row][col][dim]).size();
                 if (num_chars > max) {
                     // update the max
                     max = num_chars;
                 }
             }
-            max_chars_dim.push_back(max);
         }
-        max_chars.push_back(max_chars_dim);
+        max_chars.push_back(max);
     }
 
     // open the file
@@ -226,10 +283,40 @@ void write_3d_array(const array<array<array< double, 3>, 3>, 3> arr) {
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 // left align with max width
-                file << left << setw(max_chars[dim][col]) << arr[row][col][dim] << " ";
+                file << left << setw(max_chars[col]) << arr[row][col][dim] << " ";
             }
             file << endl;
         }
         file << endl;
     }
+    file.close();
+
+    cout << "3D Array written to 3DArray.txt" << endl;
+}
+
+/*
+// Remove trailing zeros function
+Convert double to string
+For each char in string double, starting from the end:
+    If char is a zero:
+        Remove char
+    Else:
+        If char is a period:
+            Remove char
+        return string
+*/
+string removeTrailingZeros(double num) {
+    string num_str = to_string(num);
+    for (int i = num_str.size() - 1; i >= 0; i--) {
+        if (num_str[i] == '0') {
+            num_str.pop_back();
+        } else {
+            // when we hit a period, remove it and return
+            if (num_str[i] == '.') {
+                num_str.pop_back();
+            }
+            return num_str;
+        }
+    }
+    return num_str;
 }
