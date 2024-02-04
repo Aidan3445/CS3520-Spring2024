@@ -609,7 +609,7 @@ void ReservationSystem::passengerManifest() {
     // get user input to sort by name seat or class,
     bool hasFiltered = false;
     while (true) {
-        cout << "Would you like to sort by name, seat? (n/s): ";
+        cout << "Would you like to sort by name or seat? (n/s): ";
         if (!hasFiltered) {
             cout << "or filter by class? (c): ";
         }
