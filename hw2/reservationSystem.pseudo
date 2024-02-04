@@ -359,3 +359,48 @@ function changeAssignment()
         else:
             cout: "Invalid input, please try again."
 end function changeAssignment
+
+
+
+
+
+
+
+
+                               _,.~.,_
+                              /       \  
+                            ,`         `,
+                          ,|             |,
+                         ,                 ,
+                        |___Seating_Chart___|
+                        |                   |
+                        O X B  1 D E X  1 H O
+                        |                   |
+                        O A B  2 D E F  2 H O
+                        O A B  3 D E F  3 H O
+                        O A B  4 D E F  4 H O
+            _       _/``|                   |--\_      _
+           | | _.-``    O X B  5 D E F  5 H O    ``-._| |
+    _,.-<``             O A B  6 D E F  6 H O            ``>-.,_
+   |____________________O A B  7 D E F  7 H O___________________|
+                        | A B  8 X E F  8 H |
+                        O A B  9 D E F  9 H O
+                        O A B 10 D E F 10 X O
+                        O A B 11 D X F 11 H O
+                        | A B 12 D E F 12 H |
+                        |___________________|
+                        |                   |
+                         |                 |
+                         |                 |
+                          |               |
+                          |               |
+                           |             |
+                           |             |
+                            |           |
+                           _`._       _.`_
+                      ,.<``               ``>.,
+                _,.<``                         ``>.,_
+               |_________________   _________________|
+                                 | |
+                                 |_|  
+

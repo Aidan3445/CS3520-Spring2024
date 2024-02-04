@@ -1,31 +1,22 @@
-IDIR =../include
-CC=g++
-CFLAGS= -I$(IDIR) -g -O0
+CC = g++
+CFLAGS = -Wall -Wextra -I./include
 
-ODIR=.
+SRCDIR = src
+INCDIR = include
+BINDIR = bin
 
-LIBS=-lncurses
+SOURCES = $(wildcard $(SRCDIR)/*.cpp)
+OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(BINDIR)/%.o,$(SOURCES))
+EXECUTABLE = main
 
-_DEPS = 
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
+$(BINDIR)/%.o: $(SRCDIR)/%.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
 
-_OBJ1 = reservationSystem.o
-
-$(ODIR)/%.o: %.cpp $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
-
-all: reservationSystem
-
-	
-reservationSystem: $(_OBJ1)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(OBJECTS) -o $@
 
 .PHONY: clean
 
 clean:
-	rm -f *~ core $(INCDIR)/*~ 
-	rm -f reservationSystem
-	rm -f *.o
+	rm -f $(BINDIR)/*.o $(EXECUTABLE)
 
-etags: 
-	find . -type f -iname "*.[ch]" | xargs etags --append 
