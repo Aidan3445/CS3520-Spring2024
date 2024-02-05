@@ -30,15 +30,19 @@ struct Flight {
         vector<string> findSeats(const string &passengerName);
 
         // assign seat to passenger by seat string or row and seat number
-        void assignSeat(const string &passengerName, const string &seat);
-        void assignSeat(const string &passengerName, const int row, const int seat);
+        void assignSeat(const string &passengerName, 
+                const string &seat, bool logConfirmation = true);
+        void assignSeat(const string &passengerName, 
+                const int row, const int seat, bool logConfirmation = true);
 
         // assign seat to passenger
         // start at a given row (and optional seat) and walk through the plane
         // to find the first available seat, assigning it to the passenger
         string nextAvailableSeat(const string &passengerName, 
                 const int startRow, const int endRow, int startSeat = 0);
-        
+
+        // get avaialble seats in range
+        vector<string> availableSeats(const int startRow, const int endRow);
 
         // get flight number
         string getFlightNumber();

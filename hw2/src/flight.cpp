@@ -32,6 +32,9 @@ array<int, 2> Flight::getClassBounds() {
 
 // get name assigned to seat by row and seat number
 string Flight::getSeatAssignment(const int row, const int seat) {
+    if (row < 0 || row >= rows || seat < 0 || seat >= seatsPerRow) {
+        return "";
+    }
     return seatAssignments[row][seat];
 }
 
@@ -45,33 +48,54 @@ string Flight::getSeatAssignment(const string &seat) {
     return getSeatAssignment(row, seatNumber);
 }
 
+// find seat assignment
+vector<string> Flight::findSeats(const string &passengerName) {
+    vector<string> seats;
+    for (unsigned int row = 0; row < rows; row++) {
+        for (unsigned int seat = 0; seat < seatsPerRow; seat++) {
+            if (getSeatAssignment(row, seat) == passengerName) {
+                seats.push_back(to_string(row + 1) + seatNumberToLetter(seat));
+            }
+        }
+    }
+    return seats;
+}
+
 // assign seat to passenger by row and seat number
-void Flight::assignSeat(const string &passengerName, const int row, const int seat) {
+void Flight::assignSeat(const string &passengerName, 
+        const int row, const int seat, bool logConfirmation) {
+    if (row < 0 || row >= rows || seat < 0 || seat >= seatsPerRow) {
+        return;
+    }
     // assign seat
     seatAssignments[row][seat] = passengerName;
+
+    if (logConfirmation) {
+        // print confirmation
+        cout << "Seat " << row + 1 << seatNumberToLetter(seat) << 
+            " has been assigned to " << passengerName << endl;
+    }
 }
 
 // assign seat to passenger by seat string
-void Flight::assignSeat(const string &passengerName, const string &seat) {
+void Flight::assignSeat(const string &passengerName, const string &seat, bool logConfirmation) {
     // get row and seat number
     int row = stoi(seat) - 1;
     int seatNumber = seatLetterToNumber(seat.back());
 
     // assign seat
-    assignSeat(passengerName, row, seatNumber);
+    assignSeat(passengerName, row, seatNumber, logConfirmation);
 }
 
 // assign first open seat to passenger in a given range
 string Flight::nextAvailableSeat(const string &passengerName, 
         const int startRow, const int endRow, int startSeat) {
     // find first available seat in the specified rows
-    for (int row = startRow; row < endRow; row++) {
-        for (int seat = startSeat; seat < seatsPerRow; seat++) {
+    for (unsigned int row = startRow; row < endRow; row++) {
+        for (unsigned int seat = startSeat; seat < seatsPerRow; seat++) {
             if (getSeatAssignment(row, seat) == "") {
                 // seat is empty, assign it
                 assignSeat(passengerName, row, seat);
-                cout << "Seat " << row + 1 << seatNumberToLetter(seat) 
-                    << " has been assigned to " << passengerName << endl;
                 return to_string(row + 1) + seatNumberToLetter(seat);
             }
         }
@@ -81,17 +105,17 @@ string Flight::nextAvailableSeat(const string &passengerName,
     return "";
 }
 
-// find seat assignment
-vector<string> Flight::findSeats(const string &passengerName) {
-    vector<string> seats;
-    for (int row = 0; row < rows; row++) {
-        for (int seat = 0; seat < seatsPerRow; seat++) {
-            if (getSeatAssignment(row, seat) == passengerName) {
-                seats.push_back(to_string(row + 1) + seatNumberToLetter(seat));
+// get available seats in range of rows (inclusive start, exclusive end)
+vector<string> Flight::availableSeats(const int startRow, const int endRow) {
+    vector<string> available;
+    for (unsigned int row = startRow; row < endRow; row++) {
+        for (unsigned int seat = 0; seat < seatsPerRow; seat++) {
+            if (getSeatAssignment(row, seat) == "") {
+                available.push_back(to_string(row + 1) + seatNumberToLetter(seat));
             }
         }
     }
-    return seats;
+    return available;
 }
 
 /*** Helper Functions ***/

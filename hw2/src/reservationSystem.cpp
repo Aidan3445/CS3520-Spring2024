@@ -5,41 +5,16 @@
 #include <fstream>
 #include <algorithm>
 #include "../include/reservationSystem.hpp"
+#include "../include/utils.hpp"
 
 using namespace std;
-
-/*** in a larger program the helper methods below would be in a utility file ***/
-// clear cin buffer
-void clearCin() {
-    cin.clear();
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-}
-
-// sorting/filtering helpers
-bool compareSeat(const array<string, 3> &a, const array<string, 3> &b) {
-    return a[0].compare(b[0]) < 0;
-}
-
-bool compareName(const array<string, 3> &a, const array<string, 3> &b) {
-    return a[2].compare(b[2]) < 0;
-}
-
-void filterClass(vector<array<string, 3>> &manifest, const string &classFilter) {
-    for (unsigned int i = 0; i < manifest.size(); i++) {
-        if (manifest[i][1] != classFilter) {
-            manifest.erase(manifest.begin() + i);
-            // decrement i to account for the removed element
-            i--;
-        }
-    }
-}
 
 // load flight data from file
 void ReservationSystem::load() {
     // reset seat assignments
-    for (int row = 0; row < flight.getRows(); row++) {
-        for (int seat = 0; seat < flight.getSeatsPerRow(); seat++) {
-            flight.assignSeat("", row, seat);
+    for (unsigned int row = 0; row < flight.getRows(); row++) {
+        for (unsigned int seat = 0; seat < flight.getSeatsPerRow(); seat++) {
+            flight.assignSeat("", row, seat, false);
         }
     }
 
@@ -70,7 +45,7 @@ void ReservationSystem::load() {
             return;
         }
         // add seat assignments
-        flight.assignSeat(passengerName, seat);
+        flight.assignSeat(passengerName, seat, false);
     }
 }
 
@@ -91,8 +66,8 @@ void ReservationSystem::save() {
     // write flight data
     // data is stored with the odd lines are passenger names and even lines are seat assignments
     string assignment;
-    for (int row = 0; row < flight.getRows(); row++) {
-        for (int seat = 0; seat < flight.getSeatsPerRow(); seat++) {
+    for (unsigned int row = 0; row < flight.getRows(); row++) {
+        for (unsigned int seat = 0; seat < flight.getSeatsPerRow(); seat++) {
             assignment = flight.getSeatAssignment(row, seat);
             if (assignment != "") {
                 file << assignment << endl;
@@ -111,7 +86,7 @@ void ReservationSystem::passengerLogin() {
     // get passenger name
     cout << "Please enter your name: ";
     // clear cin from previous input
-    clearCin();
+    utils::clearCin();
     getline(cin, passengerName);
 
     // set user to passenger and update user name
@@ -123,7 +98,7 @@ void ReservationSystem::passengerLogin() {
 // login as employee
 void ReservationSystem::employeeLogin() {
     // clear cin from previous input
-    clearCin();
+    utils::clearCin();
 
     // use loop to allow multiple attempts
     // with a maximum of 3 attempts before quitting
@@ -348,8 +323,8 @@ void ReservationSystem::seatingChart() {
 
     array<int, 2> aisles = flight.getAisles();
     
-    for (int row = 0; row < flight.getRows(); row++) {
-        for (int seat = 0; seat < flight.getSeatsPerRow(); seat++) {
+    for (unsigned int row = 0; row < flight.getRows(); row++) {
+        for (unsigned int seat = 0; seat < flight.getSeatsPerRow(); seat++) {
             if (find(aisles.begin(), aisles.end(), seat) != aisles.end()) {
                 // display row number in grey
                 cout << "\e[1;30m" << setw(2) << row + 1 << "\e[0m ";
@@ -414,29 +389,57 @@ void ReservationSystem::manualSeatSelection(const string &passengerName) {
         cin >> classChoice;
         classChoice = tolower(classChoice);
 
+        // available seats
+        vector<string> available;
         if (classChoice == 'f') {
-            // find first available seat in first class
-            if (flight.nextAvailableSeat(passengerName, 0, flight.getClassBounds()[0]) != "") {
-                return;
-            }
-            // no seats available in first class
-            cout << "No seats available in first class." << endl;
+            // get available seats in first class
+            available = flight.availableSeats(0, flight.getClassBounds()[0]);
         } else if (classChoice == 'b') {
-            // find first available seat in business class
-            if (flight.nextAvailableSeat(passengerName, 
-                        flight.getClassBounds()[0], flight.getClassBounds()[1]) != "") {
-                return;
-            }
-            // no seats available in business class
-            cout << "No seats available in business class." << endl;
+            // get available seats in business
+            available = flight.availableSeats(
+                    flight.getClassBounds()[0], flight.getClassBounds()[1]);
         } else {
-            // find first available seat in economy class
-            if (flight.nextAvailableSeat(passengerName, 
-                        flight.getClassBounds()[1], flight.getRows()) != "") {
-                return;
+            // get available seats in economy
+            available = flight.availableSeats(flight.getClassBounds()[1], flight.getRows());
+        }
+
+        if (available.size() == 0) {
+            // no seats available in the selected class
+            cout << "No seats available in the selected class." << endl;
+            continue;
+        }
+
+        // get user input for seat or automatic seat selection
+        string seatChoice;
+        utils::clearCin();
+        while (available.size() > 0) {
+            // display available seats
+            cout << "Available seats: " << endl;
+            for (unsigned int i = 0; i < available.size(); i++) {
+                cout << available[i] << " ";
+                if (i % 4 == 3 && i != available.size() - 1) {
+                    cout << endl;
+                }
             }
-            // no seats available in economy class
-            cout << "No seats available in economy class." << endl;
+            cout << endl;
+
+            cout << "Please select an open seat or press enter for automatic seat selection: "
+                "(or enter 'c' to cancel) ";
+            getline(cin, seatChoice);
+            if (seatChoice == "") {
+                flight.assignSeat(passengerName, available[0]);
+                return;
+            } else if (find(available.begin(), available.end(), seatChoice) != available.end()) {
+                flight.assignSeat(passengerName, seatChoice);
+                return;
+            } else if (seatChoice == "c") {
+                if (confirm("Are you sure you want to cancel the reservation? (y/n): ")) {
+                    return;
+                }
+            } else {
+                cout << "Seat " << seatChoice << " is not an available seat. "
+                    "Please try again." << endl;
+            }
         }
     }
 }
@@ -448,8 +451,8 @@ void ReservationSystem::updateReservation(string passengerName) {
     if (passengerName == "") {
         cout << "Please enter the name of the passenger "
             "whose reservation you would like to update: ";
+        utils::clearCin();
         while (true) {
-            clearCin();
             getline(cin, passengerName);
             if (passengerName != "") {
                 break;
@@ -503,20 +506,24 @@ void ReservationSystem::updateReservation(string passengerName) {
             manualSeatSelection(passengerName);
             break;
         } else if (choice == 'c') {
-            if (!confirm("Are you sure you want to cancel the reservation " + 
-                        changeSeat + "? (y/n): ")) {
-                return;
-            }
+            cout << "To confirm cancellation, please enter your seat assignment ('" << 
+                changeSeat << "') again: ";
+            cin >> changeSeat;
+            if (flight.getSeatAssignment(changeSeat) == passengerName) {
             cout << "Reservation " << changeSeat << " for " << 
                 passengerName << " has been cancelled." << endl;
             break;
+            } else {
+                cout << "Seat assignment does not match. Reservation not cancelled." << endl;
+                return;
+            }
         } else {
             cout << "Invalid input. Please try again." << endl;
         }
     }
 
     // cancel reservation
-    flight.assignSeat("", changeSeat);
+    flight.assignSeat("", changeSeat, false);
 }
 
 // display boarding pass
@@ -568,9 +575,9 @@ void ReservationSystem::boardingPass(const string &passengerName) {
 
     cout << "+-----------------------------------+" << endl;
     cout << "|                                   |" << endl;
-    cout << "|  Flight: " << setw(25) << flight.getFlightNumber() << " |" << endl;
+    cout << "|  Flight: " << left << setw(25) << flight.getFlightNumber() << "|" << endl;
     cout << "|                                   |" << endl;
-    cout << "|  Name:   " << left << setw(25) << user.getName().substr(0, 24) << "|" << endl;
+    cout << "|  Name:   " << setw(25) << user.getName().substr(0, 24) << "|" << endl;
     cout << "|  Class:  " << setw(25) << flight.seatToClass(displaySeat) << "|" << endl;
     cout << "|  Seat:   " << setw(25) << displaySeat << "|" << endl;
     cout << "|                                   |" << endl;
@@ -584,8 +591,8 @@ void ReservationSystem::passengerManifest() {
     // display passenger manifest and store as a vector of strings
     vector<array<string, 3>> manifest;
     cout << "Passenger Manifest" << endl;
-    for (int row = 0; row < flight.getRows(); row++) {
-        for (int seat = 0; seat < flight.getSeatsPerRow(); seat++) {
+    for (unsigned int row = 0; row < flight.getRows(); row++) {
+        for (unsigned int seat = 0; seat < flight.getSeatsPerRow(); seat++) {
             if (flight.getSeatAssignment(row, seat) != "") {
                 array<string, 3> passengerInfo = {
                     to_string(row + 1) + flight.seatNumberToLetter(seat), 
@@ -617,11 +624,11 @@ void ReservationSystem::passengerManifest() {
         choice = tolower(choice);
         if (choice == 'n') {
             // sort by name
-            sort(manifest.begin(), manifest.end(), compareName);
+            sort(manifest.begin(), manifest.end(), utils::compareName);
             break;
         } else if (choice == 's') {
             // sort by seat
-            sort(manifest.begin(), manifest.end(), compareSeat);
+            sort(manifest.begin(), manifest.end(), utils::compareSeat);
             break;
         } else if (!hasFiltered && choice == 'c') {
             // get class to filter by
@@ -641,7 +648,7 @@ void ReservationSystem::passengerManifest() {
                 continue;
             }
             // filter by class
-            filterClass(manifest, classFilterString);
+            utils::filterClass(manifest, classFilterString);
             // don't break loop so they can sort the filtered list
             hasFiltered = true;
         } else {
