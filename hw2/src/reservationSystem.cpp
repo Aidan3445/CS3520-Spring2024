@@ -568,11 +568,11 @@ void ReservationSystem::boardingPass(const string &passengerName) {
 
     cout << "+-----------------------------------+" << endl;
     cout << "|                                   |" << endl;
-    cout << "|  Flight: CS3520                   |" << endl;
+    cout << "|  Flight: " << setw(25) << flight.getFlightNumber() << " |" << endl;
     cout << "|                                   |" << endl;
-    cout << "|  Name:  " << left << setw(26) << user.getName().substr(0, 25) << "|" << endl;
-    cout << "|  Class: " << setw(26) << flight.seatToClass(displaySeat) << "|" << endl;
-    cout << "|  Seat:  " << setw(26) << displaySeat << "|" << endl;
+    cout << "|  Name:   " << left << setw(25) << user.getName().substr(0, 24) << "|" << endl;
+    cout << "|  Class:  " << setw(25) << flight.seatToClass(displaySeat) << "|" << endl;
+    cout << "|  Seat:   " << setw(25) << displaySeat << "|" << endl;
     cout << "|                                   |" << endl;
     cout << "+-----------------------------------+" << endl;
 }
