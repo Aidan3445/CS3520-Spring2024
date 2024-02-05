@@ -12,7 +12,7 @@ using namespace std;
 struct Flight {
     private:
         // flight details
-        string flightNumber = "CS 3520";
+        const string flightNumber = "CS 3520";
         static const int rows = 12;
         static const int seatsPerRow = 6;
         const array<int, 2> aisles = {2, 5};

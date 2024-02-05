@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Wextra -I./include
+CFLAGS= -I$(IDIR) -g -O0 -std=c++11
 
 SRCDIR = src
 INCDIR = include
