@@ -8,6 +8,10 @@
 #include "../include/utils.hpp"
 
 using namespace std;
+// initialize reservation system
+ReservationSystem::ReservationSystem(const string flightNumber, const int rows, const int seatsPerRow, 
+        const array<int, 2> aisles, const array<int, 2> classBounds) : 
+        flight(flightNumber, rows, seatsPerRow, aisles, classBounds), user() {}
 
 // load flight data from file
 void ReservationSystem::load() {

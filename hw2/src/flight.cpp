@@ -4,6 +4,20 @@
 #include <iostream>
 
 using namespace std;
+// initialize flight
+Flight::Flight(const string flightNumber, const int rows, const int seatsPerRow, 
+        const array<int, 2> aisles, const array<int, 2> classBounds) : 
+        flightNumber(flightNumber), rows(rows), seatsPerRow(seatsPerRow), 
+        aisles(aisles), classBounds(classBounds) {
+    // initialize seat assignments
+    seatAssignments = new string*[rows];
+    for (unsigned int i = 0; i < rows; i++) {
+        seatAssignments[i] = new string[seatsPerRow];
+        for (unsigned int j = 0; j < seatsPerRow; j++) {
+            seatAssignments[i][j] = "";
+        }
+    }
+}
 
 // get flight number
 string Flight::getFlightNumber() {

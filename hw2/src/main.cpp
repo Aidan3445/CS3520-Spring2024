@@ -6,7 +6,7 @@ using namespace std;
 /* main function */
 int main() {
     // create reservation system
-    ReservationSystem res;
+    ReservationSystem res = ReservationSystem("CS 3520", 12, 6, {2, 5}, {1, 4});
 
     cout << "Welcome to the Reservation System!" << endl;
     // login as passenger or employee

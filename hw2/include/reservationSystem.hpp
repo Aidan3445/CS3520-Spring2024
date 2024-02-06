@@ -37,6 +37,10 @@ struct ReservationSystem {
         bool confirm(const string message = "Are you sure? (y/n): ");
 
     public:
+        // initialize reservation system
+        ReservationSystem(const string flightNumber, const int rows, const int seatsPerRow, 
+                const array<int, 2> aisles, const array<int, 2> classBounds);
+
         // login as passenger or employee
         void passengerLogin();
         void employeeLogin();

@@ -12,16 +12,20 @@ using namespace std;
 struct Flight {
     private:
         // flight details
-        const string flightNumber = "CS 3520";
-        static const int rows = 12;
-        static const int seatsPerRow = 6;
-        const array<int, 2> aisles = {2, 5};
-        const array<int, 2> classBounds = {1, 4};
+        const string flightNumber;
+        const int rows;
+        const int seatsPerRow;
+        const array<int, 2> aisles;
+        const array<int, 2> classBounds;
 
         // passenger details
-        string seatAssignments[rows][seatsPerRow];
+        string** seatAssignments;
 
     public:
+        // initialize flight
+        Flight(const string flightNumber, const int rows, const int seatsPerRow, 
+                const array<int, 2> aisles, const array<int, 2> classBounds);
+
         // get name assigned to seat by seat string or row and seat number
         string getSeatAssignment(const string &seat);
         string getSeatAssignment(const int row, const int seat);
