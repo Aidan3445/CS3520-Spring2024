@@ -22,6 +22,12 @@ all: fig05_06 paragraphStats FindAndReplace
 fig05_06: $(_OBJ1)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
+paragraphStats: $(_OBJ2)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+
+FindAndReplace: $(_OBJ3)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+
 .PHONY: clean
 
 clean:
