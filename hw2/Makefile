@@ -9,6 +9,7 @@ SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(BINDIR)/%.o,$(SOURCES))
 EXECUTABLE = main
 
+$(shell mkdir -p $(BINDIR))
 $(BINDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -18,5 +19,5 @@ $(EXECUTABLE): $(OBJECTS)
 .PHONY: clean
 
 clean:
-	rm -f $(BINDIR)/*.o $(EXECUTABLE)
+	rm -rf $(BINDIR) $(EXECUTABLE)
 

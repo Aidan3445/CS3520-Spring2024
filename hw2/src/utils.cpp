@@ -23,7 +23,18 @@ namespace utils {
     }
 
     bool compareName(const array<string, 3> &a, const array<string, 3> &b) {
-        return a[2].compare(b[2]) < 0;
+        string aName = a[2];
+        string bName = b[2];
+
+        // convert to lowercase
+        for (char &c : aName) {
+            c = tolower(c);
+        }
+        for (char &c : bName) {
+            c = tolower(c);
+        }
+
+        return aName.compare(bName) < 0;
     }
 
     void filterClass(vector<array<string, 3>> &manifest, const string &classFilter) {
