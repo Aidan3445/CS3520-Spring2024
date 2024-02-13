@@ -91,5 +91,71 @@ int main() {
     some_tv_series.staticPrint();
 
 
+    cout << endl << "Dynamic Memory Allocation:" << endl;
+    const char* sn2 = "The Simpsons";
+    ptr_some_tv_series->series_name = new char[strlen(sn2) + 1];
+    // initialize the series name
+    strcpy(ptr_some_tv_series->series_name, sn2);
+
+    // initialize the original release year
+    ptr_some_tv_series->original_release_year = 1989;
+
+    // initialize 3 seasons
+    ptr_some_tv_series->seasons_ptr = new tvseries::tv_season[3];
+    for (int i = 0; i < 3; i++) {
+        ptr_some_tv_series->seasons_ptr[i].season_number = i + 1;
+        ptr_some_tv_series->seasons_ptr[i].season_release_year = 1989 + i;
+
+        // initialize 5 episodes for each season
+        for (int j = 0; j < 5; j++) {
+            ptr_some_tv_series->seasons_ptr[i].episodes[j].episode_number = j + 1;
+            ptr_some_tv_series->seasons_ptr[i].episodes[j].episode_release_date = 
+                "1989-01-0" + to_string(j + 1);
+        }
+    }
+
+    // initialize the episode titles
+    strcpy(ptr_some_tv_series->seasons_ptr[0].episodes[0].episode_name, 
+            "Krusty Gets Busted");
+    strcpy(ptr_some_tv_series->seasons_ptr[0].episodes[1].episode_name,
+            "Bart the Genius");
+    strcpy(ptr_some_tv_series->seasons_ptr[0].episodes[2].episode_name,
+            "Homer's Odyssey");
+    strcpy(ptr_some_tv_series->seasons_ptr[0].episodes[3].episode_name,
+            "There's No Disgrace Like Home");
+    strcpy(ptr_some_tv_series->seasons_ptr[0].episodes[4].episode_name,
+            "Bart the General");
+    
+    strcpy(ptr_some_tv_series->seasons_ptr[1].episodes[0].episode_name,
+            "Bart Gets an F");
+    strcpy(ptr_some_tv_series->seasons_ptr[1].episodes[1].episode_name,
+            "Simpson and Delilah");
+    strcpy(ptr_some_tv_series->seasons_ptr[1].episodes[2].episode_name,
+            "Treehouse of Horror");
+    strcpy(ptr_some_tv_series->seasons_ptr[1].episodes[3].episode_name,
+            "Three Eyes on Every Fish");
+    strcpy(ptr_some_tv_series->seasons_ptr[1].episodes[4].episode_name,
+            "Dancin' Homer");
+
+    strcpy(ptr_some_tv_series->seasons_ptr[2].episodes[0].episode_name,
+            "Stark Raving Dad");
+    strcpy(ptr_some_tv_series->seasons_ptr[2].episodes[1].episode_name,
+            "Mr. Lisa Goes to Washington");
+    strcpy(ptr_some_tv_series->seasons_ptr[2].episodes[2].episode_name,
+            "When Flanders Failed");
+    strcpy(ptr_some_tv_series->seasons_ptr[2].episodes[3].episode_name,
+            "Are we there yet?");
+    strcpy(ptr_some_tv_series->seasons_ptr[2].episodes[4].episode_name,
+            "Total Recall");
+
+
+    // print the series
+    tvseries::dynamicPrint(ptr_some_tv_series);
+
+    // deallocate the memory
+    // is this needed? runs fine without it
+    //delete[] some_tv_series.series_name;
+    //delete[] ptr_some_tv_series->seasons_ptr;
+
     return 0;
 }
