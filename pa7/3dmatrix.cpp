@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <cstdlib>
-#include <iomanip>
 
 void update_3d(double*** Matrix_3d, int size);
 void display_1d(double*** const Matrix_3d, int size) ;
@@ -22,12 +21,11 @@ int main(void)
     std::cin >> size;
 
 	// prompt the user to initialize the matrix accordingly
-	double*** Matrix_3d;
-    Matrix_3d = new double**[size];
+	double*** Matrix_3d = new double**[size]; // triple pointer for 3D array of any size
     for (int i = 0; i < size; i++) {
-        Matrix_3d[i] = new double*[size];
+        Matrix_3d[i] = new double*[size]; // initialize the 2nd dimension pointers
         for (int j = 0; j < size; j++) {
-            Matrix_3d[i][j] = new double[size];
+            Matrix_3d[i][j] = new double[size]; // initialize the 3rd dimension pointers
         }
     }
 	// initialize the array to non-zero values (use scanf or random numbers generator)
@@ -39,7 +37,7 @@ int main(void)
 
 void update_3d(double*** matrix, int size)
 {
-    std::srand(time(nullptr));
+    std::srand(time(nullptr)); // set seed
 
     std::cout << "Entering N^3 (" << size * size * size << 
         ") elements of the matrix:" << std::endl;
@@ -52,7 +50,7 @@ void update_3d(double*** matrix, int size)
 			int k = 0;
 			for (; k < size; k++)
 			{
-				matrix[i][j][k] = rand() % 100; 
+				matrix[i][j][k] = rand() % 100; // random number between 0 and 99
             }
 		}
 	}
@@ -67,7 +65,7 @@ void display_1d(double*** const matrix, int size) {
 	
 	int i;
     for (i = 0; i < size * size * size; i++) {
-        int d1 = i / (size * size);
+        int d1 = i / (size * size); 
         int d2 = (i % (size * size)) / size;
         int d3 = (i % (size * size)) % size;
 
