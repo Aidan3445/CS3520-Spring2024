@@ -22,22 +22,24 @@ int main()
 	{
 		for (j = 0; j < M; j++)
 		{
-			(*(d_array + i))[j] = i * M + j;
+			(*(d_array + i))[j] = i * M + j; // use mix of * and [] to access array elements
+                                             // innitialize the array with values from 0 to N*M-1
 		}
 	}
 	// Accessing 2D array using a combination of * and [] notation
 	printf("\n");
 	for (i = 0; i < N; i++)
 	{
-		for (j = 0; j < M; j++)
+		for (j = 0; j < M; j++) // use M as boundry for full row
 		{
-			cout << left << setw(3) << *(d_array[i] + j);
+			cout << left << setw(3) << *(d_array[i] + j); // set width for formatting
 		}
 		cout << "\n";
 	}
 
 	// Deallocating 2D array
-	for (i = 0; i < N; i++)
-		free(*(d_array + i));
+	for (i = 0; i < N; i++) { // add brackets for loop body
+		free(*(d_array + i)); // free each row with dereference
+    }
 	free(d_array);
 }
