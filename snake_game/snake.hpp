@@ -16,8 +16,8 @@
  */
 
 /* Change log:
- *
- *
+ * - Added a method to find the previous direction
+ * - Added a move method to snake
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -37,6 +37,11 @@ struct Snake {
   char color[3];
   char symbol;
   struct Snake* next;
+  // Added Methods
+  /**
+   * 
+   */
+  void move(const int &new_x, const int &new_y);
 };
 
 typedef struct Snake Snake;
@@ -48,3 +53,9 @@ void draw_snake(Snake* snake);
 bool eat_itself(Snake* snake);
 Snake* remove_tail(Snake* snake);
 int len(Snake* snake);
+// Added Methods
+/**
+ * Returns the previous direction the snake was moving in.
+ * If snake is only 1 long, returns NOCHAR
+ */
+int prev_dir(Snake *snake);

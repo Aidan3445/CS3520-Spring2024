@@ -60,27 +60,73 @@ Snake *create_tail(int x, int y)
   return snake;
 }
 
+int prev_dir(Snake *snake) {
+  if (snake->next != NULL) {
+    int x_dif = snake->x - snake->next->x;
+    if (x_dif < 0) {
+      return LEFT;
+    }
+    else if (x_dif > 0) {
+      return RIGHT;
+    }
+    int y_dif = snake->y - snake->next->y;
+    if (y_dif < 0) {
+      return UP;
+    }
+    else if (y_dif > 0) {
+      return DOWN;
+    }
+  }
+  return NOCHAR;
+}
+
+void Snake::move(const int &new_x, const int &new_y) {
+  if (next != NULL) {
+    // Move next of snake, if it exists
+    // to the previous position of it's prev
+    next->move(x, y);
+  }
+  x = new_x;
+  y = new_y;
+}
+
 // Moves the snake in the input direction
 Snake *move_snake(Snake *snake, int direction)
 {
+  if (direction > 4 || direction < 0) {
+    direction = NOCHAR;
+  }
   // TODO
   Snake *new_head = new Snake;
 
   // Set the new head to have the x and y coordinates as the existing head of the snake
+  int old_dir = prev_dir(snake);
+  if (direction == UP && old_dir == DOWN
+   || direction == DOWN && old_dir == UP
+   || direction == LEFT && old_dir == RIGHT
+   || direction == RIGHT && old_dir == LEFT
+   || direction == NOCHAR) {
+    // You can't turn 180 degrees
+    direction = old_dir;
+   }
 
   switch (direction)
   {
   case UP:
     // Write code to make the new head go up by 1 cell
+    snake->move(snake->x, snake->y - 1);
     break;
   case DOWN:
     // Write code to make the new head go down by 1 cell
+    snake->move(snake->x, snake->y + 1);
     break;
   case RIGHT:
     // Write code to make the new head go right by 1 cell
+    snake->move(snake->x + 1, snake->y);
     break;
   case LEFT:
     // Write code to make the new head go left by 1 cell
+    snake->move(snake->x - 1, snake->y);
     break;
   }
 

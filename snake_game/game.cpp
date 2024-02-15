@@ -102,6 +102,7 @@ void game(){
             
             /* Write your code here */
             // pass ch to snake
+            move_snake(snake, ch);
             // if ch is q, quit
             // if ch is p, pause
                 // handling of pause menu
