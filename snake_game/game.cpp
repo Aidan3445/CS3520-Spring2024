@@ -101,6 +101,10 @@ void game(){
             ch = get_char();
             
             /* Write your code here */
+            // pass ch to snake
+            // if ch is q, quit
+            // if ch is p, pause
+                // handling of pause menu
 
 			// Draw everything on the screen
             clear();
