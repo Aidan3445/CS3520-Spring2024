@@ -4,9 +4,8 @@
 // Provide a brief comment identifying each bug fixed.
 
 #include <iostream>
-#include <string> // include string library
 
-bool func(int x); // return type should be bool, param is int
+bool func(const int &n); // return type should be bool, param is int
 int main() // int not void
 {
         int input; // int not char, dont need to initialize
@@ -26,28 +25,23 @@ int main() // int not void
 }
 
 // the return value of your func should be true / false only
-bool func(int x) // return type should be bool, param is int
+bool func(const int &n) // return type should be bool, param is const &int only
 {
-       // convert the number to a string 
-       std::string str = std::to_string(x);
+        int given_number = n; // initialize given_number as int to n
+        int temp = 0;
+        while (given_number > 0) // use > instead of = and modify given_number
+        {
+                int remainder = given_number % 10; // use % instead of /, initialize remainder as int
+                given_number /= 10; // use /= assignment
+                temp = temp * 10 + remainder; // update temp value
+        }
 
-       char* start = &str.front();
-       char* end = &str.back();
-
-       // while the start and end pointers don't meet loop through the string in both directions
-       while (start < end)
-       {
-           // if the characters don't match return false
-           if (*start != *end)            
-           {
-               return false;
-           }
-
-           // move the pointers inwards
-           start++;
-           end--;
-       }
-
-       // if they match all the way through return true
-       return true;
+        if (n != temp) // invert the condition
+        {
+                return false;
+        }
+        else
+        {
+                return true;
+        }
 }
