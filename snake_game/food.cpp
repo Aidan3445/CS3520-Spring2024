@@ -39,6 +39,25 @@ Food* create_food(int x, int y, enum Type type){
      
     new_food->x = x;
     new_food->y = y;
+    switch (type) {
+        case Increase:
+            new_food->type = 'O';
+            break;
+        case Decrease:
+            new_food->type = 'X';
+            break;
+        case MegaIncrease:
+            new_food->type = 'M';
+            break;
+        case WegaDecrease:
+            new_food->type = 'W';
+            break;
+        default:
+            // Shows an error state for the food
+            new_food->type = '?';
+            break;
+    }
+    
     if (type == Increase){
         new_food->type = 'O';
     }
