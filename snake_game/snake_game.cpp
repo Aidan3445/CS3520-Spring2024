@@ -27,13 +27,9 @@
 * Additional copyrights may follow
 */
 #include "game.hpp"
-#include <cstdlib>
-#include <cstdio>
 #include <ncurses.h>
 
 int main(void){
-    printf("thuoeou");
     game();
-    printf("tuenao");
     return(0);
 }

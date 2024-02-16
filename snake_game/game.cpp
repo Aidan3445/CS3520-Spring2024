@@ -26,10 +26,12 @@
 *
 * Additional copyrights may follow
 */
+#include <cctype>
 #include <ncurses.h>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <utility>
 #include "snake.hpp"
 #include "food.hpp"
 #include "game_window.hpp"
@@ -51,11 +53,15 @@ void game(){
     const int width = 70;
     char ch;
 
+    // blinking timer for pause;
+    // first int is pause length, second is time since pause started
+    std::pair<int, int> pause_timer = std::make_pair(10, 0);
+
     struct timespec timeret;
     timeret.tv_sec = 0;
-    timeret.tv_nsec = 999999999/4;
+    timeret.tv_nsec = 999999999/60;
 
-    while(state != EXIT){
+    while(true){
         switch(state){
         case INIT:
             initscr();
@@ -99,6 +105,16 @@ void game(){
 
         case ALIVE:
             ch = get_char();
+
+            // handle quit and pause
+            if(tolower(ch) == 'q') {
+                state = EXIT;
+                break; 
+            }
+            else if(tolower(ch) == 'p'){
+                state = PAUSE;
+                break;
+            }
             
             /* Write your code here */
             // pass ch to snake
@@ -109,15 +125,48 @@ void game(){
 
 			// Draw everything on the screen
             clear();
-            mvprintw(20,20, "Key entered: %c", ch);
+            mvprintw(20,20, "Key entered: %i", ch);
             draw_Gamewindow(window);
             draw_snake(snake);
             draw_food(foods);
             break;
 
+        case PAUSE:
+            // handle quit and resume keys
+            ch = get_char();
+            if(tolower(ch) == 'p') {
+                state = ALIVE;
+                break;
+            }
+            else if(tolower(ch) == 'q') {
+                state = EXIT;
+                break;
+            }
+
+            if (pause_timer.second == pause_timer.first) {
+                clear();
+                pause_timer.second = 0;
+            } else {
+                pause_timer.second++;
+                draw_Gamewindow(window);
+                draw_snake(snake);
+                draw_food(foods);
+            }
+
+            mvprintw((window->upper_left_y + window->height + 1), 
+                    (window->upper_left_x + window->width + 1) / 2, "PAUSED");
+
+            break;
+
         case DEAD:
             endwin();
             break;
+
+        case EXIT:
+            endwin();
+            reset_shell_mode();
+            printf("Thanks for playing!\n");
+            return;
         }
         refresh();
         nanosleep(&timeret, NULL);
