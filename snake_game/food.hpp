@@ -19,6 +19,11 @@
 *
 * - Added two more food types: MegaIncrease (with the symbol as 'M') to increase snake size by a large amount
 *   and added WegaDecrease (with the symbol as 'W') to decrease snake size by a large amount
+*
+* Add methods to convert between enum and char
+* 
+* Change food_exists to return the type of food rather than bool
+* Added None type food
 */
 
 /*Copyright (c) 2022 Adeel Bhutta
@@ -32,7 +37,7 @@
 
 //Two types of food
 //Either Increase or Decrease length of snake
-enum Type {Increase, Decrease, MegaIncrease, WegaDecrease}; 
+enum Type {Increase, Decrease, MegaIncrease, WegaDecrease, None}; 
 
 //Structure to hold properties of food
 struct Food {
@@ -46,10 +51,12 @@ typedef struct Food Food;
 
 //Function prototypes 
 void add_new_food(Food* foods, Food* new_food);
-bool food_exists(Food* foods, int x, int y);
+enum Type food_exists(Food* foods, int x, int y);
 Food* create_food(int x, int y, enum Type type);
 enum Type food_type(Food* foods, int x, int y);
 Food* remove_eaten_food(Food* foods, int x, int y);
 void draw_food(Food *food);
 // Added Methods
-Type random_food_type();
+enum Type type_from_char(char type); 
+char char_from_type(enum Type type);
+enum Type random_food_type();

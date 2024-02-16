@@ -16,7 +16,8 @@
 */
 
 /* Change log:
-*
+* add pause state and menu
+* draw snake last so it is on top
 *
 */
 
@@ -32,7 +33,6 @@
 #include <cstdlib>
 #include <ctime>
 #include <utility>
-#include <string>
 #include "snake.hpp"
 #include "food.hpp"
 #include "game_window.hpp"
@@ -57,7 +57,7 @@ void game(){
     // blinking timer for pause;
     // first int is pause length, second is time since pause started
     // time measured in frames defined by timeret below
-    std::pair<int, int> pause_timer = std::make_pair(10, 0);
+    std::pair<int, int> pause_timer = std::make_pair(10, 10);
 
     struct timespec timeret;
     timeret.tv_sec = 0;
@@ -96,7 +96,7 @@ void game(){
             foods = create_food(food_x, food_y, type);
             for(i = 1; i < 20; i++){
                 generate_points(&food_x, &food_y, width, height, x_offset, y_offset);
-                while (food_exists(foods,food_x, food_y))
+                while (food_exists(foods,food_x, food_y) != None)
                     generate_points(&food_x, &food_y, width, height, x_offset, y_offset);
                 type = (rand() > RAND_MAX/2) ? Increase : Decrease;
                 new_food = create_food(food_x, food_y, type);
@@ -121,16 +121,21 @@ void game(){
             /* Write your code here */
             // pass ch to snake
             move_snake(snake, ch);
-            // if ch is q, quit
-            // if ch is p, pause
-                // handling of pause menu
 
-			// Draw everything on the screen
+            // check for food
+            type = food_exists(foods, snake->x, snake->y);
+            if (type != None) {
+                // get food type to determine how to change snake size
+                remove_eaten_food(foods, snake->x, snake->y);
+            }
+
+            // Draw everything on the screen
             clear();
-            mvprintw(20,20, "Key entered: %i", ch);
+            mvprintw(20,20, "Key entered: %c", ch);
             draw_Gamewindow(window);
-            draw_snake(snake);
             draw_food(foods);
+            draw_snake(snake);
+
             break;
 
         case PAUSE:
@@ -138,6 +143,7 @@ void game(){
             ch = get_char();
             if(tolower(ch) == 'p') {
                 state = ALIVE;
+                pause_timer.second = pause_timer.first;
                 break;
             }
             else if(tolower(ch) == 'q') {

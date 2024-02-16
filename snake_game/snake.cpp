@@ -97,7 +97,7 @@ Snake *move_snake(Snake *snake, int direction)
     direction = NOCHAR;
   }
   // TODO
-  Snake *new_head = new Snake;
+  //Snake *new_head = new Snake;
 
   // Set the new head to have the x and y coordinates as the existing head of the snake
   int old_dir = prev_dir(snake);
@@ -132,9 +132,10 @@ Snake *move_snake(Snake *snake, int direction)
 
   // Set new head as the new head of the entire snake
   // Add all the features (color and symbol) to the new cell
-  //  Delete the tail from the snake: HINT - there is a remove tail function below
+  // Delete the tail from the snake: HINT - there is a remove tail function below
+  
 
-  return new_head;
+  return snake;
 }
 
 Snake *remove_tail(Snake *snake)

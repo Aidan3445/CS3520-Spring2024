@@ -16,7 +16,7 @@
 */
 
 /* Change log:
-*
+* add handling for 2 new food types
 *
 */
 
@@ -39,45 +39,21 @@ Food* create_food(int x, int y, enum Type type){
      
     new_food->x = x;
     new_food->y = y;
-    switch (type) {
-        case Increase:
-            new_food->type = 'O';
-            break;
-        case Decrease:
-            new_food->type = 'X';
-            break;
-        case MegaIncrease:
-            new_food->type = 'M';
-            break;
-        case WegaDecrease:
-            new_food->type = 'W';
-            break;
-        default:
-            // Shows an error state for the food
-            new_food->type = '?';
-            break;
-    }
-    
-    if (type == Increase){
-        new_food->type = 'O';
-    }
-    else if(type == Decrease){
-        new_food->type = 'X';
-    }
+    new_food->type = char_from_type(type);
     new_food->next = NULL;
 
     return new_food;
 }
 
 //Check if food exists at coordinates
-bool food_exists(Food* foods, int x, int y){
+enum Type food_exists(Food* foods, int x, int y){
     Food* temp = foods;
     while(temp){
         if(temp->x == x && temp->y == y)
-            return true;
+            return type_from_char(temp->type);
         temp = temp->next;
     }
-    return false;
+    return None;
 }
 
 //Add new food to end of food list
@@ -89,17 +65,74 @@ void add_new_food(Food* foods, Food* new_food){
     temp->next = new_food;
 }
 
+//Convert enum to char
+char char_from_type(enum Type type) {
+    switch(type) {
+        case Increase:
+            return 'O';
+        case Decrease:
+            return 'X';
+        case MegaIncrease:
+            return 'M';
+        case WegaDecrease:
+            return 'W';
+        default:
+            // indicates an error food state
+            return '?';
+    }
+}
+
+//Convert char to enum
+enum Type type_from_char(char type) {
+    switch(type) {
+        case 'O':
+            return Increase;
+        case 'X':
+            return Decrease;
+        case 'M':
+            return MegaIncrease;
+        case 'W':
+            return WegaDecrease;
+        default:
+            // indicates an error food state
+            return None;
+    }
+}
+
 
 enum Type food_type(Food* foods, int x, int y){
     //Implement the code to return the type of the food 
     //present at position (x, y)	
-	
+
+    Food* temp = foods;
+    while(temp){
+        if(temp->x == x && temp->y == y)
+            return type_from_char(temp->type);
+        temp = temp->next;
+    }
+
+    return None;
 }
 Food* remove_eaten_food(Food* foods, int x, int y){
 	//Implement the code to remove food at position (x,y).
 	//Create a new linked list of type Food containing only the
 	//needed food and return this new list
+
+    // if we reach the end of the list, return NULL
+    if(!foods) return NULL;
+
+    // if the current food is eaten, then remove it and recurse
+    if (foods->x == x && foods->y == y) {
+        Food* temp = foods->next;
+        free(foods);
+        return temp;
+    }
+
+    // if the current food is not eaten, then keep it and recurse
+    foods->next = remove_eaten_food(foods->next, x, y);
+    return foods;
 }
+
 // Display all the food
 void draw_food (Food *foods)
 {   Food* temp = foods;
