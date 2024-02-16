@@ -18,7 +18,7 @@
  */
 
 /* Change log:
- *
+ * add method to draw pause menu on screen
  *
  */
 
@@ -51,3 +51,5 @@ gamewindow_t *changeGameWindow(int upper_left_x, int upper_left_y, int width, in
 
 void undraw_Gamewindow(gamewindow_t *);
 void draw_Gamewindow(gamewindow_t *);
+// Added Methods
+void draw_pause_menu(int x_offset, int y_offset, int width, int height);

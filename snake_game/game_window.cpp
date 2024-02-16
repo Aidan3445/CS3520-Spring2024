@@ -134,3 +134,22 @@ void undraw_Gamewindow(gamewindow_t *r)
 	}
 }
 /* room.c ends here */
+
+// Added Methods
+
+void draw_pause_menu(int x_offset, int y_offset, int width, int height)
+{
+    const char *lines[17] = {
+        "+---------------+",
+        "|  Game Paused: |",
+        "| 'p' to resume |",
+        "|  'q' to quit  |",
+        "+---------------+",
+        NULL // terminator
+    };
+    
+    for (int i = 0; lines[i] != NULL; i++) {
+        mvprintw(y_offset + (height / 2) + i, 
+                x_offset + (width / 2) - 8, lines[i]);
+    }
+}

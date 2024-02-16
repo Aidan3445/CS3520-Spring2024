@@ -32,6 +32,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <utility>
+#include <string>
 #include "snake.hpp"
 #include "food.hpp"
 #include "game_window.hpp"
@@ -153,9 +154,8 @@ void game(){
                 draw_food(foods);
             }
 
-            mvprintw((window->upper_left_y + window->height + 1), 
-                    (window->upper_left_x + window->width + 1) / 2, "PAUSED");
-
+            // draw pause menu
+            draw_pause_menu(x_offset, y_offset, width, height);
             break;
 
         case DEAD:
