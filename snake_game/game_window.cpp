@@ -18,8 +18,7 @@
  */
 
 /* Change log:
- *
- *
+ * added pause menu method
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
