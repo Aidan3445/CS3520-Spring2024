@@ -56,6 +56,7 @@ void game(){
 
     // blinking timer for pause;
     // first int is pause length, second is time since pause started
+    // time measured in frames defined by timeret below
     std::pair<int, int> pause_timer = std::make_pair(10, 0);
 
     struct timespec timeret;
