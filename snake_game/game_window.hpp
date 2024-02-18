@@ -19,7 +19,7 @@
 
 /* Change log:
  * add method to draw pause menu on screen
- *
+ * add method to draw start menu on screen
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -53,3 +53,4 @@ void undraw_Gamewindow(gamewindow_t *);
 void draw_Gamewindow(gamewindow_t *);
 // Added Methods
 void draw_pause_menu(int x_offset, int y_offset, int width, int height);
+void draw_start_menu(int x_offset, int y_offset, int width, int height);

@@ -18,6 +18,9 @@
 /* Change log:
  * - Added a method to find the previous direction
  * - Added a move method to snake
+ * - Added an eat_food method to change the snake's size
+ *   based on the food that was eaten
+ * - Added method to grow snake by 1
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -27,7 +30,7 @@
  * Additional copyrights may follow
  */
 
-
+#include "food.hpp"
 #include <cstdbool>
 
 struct Snake {
@@ -39,7 +42,7 @@ struct Snake {
   struct Snake* next;
   // Added Methods
   /**
-   * 
+   * Moves the snake to the given new x and y position.
    */
   void move(const int &new_x, const int &new_y);
 };
@@ -59,3 +62,11 @@ int len(Snake* snake);
  * If snake is only 1 long, returns NOCHAR
  */
 int prev_dir(Snake *snake);
+/**
+ * Changes the given snake's size based on the food that was eaten.
+ */
+void eat_food(Snake *snake, enum Type food);
+/**
+ * Adds a tail to the snake.
+ */
+Snake* grow(Snake *snake);

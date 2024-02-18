@@ -152,3 +152,27 @@ void draw_pause_menu(int x_offset, int y_offset, int width, int height)
                 x_offset + (width / 2) - 8, lines[i]);
     }
 }
+
+void draw_start_menu(int x_offset, int y_offset, int width, int height)
+{
+    const char *lines[17] = {
+        "+---------------------+",
+        "|  Press s to start!  |",
+		"+---------------------+",
+		"+---------------------+ +----------+",
+		"|  How to Play:       | |  Scoring  |",
+		"|  - Use arrow keys   | | --------- |",
+		"|    or wsad to move  | | O =  20p  |",
+		"|  - Press p to pause | | X = -10p  |",
+		"|  - Press q to quit  | | M =  30p  |",
+        "+---------------------+ | W = -20p  |",
+		"                        +-----------+",
+        NULL // terminator
+    };
+    // Subtracts (5, 12) to account for centering the start menu
+	// by subtracting from the cursor half the size of the menu
+    for (int i = 0; lines[i] != NULL; i++) {
+        mvprintw(y_offset + (height / 2) + i - 5, 
+                x_offset + (width / 2) - 12, lines[i]);
+    }
+}

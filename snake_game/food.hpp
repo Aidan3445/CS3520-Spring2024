@@ -24,6 +24,8 @@
 * 
 * Change food_exists to return the type of food rather than bool
 * Added None type food
+*
+* - Added guard bit to prevent this header file from being included twice
 */
 
 /*Copyright (c) 2022 Adeel Bhutta
@@ -33,6 +35,8 @@
 * Additional copyrights may follow
 */
 
+#ifndef FOOD
+#define FOOD
 #include <ncurses.h>
 
 //Two types of food
@@ -59,4 +63,14 @@ void draw_food(Food *food);
 // Added Methods
 enum Type type_from_char(char type); 
 char char_from_type(enum Type type);
+/**
+ * Returns a random food type.
+ */
 enum Type random_food_type();
+/**
+ * Amount added or removed from the snake when it eats
+ * the given food.
+ * Ex. Returning a 1 means the snake will increase in size by 1
+ */
+int tails_added(enum Type type);
+#endif

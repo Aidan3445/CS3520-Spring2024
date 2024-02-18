@@ -17,7 +17,10 @@
 
 /* Change log:
  *
- *
+ * - Updated remove_tail to prevent removing a tail if the snake is at length 2
+ *   (which prevents a segmentation fault if you try to remove a tail when the 
+ *   snake is length 1)
+ *   |-> Also, since length 2 is the minimum length for the game to function properly
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -78,6 +81,16 @@ int prev_dir(Snake *snake) {
     }
   }
   return NOCHAR;
+}
+
+void eat_food(Snake *snake, enum Type food) {
+  int added = tails_added(food);
+  for (int i = 0; i < added; i++) {
+    grow(snake);
+  }
+  for (int i = 0; i > added; i--) {
+    remove_tail(snake);
+  }
 }
 
 void Snake::move(const int &new_x, const int &new_y) {
@@ -141,10 +154,25 @@ Snake *move_snake(Snake *snake, int direction)
 Snake *remove_tail(Snake *snake)
 {
   Snake *end = snake;
+  if (!end->next->next) {
+    // Only removes a tail if two exists
+    // So the min size of a snake is 2
+    return snake;
+  }
   while (end->next->next)
     end = end->next;
   free(end->next);
   end->next = NULL;
+  return snake;
+}
+
+Snake* grow(Snake *snake) {
+  Snake *end = snake;
+  while (end->next)
+    end = end->next;
+  // Adds a tail to the spot of the previous tail
+  // So as the snake moves, the new tail pieces will show
+  end->next = create_tail(end->x, end->y);
   return snake;
 }
 

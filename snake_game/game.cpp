@@ -66,6 +66,7 @@ void game(){
     while(true){
         switch(state){
         case INIT:
+            srand(time(nullptr)); // Initializes random seed
             initscr();
             start_color();
             nodelay(stdscr, TRUE); //Dont wait for char
@@ -92,19 +93,42 @@ void game(){
 
             //Generate 20 foods
             generate_points(&food_x, &food_y, width, height, x_offset, y_offset);
-            type = (rand() > RAND_MAX/2) ? Increase : Decrease; // Randomly deciding type of food
+            type = random_food_type(); // Randomly deciding type of food
             foods = create_food(food_x, food_y, type);
             for(i = 1; i < 20; i++){
                 generate_points(&food_x, &food_y, width, height, x_offset, y_offset);
                 while (food_exists(foods,food_x, food_y) != None)
                     generate_points(&food_x, &food_y, width, height, x_offset, y_offset);
-                type = (rand() > RAND_MAX/2) ? Increase : Decrease;
+                type = random_food_type();
                 new_food = create_food(food_x, food_y, type);
                 add_new_food(foods, new_food);
             }
-            state = ALIVE;
+            state = START_MENU;
             break;
 
+        case START_MENU:
+            // Uses getch instead of get_char, since 's' is encoded to down in get_char
+            // and we need to know if s or q have been pressed
+            ch = getch();
+
+            clear();
+            draw_Gamewindow(window);
+            draw_snake(snake);
+            draw_food(foods);
+            // draw start menu
+            draw_start_menu(x_offset, y_offset, width, height);
+
+            // handle quit and start
+            if(tolower(ch) == 'q') {
+                state = EXIT;
+                break; 
+            }
+            else if(tolower(ch) == 's'){
+                state = ALIVE;
+                break;
+            }
+            break;
+        
         case ALIVE:
             ch = get_char();
 
@@ -125,8 +149,9 @@ void game(){
             // check for food
             type = food_exists(foods, snake->x, snake->y);
             if (type != None) {
+                eat_food(snake, type);
                 // get food type to determine how to change snake size
-                remove_eaten_food(foods, snake->x, snake->y);
+                foods = remove_eaten_food(foods, snake->x, snake->y);
             }
 
             // Draw everything on the screen

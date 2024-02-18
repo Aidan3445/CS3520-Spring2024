@@ -141,3 +141,26 @@ void draw_food (Food *foods)
         temp = temp->next;
     }
 }
+
+enum Type random_food_type() {
+    // Selects a random type by using the fact that enums go from 
+    // 0 to the number of states - 1. 
+    // So this will return one of the first 4 states in Type 
+    // (which are all the valid states)
+    return (Type)(rand() % 4);
+}
+
+int tails_added(enum Type type) {
+    switch (type) {
+        case Increase:
+            return 1;
+        case Decrease:
+            return -1;
+        case MegaIncrease:
+            return 3;
+        case WegaDecrease:
+            return -3;
+        default:
+            return 0;
+    }
+}
