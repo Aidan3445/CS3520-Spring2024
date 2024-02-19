@@ -152,6 +152,12 @@ void game(){
                 eat_food(snake, type);
                 // get food type to determine how to change snake size
                 foods = remove_eaten_food(foods, snake->x, snake->y);
+                // Adds a new food to replace the old one
+                Food *new_food = create_food(0, 0, random_food_type());
+                do {
+                    generate_points(&(new_food->x), &(new_food->y), width, height, x_offset, y_offset);
+                } while (food_exists(foods, new_food->x, new_food->y) != None);
+                add_new_food(foods, new_food);
             }
 
             // Draw everything on the screen
@@ -160,6 +166,7 @@ void game(){
             draw_Gamewindow(window);
             draw_food(foods);
             draw_snake(snake);
+            draw_score(0, x_offset, y_offset, width, height);
 
             break;
 

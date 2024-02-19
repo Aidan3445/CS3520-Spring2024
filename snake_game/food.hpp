@@ -26,6 +26,7 @@
 * Added None type food
 *
 * - Added guard bit to prevent this header file from being included twice
+* - Added score_added to determine the point value of all the food types
 */
 
 /*Copyright (c) 2022 Adeel Bhutta
@@ -73,4 +74,8 @@ enum Type random_food_type();
  * Ex. Returning a 1 means the snake will increase in size by 1
  */
 int tails_added(enum Type type);
+/**
+ * Amount of score added based on the given food type.
+ */
+int score_added(enum Type type);
 #endif

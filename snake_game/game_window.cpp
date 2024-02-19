@@ -159,7 +159,7 @@ void draw_start_menu(int x_offset, int y_offset, int width, int height)
         "+---------------------+",
         "|  Press s to start!  |",
 		"+---------------------+",
-		"+---------------------+ +----------+",
+		"+---------------------+ +-----------+",
 		"|  How to Play:       | |  Scoring  |",
 		"|  - Use arrow keys   | | --------- |",
 		"|    or wsad to move  | | O =  20p  |",
@@ -175,4 +175,25 @@ void draw_start_menu(int x_offset, int y_offset, int width, int height)
         mvprintw(y_offset + (height / 2) + i - 5, 
                 x_offset + (width / 2) - 12, lines[i]);
     }
+}
+
+void draw_score(unsigned int score, int x_offset, int y_offset, int width, int height) {
+	const char *lines[17] = {
+		"+---------------------+ +-----------+",
+		"|  Score Board:       | |  Scoring  |",
+		"| ------------------- | | --------- |",
+		"|                     | | O =       |",
+		"|                     | | X =       |",
+		"|                     | | M =       |",
+        "|                     | |           |",
+		"+---------------------+ +-----------+",
+        NULL // terminator
+    };
+    // Subtracts (4, 12) to account for centering the start menu
+	// by subtracting from the cursor half the size of the menu
+    for (int i = 0; lines[i] != NULL; i++) {
+        mvprintw(y_offset + i - 4, 
+                x_offset + width - 12, lines[i]);
+    }
+	
 }

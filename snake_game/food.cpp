@@ -164,3 +164,18 @@ int tails_added(enum Type type) {
             return 0;
     }
 }
+
+int score_added(enum Type type) {
+    switch (type) {
+        case Increase:
+            return 20;
+        case Decrease:
+            return -10;
+        case MegaIncrease:
+            return 60;
+        case WegaDecrease:
+            return -30;
+        default:
+            return 0;
+    }
+}
