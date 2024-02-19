@@ -179,7 +179,7 @@ void draw_start_menu(int x_offset, int y_offset, int width, int height)
     }
 }
 
-void draw_score(unsigned int score, int x_offset, int y_offset, int width, int height) {
+void draw_score(int score, int x_offset, int y_offset, int width, int height) {
 	const char *lines[18] = {
 		"+---------------------+ ",
 		"|     Scoreboard:     | ",
