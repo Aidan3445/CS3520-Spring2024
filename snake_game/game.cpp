@@ -77,7 +77,7 @@ void game(){
             timeout(100);
 
             // Setting height and width of the board
-            x_offset = (x_max / 2) - (width / 2);
+            x_offset = (x_max / 2) - (width / 2) - 12;
             y_offset = (y_max / 2) - (height / 2);
             
             //Init board
@@ -195,6 +195,7 @@ void game(){
 
             // draw pause menu
             draw_pause_menu(x_offset, y_offset, width, height);
+            draw_score(0, x_offset, y_offset, width, height);
             break;
 
         case DEAD:

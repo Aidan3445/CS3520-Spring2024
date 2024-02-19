@@ -19,6 +19,8 @@
 
 /* Change log:
  * added pause menu method
+ *
+ * added scoring method
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -33,6 +35,7 @@
 #include <cstdlib>
 #include <ncurses.h>
 #include "game_window.hpp"
+#include "food.hpp"
 
 gamewindow_t *init_GameWindow(int upper_left_x, int upper_left_y, int width, int height)
 {
@@ -159,14 +162,13 @@ void draw_start_menu(int x_offset, int y_offset, int width, int height)
         "+---------------------+",
         "|  Press s to start!  |",
 		"+---------------------+",
-		"+---------------------+ +-----------+",
-		"|  How to Play:       | |  Scoring  |",
-		"|  - Use arrow keys   | | --------- |",
-		"|    or wsad to move  | | O =  20p  |",
-		"|  - Press p to pause | | X = -10p  |",
-		"|  - Press q to quit  | | M =  30p  |",
-        "+---------------------+ | W = -20p  |",
-		"                        +-----------+",
+		"+---------------------+",
+		"|  How to Play:       |",
+		"|  - Use arrow keys   |",
+		"|    or wsad to move  |",
+		"|  - Press p to pause |",
+		"|  - Press q to quit  |",
+        "+---------------------+",
         NULL // terminator
     };
     // Subtracts (5, 12) to account for centering the start menu
@@ -178,22 +180,42 @@ void draw_start_menu(int x_offset, int y_offset, int width, int height)
 }
 
 void draw_score(unsigned int score, int x_offset, int y_offset, int width, int height) {
-	const char *lines[17] = {
-		"+---------------------+ +-----------+",
-		"|  Score Board:       | |  Scoring  |",
-		"| ------------------- | | --------- |",
-		"|                     | | O =       |",
-		"|                     | | X =       |",
-		"|                     | | M =       |",
-        "|                     | |           |",
-		"+---------------------+ +-----------+",
+	const char *lines[18] = {
+		"+---------------------+ ",
+		"|     Scoreboard:     | ",
+		"| ------------------- | ",
+		"|                     | ",
+		"|                     | ",
+		"|                     | ",
+        "|                     | ",
+		"+---------------------+ ",
+        "                        ",
+        "+---------------------+ ",
+        "|       Scoring:      | ",
+        "| ------------------- | ",
+        "|                     | ",
+        "|                     | ",
+        "|                     | ",
+        "|                     | ",
+        "+---------------------+ ",
         NULL // terminator
     };
     // Subtracts (4, 12) to account for centering the start menu
 	// by subtracting from the cursor half the size of the menu
     for (int i = 0; lines[i] != NULL; i++) {
-        mvprintw(y_offset + i - 4, 
-                x_offset + width - 12, lines[i]);
+        mvprintw(y_offset + i, 
+                x_offset + width + 2, lines[i]);
     }
-	
+    // print the score
+    mvprintw(y_offset + 3, x_offset + width + 8, "Score: %d", score);
+    // todo: print the other scores
+
+    for (int i = 0; i < 4; i++) {
+        enum Type foodType = (enum Type) i;
+        char typeChar = char_from_type(foodType);
+        int typeScore = score_added(foodType);
+
+        mvprintw(y_offset + 12 + i, x_offset + width + 9, 
+                "%c, %s%d pts.", typeChar, typeScore > 0 ? " " : "", typeScore);
+    }
 }
