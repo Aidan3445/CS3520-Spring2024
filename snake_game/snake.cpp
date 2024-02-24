@@ -21,6 +21,7 @@
  *   (which prevents a segmentation fault if you try to remove a tail when the 
  *   snake is length 1)
  *   |-> Also, since length 2 is the minimum length for the game to function properly
+ * - draw snake does not print the null_tail
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -43,6 +44,8 @@ Snake *init_snake(int x, int y)
   Snake *head = create_tail(x, y);
   Snake *tail1 = create_tail(x - 1, y);
   Snake *tail2 = create_tail(x - 2, y);
+  Snake *null_tail = create_tail(x - 3, y);
+  tail2->next = null_tail;
   tail1->next = tail2;
   head->next = tail1;
   return head;
@@ -157,6 +160,9 @@ Snake *remove_tail(Snake *snake)
   if (!end->next->next) {
     // Only removes a tail if two exists
     // So the min size of a snake is 2
+    // (however, since the final tail is 
+    // always the null tail, and essentially 
+    // does not exist, we have a min size of 1)
     return snake;
   }
   while (end->next->next)
@@ -179,7 +185,10 @@ Snake* grow(Snake *snake) {
 // draws the snake on the board
 void draw_snake(Snake *snake)
 {
-  while (snake)
+  // Since the final tail is just there to store the snake's 
+  // previous direction (and prevent any errors), we do not
+  // print it
+  while (snake->next)
   {
     mvprintw(snake->y, snake->x, "%c", snake->symbol);
     snake = snake->next;
@@ -189,5 +198,20 @@ void draw_snake(Snake *snake)
 // checks if it eats itself, if it does, then return true
 bool eat_itself(Snake *snake)
 {
-  // TODO for Milestone 2 only
+  // This is fine because we always have a null_tail,
+  // so the snake has a min size of 2
+  Snake *cur_tail = snake->next;
+  while (cur_tail->next) {
+    if (snake->x == cur_tail->x && snake->y == cur_tail->y) {
+      return true;
+    }
+    cur_tail = cur_tail->next;
+  }
+  return false;
+}
+
+bool out_of_bounds(Snake* snake, const int &x_offset, const int &y_offset, const int &width, const int &height) {
+  // Checks if the snake is off the screen
+  return (snake->x < x_offset || snake->x > width + x_offset)
+      || (snake->y < y_offset || snake->y > height + y_offset);
 }

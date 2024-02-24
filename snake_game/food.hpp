@@ -27,6 +27,7 @@
 *
 * - Added guard bit to prevent this header file from being included twice
 * - Added score_added to determine the point value of all the food types
+* - Added Death type to act as an obstacles
 */
 
 /*Copyright (c) 2022 Adeel Bhutta
@@ -42,7 +43,7 @@
 
 //Two types of food
 //Either Increase or Decrease length of snake
-enum Type {Increase, Decrease, MegaIncrease, WegaDecrease, None}; 
+enum Type {Increase, Decrease, MegaIncrease, WegaDecrease, Death, None}; 
 
 //Structure to hold properties of food
 struct Food {

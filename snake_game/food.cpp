@@ -76,6 +76,8 @@ char char_from_type(enum Type type) {
             return 'M';
         case WegaDecrease:
             return 'W';
+        case Death:
+            return '@';
         default:
             // indicates an error food state
             return '?';
@@ -93,6 +95,8 @@ enum Type type_from_char(char type) {
             return MegaIncrease;
         case 'W':
             return WegaDecrease;
+        case '@':
+            return Death;
         default:
             // indicates an error food state
             return None;
@@ -146,7 +150,7 @@ enum Type random_food_type() {
     // Selects a random type by using the fact that enums go from 
     // 0 to the number of states - 1. 
     // So this will return one of the first 4 states in Type 
-    // (which are all the valid states)
+    // (which are all the valid states, not including Death or None)
     return (Type)(rand() % 4);
 }
 

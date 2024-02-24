@@ -111,6 +111,14 @@ void game() {
         new_food = create_food(food_x, food_y, type);
         add_new_food(foods, new_food);
       }
+      // Generate 10 obstacles
+      for (i = 0; i < 10; i++) {
+        generate_points(&food_x, &food_y, width, height, x_offset, y_offset);
+        while (food_exists(foods, food_x, food_y) != None)
+          generate_points(&food_x, &food_y, width, height, x_offset, y_offset);
+        new_food = create_food(food_x, food_y, Type::Death);
+        add_new_food(foods, new_food);
+      }
       state = START_MENU;
       break;
 
@@ -153,8 +161,14 @@ void game() {
       // pass ch to snake
       move_snake(snake, ch);
 
-      // check for food
       type = food_exists(foods, snake->x, snake->y);
+
+      if (type == Type::Death || out_of_bounds(snake, x_offset, y_offset, width, height) || eat_itself(snake)) {
+        state = DEAD;
+        break;
+      }
+
+      // check for food
       if (type != None) {
         eat_food(snake, type);
         // get food type to determine how to change snake size

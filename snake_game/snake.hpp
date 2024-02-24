@@ -21,6 +21,7 @@
  * - Added an eat_food method to change the snake's size
  *   based on the food that was eaten
  * - Added method to grow snake by 1
+ * - Added method to check if the snake is out of bounds
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -70,3 +71,7 @@ void eat_food(Snake *snake, enum Type food);
  * Adds a tail to the snake.
  */
 Snake* grow(Snake *snake);
+/**
+ * Returns true if the snake is out of bounds.
+ */
+bool out_of_bounds(Snake* snake, const int &x_offset, const int &y_offset, const int &width, const int &height);
