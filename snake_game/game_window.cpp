@@ -219,3 +219,27 @@ void draw_score(int score, int x_offset, int y_offset, int width, int height) {
                 "%c, %s%d pts.", typeChar, typeScore > 0 ? " " : "", typeScore);
     }
 }
+
+void draw_dead(int lives_remaining, int x_offset, int y_offset, int width, int height)
+{
+    const char *lines[17] = {
+        "+----------------+",
+        "|    You Died!   |",
+        "| -------------- |",
+        "|    Lives:      |",
+        "| -------------- |",
+        "| 'r' to respawn |",
+        "|  'q' to quit   |",
+        "+----------------+",
+        NULL // terminator
+    };
+    
+    for (int i = 0; lines[i] != NULL; i++) {
+        mvprintw(y_offset + (height / 2) + i, 
+                x_offset + (width / 2) - 8, lines[i]);
+    }
+
+    mvprintw(y_offset + (height / 2) + 3, 
+            x_offset + (width / 2) + 4, "%d", lives_remaining);
+}
+

@@ -46,9 +46,10 @@ Food* create_food(int x, int y, enum Type type){
 }
 
 //Check if food exists at coordinates
-enum Type food_exists(Food* foods, int x, int y){
+enum Type food_exists(Food* foods, int x, int y) {
+    return None; //AHHHHHHHHHH
     Food* temp = foods;
-    while(temp){
+    while(temp) {
         if(temp->x == x && temp->y == y)
             return type_from_char(temp->type);
         temp = temp->next;
@@ -182,4 +183,14 @@ int score_added(enum Type type) {
         default:
             return 0;
     }
+}
+
+// delete food
+void free_food(Food* food) {
+  Food* cur_food = food;
+  while (cur_food) {
+    Food *next = cur_food->next;
+    free(cur_food);
+    cur_food = next;
+  }
 }

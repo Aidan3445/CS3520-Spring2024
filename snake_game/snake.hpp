@@ -22,6 +22,7 @@
  *   based on the food that was eaten
  * - Added method to grow snake by 1
  * - Added method to check if the snake is out of bounds
+ * - added method to check if snake is on a given x and y position at any point in the tail
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -30,7 +31,6 @@
  *
  * Additional copyrights may follow
  */
-
 #include "food.hpp"
 #include <cstdbool>
 
@@ -75,3 +75,12 @@ Snake* grow(Snake *snake);
  * Returns true if the snake is out of bounds.
  */
 bool out_of_bounds(Snake* snake, const int &x_offset, const int &y_offset, const int &width, const int &height);
+/**
+ * deallocates the memory used by the snake 
+ */
+void free_snake(Snake* snake);
+/**
+ * Returns true if the snake exists at the given x and y position.
+ */
+bool snake_exists(Snake *snake, int x, int y);
+

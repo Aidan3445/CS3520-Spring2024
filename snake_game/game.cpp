@@ -20,6 +20,12 @@
  * draw snake last so it is on top
  * increase score depending on food type
  * increase speed depending on score (every 100 points)
+ * add lives
+ * add a starting score to help keep track of points earned on each life
+ * free memory of food and snake when respawning
+ * add death screen
+ *
+ * fix food spawn to avoid edges and snake
  */
 
 /*Copyright (c) 2022 Adeel Bhutta
@@ -41,8 +47,8 @@
 #include <utility>
 void generate_points(int *food_x, int *food_y, int width, int height,
                      int x_offset, int y_offset) {
-  *food_x = rand() % width + x_offset;
-  *food_y = rand() % height + y_offset;
+  *food_x = rand() % (width - 1) + x_offset + 1;
+  *food_y = rand() % (height - 1) + y_offset + 1;
 }
 void game() {
   enum State state = INIT;       // Set the initial state
@@ -68,8 +74,10 @@ void game() {
 
   // initialize score
   int score = 0;
+  int starting_score;
   double speedRatio = 0.75;
-  int speedCounter = 1;
+  int speedCounter;
+  int lives = 3;
 
   while (true) {
     switch (state) {
@@ -105,7 +113,8 @@ void game() {
       foods = create_food(food_x, food_y, type);
       for (i = 1; i < 20; i++) {
         generate_points(&food_x, &food_y, width, height, x_offset, y_offset);
-        while (food_exists(foods, food_x, food_y) != None)
+        while (food_exists(foods, new_food->x, new_food->y) != None ||
+                 snake_exists(snake, new_food->x, new_food->y))
           generate_points(&food_x, &food_y, width, height, x_offset, y_offset);
         type = random_food_type();
         new_food = create_food(food_x, food_y, type);
@@ -114,11 +123,17 @@ void game() {
       // Generate 10 obstacles
       for (i = 0; i < 10; i++) {
         generate_points(&food_x, &food_y, width, height, x_offset, y_offset);
-        while (food_exists(foods, food_x, food_y) != None)
+        while (food_exists(foods, new_food->x, new_food->y) != None ||
+                 snake_exists(snake, new_food->x, new_food->y))
           generate_points(&food_x, &food_y, width, height, x_offset, y_offset);
         new_food = create_food(food_x, food_y, Type::Death);
         add_new_food(foods, new_food);
       }
+
+      // set initial score, score, and speed
+      starting_score = score;
+      speedCounter = 1;
+
       state = START_MENU;
       break;
 
@@ -164,7 +179,16 @@ void game() {
       type = food_exists(foods, snake->x, snake->y);
 
       if (type == Type::Death || out_of_bounds(snake, x_offset, y_offset, width, height) || eat_itself(snake)) {
-        state = DEAD;
+        lives--;
+
+        if (lives > 0) {
+          state = DEAD;
+          break;
+        } else {
+          state = EXIT; // game over eventually
+          break;
+        }
+
         break;
       }
 
@@ -178,7 +202,8 @@ void game() {
         do {
           generate_points(&(new_food->x), &(new_food->y), width, height,
                           x_offset, y_offset);
-        } while (food_exists(foods, new_food->x, new_food->y) != None);
+        } while (food_exists(foods, new_food->x, new_food->y) != None ||
+                 snake_exists(snake, new_food->x, new_food->y));
         add_new_food(foods, new_food);
 
         // increase score
@@ -189,7 +214,7 @@ void game() {
         }
 
         // increse frame rate to make game harder as score increases
-        if (score / speedCounter >= 100) {
+        if ((score - starting_score) / speedCounter >= 100) {
           timeret.tv_nsec *= speedRatio;
           speedCounter++;
         }
@@ -233,7 +258,21 @@ void game() {
       break;
 
     case DEAD:
-      endwin();
+      ch = get_char();
+      if (tolower(ch) == 'r') {
+        state = INIT;
+        free_food(foods);
+        free_snake(snake);
+        break;
+      } else if (tolower(ch) == 'q') {
+        state = EXIT;
+        break;
+      }
+
+      draw_Gamewindow(window);
+      draw_food(foods);
+      draw_snake(snake);
+      draw_dead(lives, x_offset, y_offset, width, height);
       break;
 
     case EXIT:

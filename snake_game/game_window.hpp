@@ -21,6 +21,7 @@
  * add method to draw pause menu on screen
  * add method to draw start menu on screen
  * add method to draw score
+ * add death screen
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -57,3 +58,4 @@ void draw_Gamewindow(gamewindow_t *);
 void draw_pause_menu(int x_offset, int y_offset, int width, int height);
 void draw_start_menu(int x_offset, int y_offset, int width, int height);
 void draw_score(int score, int x_offset, int y_offset, int width, int height);
+void draw_dead(int lives_remaining, int x_offset, int y_offset, int width, int height);

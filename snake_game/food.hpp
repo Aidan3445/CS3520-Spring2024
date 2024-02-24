@@ -28,7 +28,11 @@
 * - Added guard bit to prevent this header file from being included twice
 * - Added score_added to determine the point value of all the food types
 * - Added Death type to act as an obstacles
-*/
+*
+* - Add method to deallocate memory of food
+*
+* - Add check to prevent food 
+*   */
 
 /*Copyright (c) 2022 Adeel Bhutta
 *
@@ -79,4 +83,8 @@ int tails_added(enum Type type);
  * Amount of score added based on the given food type.
  */
 int score_added(enum Type type);
+/**
+ * Deallocates memory of the given food.
+ */
+void free_food(Food *food);
 #endif

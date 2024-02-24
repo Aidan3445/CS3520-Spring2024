@@ -22,6 +22,8 @@
  *   snake is length 1)
  *   |-> Also, since length 2 is the minimum length for the game to function properly
  * - draw snake does not print the null_tail
+ *
+ *   delete snake
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -210,8 +212,30 @@ bool eat_itself(Snake *snake)
   return false;
 }
 
+// ensure in bounds
 bool out_of_bounds(Snake* snake, const int &x_offset, const int &y_offset, const int &width, const int &height) {
   // Checks if the snake is off the screen
-  return (snake->x < x_offset || snake->x > width + x_offset)
-      || (snake->y < y_offset || snake->y > height + y_offset);
+  return (snake->x <= x_offset || snake->x >= width + x_offset)
+      || (snake->y <= y_offset || snake->y >= height + y_offset);
+}
+
+// delete snake
+void free_snake(Snake* snake) {
+  Snake *cur_tail = snake;
+  while (cur_tail) {
+    Snake *next = cur_tail->next;
+    delete cur_tail;
+    cur_tail = next;
+  }
+}
+
+bool snake_exists(Snake *snake, int x, int y) {
+  Snake *cur_tail = snake;
+  while (cur_tail->next) {
+    if (cur_tail->x == x && cur_tail->y == y) {
+      return true;
+    }
+    cur_tail = cur_tail->next;
+  }
+  return false;
 }
