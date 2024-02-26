@@ -22,6 +22,7 @@
  * add method to draw start menu on screen
  * add method to draw score
  * add death screen
+ * draw_score now also draws the top three saved high scores
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -57,5 +58,5 @@ void draw_Gamewindow(gamewindow_t *);
 // Added Methods
 void draw_pause_menu(int x_offset, int y_offset, int width, int height);
 void draw_start_menu(int x_offset, int y_offset, int width, int height, int difficulty);
-void draw_score(int score, int x_offset, int y_offset, int width, int height);
+void draw_score(int score, int* top_three, int x_offset, int y_offset, int width, int height);
 void draw_dead(int lives_remaining, int x_offset, int y_offset, int width, int height);

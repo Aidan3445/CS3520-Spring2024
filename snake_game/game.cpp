@@ -48,6 +48,7 @@
 #include <ctime>
 #include <ncurses.h>
 #include <utility>
+#include "high_score.hpp"
 
 void generate_points(int *food_x, int *food_y, int width, int height,
         int x_offset, int y_offset) {
@@ -162,6 +163,8 @@ void game() {
     // difficulty settings
     int difficulty = 0;
     unsigned int protectionRadius = 5;
+    int *top_ten_scores = top_scores();
+    int *cur_top_scores = new int[10];
 
     while (true) {
         switch (state) {
@@ -239,7 +242,7 @@ void game() {
                 draw_food(foods);
                 // draw start menu
                 draw_start_menu(x_offset, y_offset, width, height, difficulty);
-                draw_score(score, x_offset, y_offset, width, height);
+                draw_score(score, top_ten_scores, x_offset, y_offset, width, height);
 
 
                 break;
@@ -296,7 +299,9 @@ void game() {
                 draw_Gamewindow(window);
                 draw_food(foods);
                 draw_snake(snake);
-                draw_score(score, x_offset, y_offset, width, height);
+                // Inserts your score into the current top scores
+                insert_score(top_ten_scores, cur_top_scores, score);
+                draw_score(score, cur_top_scores, x_offset, y_offset, width, height);
 
                 // check for death
                 // death cases:
@@ -338,7 +343,7 @@ void game() {
 
                 // draw pause menu
                 draw_pause_menu(x_offset, y_offset, width, height);
-                draw_score(0, x_offset, y_offset, width, height);
+                draw_score(score, cur_top_scores, x_offset, y_offset, width, height);
                 break;
 
             case DEAD:
@@ -362,12 +367,22 @@ void game() {
                     if (lives > 0) {
                         state = ALIVE;
                     } else {
+                        // Inserts your score to the file
+                        save_score(top_ten_scores, score);
+                        // updates top score from file
+                        delete[] top_ten_scores;
+                        top_ten_scores = top_scores();
                         starting_score = 0;
 
                         state = START_MENU;
                     }
                     break;
                 } else if (tolower(ch) == 'q') {
+                    // Inserts your score to the file
+                    save_score(top_ten_scores, score);
+                    // updates top score from file
+                    delete[] top_ten_scores;
+                    top_ten_scores = top_scores();
                     state = EXIT;
                     break;
                 }
@@ -382,6 +397,9 @@ void game() {
                 endwin();
                 reset_shell_mode();
                 printf("Thanks for playing!\n");
+                // Frees the score information
+                delete[] cur_top_scores;
+                delete[] top_ten_scores;
                 return;
         }
         refresh();

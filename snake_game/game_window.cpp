@@ -221,7 +221,8 @@ void draw_start_menu(int x_offset, int y_offset, int width, int height, int diff
     attroff(COLOR_PAIR(7));
 }
 
-void draw_score(int score, int x_offset, int y_offset, int width, int height) {
+// Assumes top_three is an array of at least 3 ints
+void draw_score(int score, int* top_three, int x_offset, int y_offset, int width, int height) {
     const char *lines[18] = {
         "+---------------------+ ",
         "|     Scoreboard:     | ",
@@ -251,6 +252,10 @@ void draw_score(int score, int x_offset, int y_offset, int width, int height) {
     }
     // print the score
     mvprintw(y_offset + 3, x_offset + width + 8, "Score: %d", score);
+    // prints top 3
+    mvprintw(y_offset + 4, x_offset + width + 7, "High 1: %d", top_three[0]);
+    mvprintw(y_offset + 5, x_offset + width + 7, "High 2: %d", top_three[1]);
+    mvprintw(y_offset + 6, x_offset + width + 7, "High 3: %d", top_three[2]);
     // todo: print the other scores
 
     for (int i = 0; i < 4; i++) {

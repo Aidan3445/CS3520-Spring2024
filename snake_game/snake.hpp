@@ -23,6 +23,7 @@
  * - Added method to grow snake by 1
  * - Added method to check if the snake is out of bounds
  * - added method to check if snake is on a given x and y position at any point in the tail
+ * - removed color property from snake
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -38,7 +39,6 @@ struct Snake {
   int x;
   int y;
   int speed;
-  char color[3];
   char symbol;
   struct Snake* next;
   // Added Methods

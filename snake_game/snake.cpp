@@ -57,10 +57,6 @@ Snake *init_snake(int x, int y)
 Snake *create_tail(int x, int y)
 {
   Snake *snake = new Snake;
-  snake->color[0] = 0;
-  snake->color[1] = 0;
-  snake->color[2] = 255;
-  /* snake->color = {0, 0, 255}; */
   snake->symbol = '#';
   snake->next = NULL;
   snake->x = x;
