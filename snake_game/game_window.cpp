@@ -21,6 +21,8 @@
  * added pause menu method
  *
  * added scoring method
+ *
+ * add difficulty to start menu
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -156,27 +158,41 @@ void draw_pause_menu(int x_offset, int y_offset, int width, int height)
     }
 }
 
-void draw_start_menu(int x_offset, int y_offset, int width, int height)
+void draw_start_menu(int x_offset, int y_offset, int width, int height, int difficulty)
 {
     const char *lines[17] = {
         "+---------------------+",
         "|  Press s to start!  |",
-		"+---------------------+",
-		"+---------------------+",
-		"|  How to Play:       |",
-		"|  - Use arrow keys   |",
-		"|    or wsad to move  |",
-		"|  - Press p to pause |",
-		"|  - Press q to quit  |",
+        "|  <--           -->  |",
+        "+---------------------+",
+        "+---------------------+",
+        "|  How to Play:       |",
+        "|  - Use arrow keys   |",
+        "|    or wsad to move  |",
+        "|  - Press p to pause |",
+        "|  - Press q to quit  |",
         "+---------------------+",
         NULL // terminator
     };
     // Subtracts (5, 12) to account for centering the start menu
-	// by subtracting from the cursor half the size of the menu
+    // by subtracting from the cursor half the size of the menu
     for (int i = 0; lines[i] != NULL; i++) {
         mvprintw(y_offset + (height / 2) + i - 5, 
                 x_offset + (width / 2) - 12, lines[i]);
     }
+
+    // print the difficulty
+    // 0 - easy, 1 - hard, 2 - advanced
+    // 3 - expert, 4 - insane    i
+    const char *diffs[3] = {
+        "    Easy", "    Hard", "  Advanced"
+    };
+    if (difficulty < 0) {
+        difficulty = 0;
+    } else if (difficulty > 2) {
+        difficulty = 2;
+    }
+    mvprintw(y_offset + (height / 2) - 3, x_offset + (width / 2) - 6, diffs[difficulty]); 
 }
 
 void draw_score(int score, int x_offset, int y_offset, int width, int height) {
@@ -241,5 +257,12 @@ void draw_dead(int lives_remaining, int x_offset, int y_offset, int width, int h
 
     mvprintw(y_offset + (height / 2) + 3, 
             x_offset + (width / 2) + 4, "%d", lives_remaining);
+
+    if (lives_remaining <= 0) {
+        mvprintw(y_offset + (height / 2) + 1, 
+            x_offset + (width / 2) - 3, "GAME OVER");
+        mvprintw(y_offset + (height / 2) + 5, 
+            x_offset + (width / 2) + 1, "restart");
+    }
 }
 

@@ -47,7 +47,6 @@ Food* create_food(int x, int y, enum Type type){
 
 //Check if food exists at coordinates
 enum Type food_exists(Food* foods, int x, int y) {
-    return None; //AHHHHHHHHHH
     Food* temp = foods;
     while(temp) {
         if(temp->x == x && temp->y == y)

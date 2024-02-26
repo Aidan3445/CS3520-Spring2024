@@ -80,7 +80,8 @@ bool out_of_bounds(Snake* snake, const int &x_offset, const int &y_offset, const
  */
 void free_snake(Snake* snake);
 /**
- * Returns true if the snake exists at the given x and y position.
+ * Returns true if the snake exists at the given x and y position
+ * as well as a given radius around the head.
  */
-bool snake_exists(Snake *snake, int x, int y);
+bool snake_exists(Snake *snake, int x, int y, unsigned int radius = 0);
 

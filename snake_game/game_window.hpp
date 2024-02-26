@@ -56,6 +56,6 @@ void undraw_Gamewindow(gamewindow_t *);
 void draw_Gamewindow(gamewindow_t *);
 // Added Methods
 void draw_pause_menu(int x_offset, int y_offset, int width, int height);
-void draw_start_menu(int x_offset, int y_offset, int width, int height);
+void draw_start_menu(int x_offset, int y_offset, int width, int height, int difficulty);
 void draw_score(int score, int x_offset, int y_offset, int width, int height);
 void draw_dead(int lives_remaining, int x_offset, int y_offset, int width, int height);

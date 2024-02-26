@@ -159,16 +159,12 @@ Snake *move_snake(Snake *snake, int direction)
 Snake *remove_tail(Snake *snake)
 {
   Snake *end = snake;
-  if (!end->next->next) {
-    // Only removes a tail if two exists
-    // So the min size of a snake is 2
-    // (however, since the final tail is 
-    // always the null tail, and essentially 
-    // does not exist, we have a min size of 1)
+  if (!end->next) {
     return snake;
   }
-  while (end->next->next)
+  while (end->next->next) {
     end = end->next;
+  }
   free(end->next);
   end->next = NULL;
   return snake;
@@ -229,13 +225,23 @@ void free_snake(Snake* snake) {
   }
 }
 
-bool snake_exists(Snake *snake, int x, int y) {
-  Snake *cur_tail = snake;
-  while (cur_tail->next) {
-    if (cur_tail->x == x && cur_tail->y == y) {
-      return true;
+bool snake_exists(Snake *snake, int x, int y, unsigned int radius) {
+    if (!snake->next) {
+        return false;
     }
+
+    Snake *cur_tail = snake;
+    if (abs(cur_tail->x - x) <= radius && abs(cur_tail->y - y) <= radius) {
+        return true;
+    }
+    // this is safe becasue we always have a null_tail
     cur_tail = cur_tail->next;
-  }
-  return false;
+
+    while (cur_tail->next) {
+        if (cur_tail->x == x && cur_tail->y == y) {
+            return true;
+        }
+        cur_tail = cur_tail->next;
+    }
+    return false;
 }
