@@ -51,9 +51,6 @@ gamewindow_t *init_GameWindow(int upper_left_x, int upper_left_y, int width, int
     g->width = width;
     g->height = height;
     g->draw_char = '*';
-    g->color[0] = 0;
-    g->color[1] = 0;
-    g->color[2] = 255;
     return (g);
 }
 

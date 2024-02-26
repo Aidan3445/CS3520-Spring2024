@@ -44,7 +44,6 @@ struct gamewindow_t
   int width;
   int height;
   char draw_char;
-  char color[3];
 };
 
 typedef struct gamewindow_t gamewindow_t;
