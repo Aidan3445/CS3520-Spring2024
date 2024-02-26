@@ -29,7 +29,7 @@ int* top_scores() {
 }
 
 // Places top 10 scores in cur_top array, with my score inserted
-int* insert_score(const int const* orig_top, int* cur_top, const int &my_score) {
+int* insert_score(const int* orig_top, int* cur_top, const int &my_score) {
     for (int i = 0; i < 10; i++) {
         cur_top[i] = orig_top[i];
         if (my_score > orig_top[i]) {
@@ -44,7 +44,7 @@ int* insert_score(const int const* orig_top, int* cur_top, const int &my_score) 
 }
 
 // Saves your score (if you're good)
-void save_score(const int const* orig_top, const int &my_score) {
+void save_score(const int* orig_top, const int &my_score) {
     ofstream file;
     file.open(BEST_TEN_FILE);
     if (!file) {

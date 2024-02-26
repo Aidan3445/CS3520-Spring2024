@@ -261,7 +261,7 @@ void draw_score(int score, int* top_three, int x_offset, int y_offset, int width
         int typeScore = score_added(foodType);
 
         mvprintw(y_offset + 12 + i, x_offset + width + 9, 
-                "%c, %s%d pts.", typeChar, typeScore > 0 ? " " : "", typeScore);
+                "%c: %s%d pts.", typeChar, typeScore > 0 ? " " : "", typeScore);
     }
     attroff(COLOR_PAIR(5));
 }
