@@ -26,6 +26,9 @@
  * add death screen
  *
  * fix food spawn to avoid edges and snake
+ *
+ *
+ * COLORS!
  */
 
 /*Copyright (c) 2022 Adeel Bhutta
@@ -115,6 +118,17 @@ void setDifficulty(int difficulty, Food** foods, Snake* snake, const int &width,
     timeret.tv_nsec = 999999999 / startingSpeed;
 }
 
+// initialize colors
+void init_game_colors() {
+    start_color();
+    init_pair(1, COLOR_YELLOW, COLOR_YELLOW); // snake
+    init_pair(2, COLOR_BLACK, COLOR_GREEN);   // growth food
+    init_pair(3, COLOR_BLACK, COLOR_RED);     // shrink food
+    init_pair(4, COLOR_BLACK, COLOR_WHITE);   // walls and death food
+    init_pair(5, COLOR_BLACK, COLOR_CYAN);    // menu color
+    init_pair(6, COLOR_BLACK, COLOR_RED);     // game over color
+}
+
 void game() {
     enum State state = INIT;       // Set the initial state
     static int x_max, y_max;       // Max screen size variables
@@ -152,14 +166,14 @@ void game() {
     while (true) {
         switch (state) {
             case INIT:
-                srand(time(nullptr)); // Initializes random seed
+                srand(time(nullptr));  // Initializes random seed
                 initscr();
-                start_color();
+                init_game_colors();         // Initializes colors
                 nodelay(stdscr, TRUE); // Dont wait for char
                 noecho();              // Don't echo input chars
                 getmaxyx(stdscr, y_max, x_max);
-                keypad(stdscr, TRUE); // making keys work
-                curs_set(0);          // hide cursor
+                keypad(stdscr, TRUE);  // making keys work
+                curs_set(0);           // hide cursor
                 timeout(100);
 
                 // Setting height and width of the board
@@ -214,8 +228,10 @@ void game() {
                         setDifficulty(difficulty, &foods, snake, 
                                 width, height, x_offset, y_offset, timeret, protectionRadius);
                         break;
-                
+
                 }
+                score = 0;
+                lives = 3;
 
                 clear();
                 draw_Gamewindow(window);
@@ -347,6 +363,7 @@ void game() {
                         state = ALIVE;
                     } else {
                         starting_score = 0;
+
                         state = START_MENU;
                     }
                     break;

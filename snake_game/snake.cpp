@@ -183,14 +183,16 @@ Snake* grow(Snake *snake) {
 // draws the snake on the board
 void draw_snake(Snake *snake)
 {
-  // Since the final tail is just there to store the snake's 
-  // previous direction (and prevent any errors), we do not
-  // print it
-  while (snake->next)
-  {
-    mvprintw(snake->y, snake->x, "%c", snake->symbol);
-    snake = snake->next;
-  }
+    // Since the final tail is just there to store the snake's 
+    // previous direction (and prevent any errors), we do not
+    // print it
+    attron(COLOR_PAIR(1));
+    while (snake->next)
+    {
+        mvprintw(snake->y, snake->x, "%c", snake->symbol);
+        snake = snake->next;
+    }
+    attroff(COLOR_PAIR(1));
 }
 
 // checks if it eats itself, if it does, then return true

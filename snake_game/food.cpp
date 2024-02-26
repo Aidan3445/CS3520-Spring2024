@@ -139,9 +139,30 @@ Food* remove_eaten_food(Food* foods, int x, int y){
 
 // Display all the food
 void draw_food (Food *foods)
-{   Food* temp = foods;
+{   
+    int colorPair;
+    Food* temp = foods;
     while(temp) {
+
+        switch(temp->type) {
+            case 'O':
+            case 'M':
+                colorPair = 2;
+                break;
+            case 'X':
+            case 'W':
+                colorPair = 3;
+                break;
+            case '@':
+                colorPair = 4;
+                break;
+            default:
+                throw "Invalid food type";
+        }
+
+        attron(COLOR_PAIR(colorPair));
         mvprintw(temp->y, temp->x, "%c", temp->type);
+        attroff(COLOR_PAIR(colorPair));
         temp = temp->next;
     }
 }
