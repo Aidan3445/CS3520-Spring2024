@@ -1,6 +1,6 @@
 #ifndef HIGH_SCORE
 #define HIGH_SCORE
-#include <fstream>const
+#include <fstream>
 using namespace std;
 #define BEST_TEN_FILE "./saves/save_best_10.game"
 

@@ -295,7 +295,6 @@ void game() {
                 
                 // Draw everything on the screen
                 clear();
-                mvprintw(20, 20, "Key entered: %c", ch);
                 draw_Gamewindow(window);
                 draw_food(foods);
                 draw_snake(snake);
