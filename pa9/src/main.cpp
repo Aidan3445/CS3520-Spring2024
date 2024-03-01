@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <array>
+#include <vector>
 #include <algorithm>
 using namespace std;
 
@@ -36,23 +38,40 @@ int main() {
     }
 
     // find the average price for each destination
-    cout << "\nAverage price for each destination:\n";
-    for_each(prices.begin(), prices.end(), [](pair<string, map<string, double>> dest) {
+    vector<pair<string, double>> averages;
+    for_each(prices.begin(), prices.end(), [&averages](pair<string, map<string, double>> dest) {
             double sum = 0;
-            for_each(dest.second.begin(), dest.second.end(), [&sum](pair<string, double> airline) {
+            for_each(dest.second.begin(), dest.second.end(), [&sum, &averages](pair<string, double> airline) {
                     sum += airline.second;
                     });
-            cout << dest.first << " average: " << sum / dest.second.size() << endl;
+            averages.push_back(make_pair(dest.first, sum / dest.second.size()));
+            });
+    sort(averages.begin(), averages.end(), [](pair<string, double> a, pair<string, double> b) {
+            return a.second < b.second;
+            });
+    cout << "\nAverage price for each destination:\n";
+    for_each(averages.begin(), averages.end(), [](pair<string, double> dest) {
+            cout << dest.first << " average price: " << dest.second << endl;
             });
 
     // find the cheapest flight for each destination and the airline
-    cout << "\nCheapest flight for each destination:\n";
-    for_each(prices.begin(), prices.end(), [](pair<string, map<string, double>> dest) {
-            auto cheapest = min_element(dest.second.begin(), dest.second.end(), 
+    vector<pair<string, pair<string, double>>> cheapest;
+    for_each(prices.begin(), prices.end(), [&cheapest](pair<string, map<string, double>> dest) {
+            auto min = min_element(dest.second.begin(), dest.second.end(), 
                     [](pair<string, double> a, pair<string, double> b) {
                     return a.second < b.second;
                     });
-            cout << dest.first << " cheapest flight: " << cheapest->first << " " << cheapest->second << endl;
+            cheapest.push_back(make_pair(dest.first, *min)); // not entirely sure why 
+                                                             // this needs to be dereferenced
+            });
+    sort(cheapest.begin(), cheapest.end(), 
+            [](pair<string, pair<string, double>> a, pair<string, pair<string, double>> b) {
+            return a.second.second < b.second.second;
+            });
+    cout << "\nCheapest flight for each destination:\n";
+    for_each(cheapest.begin(), cheapest.end(), [](pair<string, pair<string, double>> dest) {
+            cout << dest.first << " cheapest flight: " << 
+            dest.second.first << " " << dest.second.second << endl;
             });
 
     return 0;
