@@ -18,8 +18,11 @@
  */
 
 /* Change log:
- *
- *
+ * add method to draw pause menu on screen
+ * add method to draw start menu on screen
+ * add method to draw score
+ * add death screen
+ * draw_score now also draws the top three saved high scores
  */
 
 /* Copyright (c) 2022 Adeel Bhutta
@@ -41,13 +44,18 @@ struct gamewindow_t
   int width;
   int height;
   char draw_char;
-  char color[3];
 };
 
 typedef struct gamewindow_t gamewindow_t;
 
 gamewindow_t *init_GameWindow(int, int, int, int);
-gamewindow_t *changeGameWindow(int upper_left_x, int upper_left_y, int width, int height, gamewindow_t *);
+gamewindow_t *changeGameWindow(int upper_left_x, int upper_left_y, 
+        int width, int height, gamewindow_t *);
 
 void undraw_Gamewindow(gamewindow_t *);
 void draw_Gamewindow(gamewindow_t *);
+// Added Methods
+void draw_pause_menu(int x_offset, int y_offset, int width, int height);
+void draw_start_menu(int x_offset, int y_offset, int width, int height, int difficulty);
+void draw_score(int score, int* top_three, int x_offset, int y_offset, int width, int height);
+void draw_dead(int lives_remaining, int x_offset, int y_offset, int width, int height);

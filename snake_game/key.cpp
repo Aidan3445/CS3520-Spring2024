@@ -16,7 +16,7 @@
  */
 
 /* Change log:
- *
+ * add wasd support
  *
  */
 
@@ -28,7 +28,6 @@
  */
 
 #include <ncurses.h>
-#include <cstdlib>
 #include "key.hpp"
 
 int get_char()
@@ -41,15 +40,23 @@ int get_char()
   switch (ch)
   {
   case KEY_LEFT:
+  case 65:
+  case 97:
     return LEFT;
     break;
   case KEY_RIGHT:
+  case 68:
+  case 100:
     return RIGHT;
     break;
   case KEY_UP:
+  case 87:
+  case 119:
     return UP;
     break;
   case KEY_DOWN:
+  case 83:
+  case 115:
     return DOWN;
     break;
   default:
