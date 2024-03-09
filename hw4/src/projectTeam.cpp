@@ -9,7 +9,7 @@ bool ProjectTeam::isRejected(const StudentPref* student) const {
 
 // is the team full
 bool ProjectTeam::isFull() const {
-    return members.size() > 3;
+    return members.size() > minSize;
 }
 
 // calculate the skill level of the team for each skill

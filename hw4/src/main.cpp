@@ -11,9 +11,9 @@ namespace utils {
 }
 
 int main() {
-    GroupCreator gc;
+    GroupCreator gc("data/Assignment4 Roster Pref3.csv", 5, 6);
     // read student preferences from a CSV file
-    std::vector<StudentPref*> students = gc.readStudentPrefs("data/Assignment4 Roster Pref3.csv");
+    std::vector<StudentPref*> students = gc.readStudentPrefs();
     // map the students to their preferences
     for (auto &student : students) {
         for (auto &partnerUsername : student->preferredPartnersUsernames) {

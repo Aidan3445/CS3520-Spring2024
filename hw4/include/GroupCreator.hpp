@@ -4,12 +4,24 @@
 #include "Comparator.hpp"
 #include <cmath>
 #include <fstream>
-#include <iostream>
 #include <set>
+#include <string>
 
 struct GroupCreator {
+    std::string filename;
+    int groupMinSize;
+    int groupMaxSize;
+    // constructor
+    GroupCreator(std::string filename, int groupMinSize, int groupMaxSize) 
+        : filename(filename), groupMinSize(groupMinSize), groupMaxSize(groupMaxSize) {
+            // validate the group sizes
+            if (groupMinSize < 1 || groupMaxSize < 1 || groupMinSize > groupMaxSize) {
+                throw std::invalid_argument("Invalid group size");
+            }
+        }
+
     // read student preferences from a CSV file
-    std::vector<StudentPref*> readStudentPrefs(std::string filename);
+    std::vector<StudentPref*> readStudentPrefs();
 
     // write teams to a CSV file
     void writeTeamsToCSV(std::string filename, std::vector<ProjectTeam*> teams);

@@ -7,6 +7,12 @@
 struct ProjectTeam {
     // list of members
     std::vector<StudentPref*> members;
+    // min and max size of the team
+    int minSize;
+    int maxSize;
+
+    // constructor
+    ProjectTeam(int minSize, int maxSize) : minSize(minSize), maxSize(maxSize) {}
 
     // get the sum of the skill levels of the team in a particular area
     int cppSkillSum() const;
