@@ -11,6 +11,9 @@ struct GroupCreator {
     // read student preferences from a CSV file
     std::vector<StudentPref*> readStudentPrefs(std::string filename);
 
+    // write teams to a CSV file
+    void writeTeamsToCSV(std::string filename, std::vector<ProjectTeam*> teams);
+
     // create teams from preferences
     std::vector<ProjectTeam*> preferentialTeams(std::vector<StudentPref*> students);
 

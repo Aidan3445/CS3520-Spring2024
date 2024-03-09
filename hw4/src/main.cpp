@@ -50,6 +50,8 @@ int main() {
     }
 
     std::cout << "Initial Standard deviation: " << gc.standardDeviation(teams, totalSkillComp) << std::endl << std::endl;
+
+    // balance the teams, multiple iterations allow for better balancing
     for (int i = 0; i < 100; i++) {
         teams = gc.balanceTeams(teams, totalSkillComp, 100, 1); 
         teams = gc.balanceTeams(teams, algoSkillComp, 100, 1);
@@ -92,6 +94,8 @@ int main() {
             }
         }
     }
+
+    gc.writeTeamsToCSV("data/Teams.csv", teams);
 
     return 0;
 }

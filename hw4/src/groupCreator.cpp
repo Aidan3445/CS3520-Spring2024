@@ -26,6 +26,35 @@ std::vector<StudentPref*> GroupCreator::readStudentPrefs(std::string filename) {
     return students;
 }
 
+// write teams to a CSV file
+void GroupCreator::writeTeamsToCSV(std::string filename, std::vector<ProjectTeam*> teams) {
+    // open the file
+    std::ofstream file;
+    file.open(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: could not open file " << filename << std::endl;
+        throw std::runtime_error("Could not open file");
+    }
+
+    // write the column headers
+    file << "Team,Members" << std::endl;
+
+    // write the teams to the file
+    for (int i = 0; i < teams.size(); i++) {
+        file << "Team " << i + 1 << ",";
+        for (int j = 0; j < teams[i]->members.size(); j++) {
+            file << teams[i]->members[j]->username;
+            if (j < teams[i]->members.size() - 1) {
+                file << ";";
+            } 
+        }
+        file << std::endl;
+    }
+
+    // close the file
+    file.close();
+}
+
 // create teams based on student preferences
 std::vector<ProjectTeam*> GroupCreator::preferentialTeams(std::vector<StudentPref*> students) {
     // teams initially stored in a set to keep them sorted by how many members they need

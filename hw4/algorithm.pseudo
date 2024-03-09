@@ -24,6 +24,7 @@ func preferentialTeams {
             }
             
             // add the student to the team
+            
             team.addStudent(student)
             student.team = team
 
