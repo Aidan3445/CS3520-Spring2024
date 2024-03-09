@@ -1,0 +1,121 @@
+// The general plan for the alogrithm is to first make teams ignoring skill level,
+// and only considering preferences. Then, we will try to swap players between teams
+// to make the skill levels more even while still keeping the preferences as close as possible.
+// We also will make sure that swaps do not put rejected players on the same team but it can
+// break up pairs of preferred players. The goal will be for the team's skill level to be
+// as close as possible to the average skill level of all players.
+
+// The algorithm will be broken down into 2 main steps:
+
+// the project team comparator sorts the set so that the top teams are teams that still need players
+initialTeams = set<ProjectTeam, needMembersComparator>()
+students = readStudentsFromCSV()
+
+// STEP 1: Make teams based on preferences
+func preferentialTeams {
+    for student in students {
+        // if the student is not already on a team
+        if student.team == nullptr {
+            // create team or add to existing team
+            team = initialTeams.first()
+            if team == nullptr or team.isFull() or team.isRejected(student) {
+                team = new Team()
+                teams.add(team)
+            }
+            
+            // add the student to the team
+            team.addStudent(student)
+            student.team = team
+
+            // add the student's preferred students to the team
+            for pref in student.preferredStudents {
+                // if the preferred student is not already on a team 
+                // and the student has not rejected them, add them to the team
+                if pref.team == nullptr and !pref.rejectedStudents.contains(student) {
+                    team.addStudent(pref)
+                    pref.team = team
+                }
+                // if the team is full, break
+                if team.isFull() {
+                    break
+                }
+            }
+        }
+    }
+
+    // begin the process of filling the last team
+    for team in teams.reversed() {
+        // if the team is at least 3 students, we are done
+        if teams.first().size() >= 3 {
+            return teams
+        }
+
+        // if the team is not full, add students to it from the other teams of 4
+        for student in team.members {
+            if !teams.first().isRejected(student) {
+                // move the student if they are not rejected by the underfilled team
+                teams.first().addStudent(student)
+                student.team = teams.first()
+                team.removeStudent(student)
+                break;
+            }
+        }
+
+// STEP 2: Swap students between teams to make skill levels more even
+// the comparator allows us to sort the teams and students by skill level
+// by using different type of comparators we can optimize for different goals
+// using multiple comparators in succession will allow us to optimize for multiple goals
+func balanceTeams(Comparator comp, int maxIterations, double threshold) {
+    balancedTeams = set<ProjectTeam, comp.teamComparator>()
+    // add the initial teams to the set
+    for team in initialTeams {
+        // sort team members by given comparator
+        team.sortMembers(comp.studentComparator)
+        balancedTeams.add(team)
+    }
+
+    // if there is only one team we are done
+    if balancedTeams.size() < 2 {
+        return balancedTeams
+    }
+
+    // iterate through the teams and try to swap students to make the skill levels more even
+    while stdev(balancedTeams) > threshold and maxIterations > 0 {
+        maxIterations -= 1
+
+        // since the set will be sorted by skill level, 
+        // the first team will be the team with the lowest skill level
+        // the last team will be the team with the highest skill level
+        // these two teams should have the highest chance of swapping students
+        // walk through the teams and try to swap students so that the skill levels are more even
+        // while still keeping the preferences as close as possible
+        // in general we want to prefer increasing the skill level of the lower team
+        func iterate {
+            lowestTeam = balancedTeams.first()
+
+            for student in lowestTeam.members {
+                // iterate through the teams and try to swap students
+                for team in balancedTeams.reversed() {
+                    if team != lowestTeam {
+                        // iterate from back of sorted team members 
+                        // to swap the highest skill level students first
+                        for otherStudent in team.members.reversed() {
+                            if !lowestTeam.isRejected(otherStudent) and !team.isRejected(student) and
+                                comp.studentComparator(student, otherStudent) > 0 {
+                                    // swap is valid, swap the students
+                                    lowestTeam.removeStudent(student)
+                                    lowestTeam.addStudent(otherStudent)
+                                    student.team = team
+                                    team.removeStudent(otherStudent)
+                                    team.addStudent(student)
+                                    otherStudent.team = lowestTeam
+                                    return                                }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return balancedTeams
+}

@@ -1,0 +1,186 @@
+#include "../include/GroupCreator.hpp"
+#include "comparator.cpp"
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <set>
+
+// read students from a CSV file in unsorted order
+std::vector<StudentPref*> GroupCreator::readStudentPrefs(std::string filename) {
+    std::vector<StudentPref*> students;
+
+    // open the file
+    std::ifstream file;
+    file.open(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: could not open file " << filename << std::endl;
+        throw std::runtime_error("Could not open file");
+    }
+
+    // read the file line by line
+    std::string line;
+    // skip the first line with the column headers
+    std::getline(file, line);
+    while (std::getline(file, line)) {
+        students.push_back(new StudentPref(line));
+    }
+
+    // close the file
+    file.close();
+
+    return students;
+}
+
+// create teams based on student preferences
+std::vector<ProjectTeam*> GroupCreator::preferentialTeams(std::vector<StudentPref*> students) {
+    // teams initially stored in a set to keep them sorted by how many members they need
+    std::set<ProjectTeam*, NeedMembersComparator> teams;
+
+    for (StudentPref* student : students) {
+        // if the student is not already on a team
+        if (student->team == nullptr) {
+            // create team or add to existing team
+            auto validTeam = std::find_if(teams.begin(), teams.end(), [student](const ProjectTeam* team) {
+                    return !team->isFull() && !team->isRejected(student);
+                    });
+            ProjectTeam* team;
+            if (validTeam != teams.end()) {
+                team = *validTeam;
+            } else {
+                team = new ProjectTeam();
+                teams.insert(team);
+            }
+
+            // add the student to the team
+            team->members.push_back(student);
+            student->team = team;
+
+            // add the student's preferences to the team
+            for (StudentPref* pref : student->preferredPartners) {
+                // if the team is full, stop adding members
+                if (team->isFull()) {
+                    break;
+                }
+
+                // if the preference is not already on a team
+                // and the preference is not rejected by another member of the team
+                // and the student is not rejected by the preference
+                if (pref->team == nullptr && !team->isRejected(pref) && !pref->isRejected(student)) {
+                    // add the preference to the team
+                    team->members.push_back(pref);
+                    pref->team = team;
+                }
+            }
+        } 
+    }
+
+    // begin the process of filling the last team
+    auto revIt = teams.rbegin();
+    while (revIt != teams.rend()) {
+        ProjectTeam* team = *revIt;
+
+        // if the first team is full, stop adding members
+        if ((*teams.begin())->members.size() >= 3) {
+            break;
+        }
+
+        // if the team is not full, add students to it from the other teams of 4
+        for (auto student : team->members) {
+            if (!(*teams.begin())->isRejected(student)) {
+                (*teams.begin())->members.push_back(student);
+                student->team = *teams.begin();
+                // use find to get the iterator
+                team->members.erase(std::find(team->members.begin(), team->members.end(), student));
+                break;
+            }
+        }
+        revIt++;
+    }
+
+    // convert the set of teams to a vector
+    return std::vector<ProjectTeam*>(teams.begin(), teams.end());
+}
+
+// balance the teams by swaping students around
+std::vector<ProjectTeam*> GroupCreator::balanceTeams(std::vector<ProjectTeam*> teams, Comparator comp, 
+        int maxIterations, double maxDelta) {
+    // create set with teams sorted by comparator
+    std::set<ProjectTeam*, Comparator::TeamComp> teamSet(teams.begin(), teams.end(), comp);
+
+    // if there is only one team, we are done
+    if (teams.size() < 2) {
+        return teams;
+    }
+
+    // get lowest team
+    ProjectTeam* lowest = *teamSet.begin();
+    std::sort(lowest->members.begin(), lowest->members.end(), comp.studentComp);
+
+    // iterate through the teams and swap students from the top and bottom
+    while (standardDeviation(teams, comp) > maxDelta && maxIterations > 0) {
+        for (StudentPref* student : lowest->members) {
+            // iterate through the teams from the back and try to swap students
+            for (auto it = teamSet.rbegin(); it != teamSet.rend(); it++) {
+                if (lowest == *it) {
+                    break;
+                }
+                // get the team with the highest evaluation
+                // and sort the members by the student comparator
+                ProjectTeam* highest = *it;
+                std::sort(highest->members.begin(), highest->members.end(), comp.studentComp);
+                // iterare backwards through the highest team to find a student to swap
+                for (auto it2 = highest->members.rbegin(); it2 != highest->members.rend(); it2++) {
+                    StudentPref* student2 = *it2;
+                    // if the student is not rejected by the highest team
+                    // and the student2 is not rejected by the lowest team
+                    // and student2 is evaluated higher than student
+                    // then swap the students
+                    if (!highest->isRejected(student) && !lowest->isRejected(student2) && comp.studentComp(student, student2)) {
+                        // swap the students
+                        student->team = highest;
+                        student2->team = lowest;
+                        highest->members.push_back(student);
+                        lowest->members.push_back(student2);
+                        highest->members.erase(std::find(highest->members.begin(), highest->members.end(), student2));
+                        lowest->members.erase(std::find(lowest->members.begin(), lowest->members.end(), student));
+
+                        // re-sort the teams
+                        std::sort(highest->members.begin(), highest->members.end(), comp.studentComp);
+                        std::sort(lowest->members.begin(), lowest->members.end(), comp.studentComp);
+
+                        // re-insert the teams into the set to update the order
+                        teamSet.erase(highest);
+                        teamSet.erase(lowest);
+                        teamSet.insert(highest);
+                        teamSet.insert(lowest);
+                        goto outer_break;
+                    }
+                }
+            }
+        }
+        outer_break:
+
+        maxIterations--;
+    }
+
+    return teams;
+}
+
+// calculate the standard deviation of a set of teams
+double GroupCreator::standardDeviation(std::vector<ProjectTeam*> teams, Comparator comp) {
+    // standard deviation = sqrt(variance) 
+    double mean = 0;
+    for (ProjectTeam* team : teams) {
+        mean += comp.teamEval(team);
+    }
+    mean /= teams.size();
+
+    double variance = 0;
+    for (ProjectTeam* team : teams) {
+        variance += pow(comp.teamEval(team) - mean, 2);
+    }
+    variance /= teams.size();
+
+    return sqrt(variance);
+}
