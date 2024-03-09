@@ -1,9 +1,11 @@
 #ifndef GROUPCREATOR_HPP
 #define GROUPCREATOR_HPP
 
-#include "ProjectTeam.hpp"
-#include "StudentPref.hpp"
 #include "Comparator.hpp"
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <set>
 
 struct GroupCreator {
     // read student preferences from a CSV file

@@ -1,7 +1,6 @@
 #ifndef COMPARATOR_HPP
 #define COMPARATOR_HPP
 #include "ProjectTeam.hpp"
-#include "StudentPref.hpp"
 #include <functional>
 
 // comparator used to compare and evaluate teams
@@ -30,5 +29,12 @@ struct Comparator {
     };
 
 };
+// camparators
+extern Comparator totalSkillComp;
+extern Comparator cppSkillComp;
+extern Comparator gdbSkillComp;
+extern Comparator algoSkillComp;
+extern Comparator needMembersComp;
 
 #endif
+

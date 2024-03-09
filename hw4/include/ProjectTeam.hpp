@@ -2,6 +2,7 @@
 #define PROJECTTEAM_HPP
 
 #include "StudentPref.hpp"
+#include <numeric>
 
 struct ProjectTeam {
     // list of members
@@ -17,17 +18,6 @@ struct ProjectTeam {
 
     // return if a student is rejected by any member of the team
     bool isRejected(const StudentPref* student) const;
-};
-
-// comparators for ProjectTeam
-struct NeedMembersComparator {
-    // compare two teams based on the number of members they need
-    bool operator()(const ProjectTeam* lhs, const ProjectTeam* rhs) const;
-};
-
-struct SkillLevelComparator {
-    // compare two teams based on the sum of their skill levels
-    bool operator()(const ProjectTeam* lhs, const ProjectTeam* rhs) const;
 };
 
 #endif

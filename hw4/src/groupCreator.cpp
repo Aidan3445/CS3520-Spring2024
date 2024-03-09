@@ -1,10 +1,4 @@
 #include "../include/GroupCreator.hpp"
-#include "comparator.cpp"
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iostream>
-#include <set>
 
 // read students from a CSV file in unsorted order
 std::vector<StudentPref*> GroupCreator::readStudentPrefs(std::string filename) {
@@ -35,7 +29,7 @@ std::vector<StudentPref*> GroupCreator::readStudentPrefs(std::string filename) {
 // create teams based on student preferences
 std::vector<ProjectTeam*> GroupCreator::preferentialTeams(std::vector<StudentPref*> students) {
     // teams initially stored in a set to keep them sorted by how many members they need
-    std::set<ProjectTeam*, NeedMembersComparator> teams;
+    std::set<ProjectTeam*, Comparator::TeamComp> teams(needMembersComp);
 
     for (StudentPref* student : students) {
         // if the student is not already on a team
@@ -159,7 +153,7 @@ std::vector<ProjectTeam*> GroupCreator::balanceTeams(std::vector<ProjectTeam*> t
                 }
             }
         }
-        outer_break:
+outer_break:
 
         maxIterations--;
     }

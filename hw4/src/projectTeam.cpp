@@ -1,11 +1,4 @@
 #include "../include/ProjectTeam.hpp"
-#include <iostream>
-
-// comparator for sorting teams by how many members they need
-bool NeedMembersComparator::operator()
-    (const ProjectTeam* lhs, const ProjectTeam* rhs) const {
-        return lhs->members.size() < rhs->members.size();
-    }
 
 // is a student rejected by this team
 bool ProjectTeam::isRejected(const StudentPref* student) const {
@@ -17,4 +10,23 @@ bool ProjectTeam::isRejected(const StudentPref* student) const {
 // is the team full
 bool ProjectTeam::isFull() const {
     return members.size() > 3;
+}
+
+// calculate the skill level of the team for each skill
+int ProjectTeam::cppSkillSum() const {
+    return std::accumulate(members.begin(), members.end(), 0, [](int sum, const StudentPref* student) {
+            return sum + (int)student->cppSkill;
+            });
+}
+
+int ProjectTeam::gdbSkillSum() const {
+    return std::accumulate(members.begin(), members.end(), 0, [](int sum, const StudentPref* student) {
+            return sum + (int)student->gdbSkill;
+            });
+}
+
+int ProjectTeam::algoSkillSum() const {
+    return std::accumulate(members.begin(), members.end(), 0, [](int sum, const StudentPref* student) {
+            return sum + (int)student->algoSkill;
+            });
 }

@@ -66,7 +66,10 @@ struct StudentPref {
             rejectedPartners = rejectedPartners.substr(rejectedPartners.find(';') + 1);
         }
         // add the last entry
-        rejectedPartnersUsernames.push_back(rejectedPartners);
+        if (rejectedPartners.size() > 0) {
+            rejectedPartnersUsernames.push_back(rejectedPartners);
+        }
+        line = line.substr(line.find(',') + 1);
 
         // sixth entry (list): preferred partners
         std::vector<std::string> preferredPartnersUsernames;
@@ -77,7 +80,9 @@ struct StudentPref {
             preferredPartners = preferredPartners.substr(preferredPartners.find(';') + 1);
         }
         // add the last entry
-        preferredPartnersUsernames.push_back(preferredPartners);
+        if (preferredPartners.size() > 0) {
+            preferredPartnersUsernames.push_back(preferredPartners);
+        }
 
         // set the member variables
         this->username = username;
@@ -113,25 +118,6 @@ struct StudentPref {
     bool isRejected(const StudentPref* student) const;
 
     bool operator==(const StudentPref* rhs) const;
-};
-
-// comparators for StudentPref
-struct StudentPrefComparator {
-    struct preferrencesComp {
-        bool operator()(const StudentPref &lhs, const StudentPref &rhs) const;
-    };
-    struct totalSkillComp {
-        bool operator()(const StudentPref &lhs, const StudentPref &rhs) const;
-    };
-    struct cppSkillComp {
-        bool operator()(const StudentPref &lhs, const StudentPref &rhs) const;
-    };
-    struct gdbSkillComp {
-        bool operator()(const StudentPref &lhs, const StudentPref &rhs) const;
-    };
-    struct algoSkillComp {
-        bool operator()(const StudentPref &lhs, const StudentPref &rhs) const;
-    };
 };
 
 #endif

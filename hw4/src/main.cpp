@@ -1,7 +1,5 @@
 #include "../include/GroupCreator.hpp"
-#include "../include/ProjectTeam.hpp"
-#include <iostream>
-#include <vector>
+#include "../include/Comparator.hpp"
 
 namespace utils {
     std::string toLower(std::string str) {
@@ -40,15 +38,60 @@ int main() {
     // create preferential teams
     std::vector<ProjectTeam*> teams = gc.preferentialTeams(students);
 
+    std::cout << "\033[4mC, G, A, T: Members...\033[0m" << std::endl;
     for (auto &team : teams) {
-        std::cout << "Team (" << team->members.size() << "): ";
+        std::cout << team->cppSkillSum() << ", " << team->gdbSkillSum() << 
+            ", " << team->algoSkillSum() << ", " << 
+            team->cppSkillSum() + team->gdbSkillSum() + team->algoSkillSum() << ": ";
         for (auto &member : team->members) {
             std::cout << member->username << " ";
         }
         std::cout << std::endl;
     }
 
-    //teams = gc.balanceTeams(teams, Comparator(), 100, 0.01);
-    //std::cout << "Standard deviation: " << gc.standardDeviation(teams, Comparator()) << std::endl;
+    std::cout << "Initial Standard deviation: " << gc.standardDeviation(teams, totalSkillComp) << std::endl << std::endl;
+    for (int i = 0; i < 100; i++) {
+        teams = gc.balanceTeams(teams, totalSkillComp, 100, 1); 
+        teams = gc.balanceTeams(teams, algoSkillComp, 100, 1);
+        teams = gc.balanceTeams(teams, cppSkillComp, 100, 1);
+        teams = gc.balanceTeams(teams, gdbSkillComp, 100, 1);
+    }
+
+    std::cout << "\033[4mC, G, A, T: Members...\033[0m" << std::endl;
+    for (auto &team : teams) {
+        std::cout << team->cppSkillSum() << ", " << team->gdbSkillSum() << 
+            ", " << team->algoSkillSum() << ", " << 
+            team->cppSkillSum() + team->gdbSkillSum() + team->algoSkillSum() << ": ";
+        for (auto &member : team->members) {
+            std::cout << member->username << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << "Balanced Standard deviation: " << gc.standardDeviation(teams, totalSkillComp) << std::endl;
+    std::cout << "(Standard deviation of total skill level from the mean of indidual student skill levels)" << std::endl << std::endl;
+
+    // check preferences and rejections
+    for (auto &student : students) {
+        for (auto &partner : student->preferredPartners) {
+            if (student->team != partner->team) {
+                std::cout << "\033[31m" << student->username << " prefers " << 
+                    partner->username << " but is not on the same team\033[0m" << std::endl;
+            } else {
+                std::cout  << "\033[32m"<< student->username << " prefers " << 
+                    partner->username << " and is on the same team\033[0m" << std::endl;
+            }
+        }
+        for (auto &partner : student->rejectedPartners) {
+            if (student->team == partner->team) {
+                std::cout << "\033[31m" << student->username << " rejects " << 
+                    partner->username << " but is on the same team\033[0m" << std::endl;
+            } else {
+                std::cout << "\033[32m" << student->username << " rejects " << 
+                    partner->username << " and is not on the same team\033[0m" << std::endl;
+            }
+        }
+    }
+
     return 0;
 }

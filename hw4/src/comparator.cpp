@@ -32,9 +32,14 @@ bool compareStudentAlgoSkill(const StudentPref* s1, const StudentPref* s2) {
     return (int)s1->algoSkill < (int)s2->algoSkill;
 }
 
+// comparator for sorting teams by how many members they need
+int evaluateTeamNeedMembers(const ProjectTeam* team) {
+    return team->members.size();
+}
 
 // camparators
 Comparator totalSkillComp(evaluateTeamTotalSkill, evaluateStudentTotalSkill);
 Comparator cppSkillComp(evaluateTeamCppSkill, compareStudentCppSkill);
 Comparator gdbSkillComp(evaluateTeamGdbSkill, compareStudentGdbSkill);
 Comparator algoSkillComp(evaluateTeamAlgoSkill, compareStudentAlgoSkill);
+Comparator needMembersComp(evaluateTeamNeedMembers, NULL);
