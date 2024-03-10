@@ -144,49 +144,6 @@ std::vector<ProjectTeam*> GroupCreator::preferentialTeams(std::vector<StudentPre
         revIt++;
     }
 
-    /*
-    // begin the process of filling the last team
-    // wait until the first team is at minimum capacity
-    while ((*sortedTeams.begin())->members.size() < groupMinSize) {
-    // get the first team that is under capacity and remove it from the set
-    auto first = sortedTeams.begin();
-    std::cout << "First team: " << (*first)->members.size() << std::endl;
-    //std::cout << (*teams.begin())->members[0]->username << std::endl;
-
-
-    // starting from the back of the teams list
-    // find a student to add to the first team
-    for (auto it = sortedTeams.crbegin(); it != sortedTeams.crend(); it++) {
-    ProjectTeam* team = *it;
-    auto swap = std::find_if(team->members.begin(), team->members.end(), 
-    [sortedTeams](StudentPref* student) { 
-    return !(*sortedTeams.begin())->isRejected(student);
-    });
-
-    if (swap != team->members.end()) {
-    std::cout << (*swap)->username << " " << (*swap)->team << std::endl;
-    // add the student to the first team
-    (*first)->members.push_back(*swap);
-    (*swap)->team = *first;
-    // use find to get the iterator and remove the student from the old team
-    (*swap)->team->members.erase(std::find((*swap)->team->members.begin(), (*swap)->team->members.end(), *swap));
-    // re-sort the teams
-    std::sort(sortedTeams.begin(), sortedTeams.end(), [](ProjectTeam* a, ProjectTeam* b) {
-    return needMembersComp.teamEval(a) < needMembersComp.teamEval(b);
-    });
-    for (auto &team : sortedTeams) {
-    std::cout << team << " " << needMembersComp.teamEval(team) << std::endl;
-    }
-    std::cout << std::endl;
-    break;
-
-    break;
-    }
-    }
-    }
-    */
-
-
     // convert the set of teams to a vector
     return sortedTeams;
 }

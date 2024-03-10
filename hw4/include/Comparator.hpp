@@ -29,6 +29,7 @@ struct Comparator {
     };
 
 };
+
 // camparators
 extern Comparator totalSkillComp;
 extern Comparator cppSkillComp;
