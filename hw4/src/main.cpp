@@ -1,5 +1,6 @@
 #include "../include/Comparator.hpp"
 #include "../include/GroupCreator.hpp"
+#include <iomanip>
 
 namespace utils {
 std::string toLower(std::string str) {
@@ -40,12 +41,14 @@ int main() {
 	// create preferential teams
 	std::vector<ProjectTeam*> teams = gc.preferentialTeams(students);
 
-	std::cout << "\033[4mC, G, A, T: Members...\033[0m" << std::endl;
-	for (auto& team : teams) {
-		std::cout << team->cppSkillSum() << ", " << team->gdbSkillSum() << ", "
-				  << team->algoSkillSum() << ", "
-				  << team->cppSkillSum() + team->gdbSkillSum() + team->algoSkillSum() << ": ";
-		for (auto& member : team->members) {
+	std::cout << "\033[4mcpp gdb alg sum: Team # | Members...\033[0m" << std::endl;
+	for (int i = 0; i < teams.size(); i++) {
+		std::cout << std::setw(2) << teams[i]->cppSkillSum() << ", " << std::setw(2)
+				  << teams[i]->gdbSkillSum() << ", " << std::setw(2) << teams[i]->algoSkillSum()
+				  << ", " << std::setw(3)
+				  << teams[i]->cppSkillSum() + teams[i]->gdbSkillSum() + teams[i]->algoSkillSum()
+				  << ": Team " << i + 1 << " | ";
+		for (auto& member : teams[i]->members) {
 			std::cout << member->username << " ";
 		}
 		std::cout << std::endl;
@@ -63,12 +66,14 @@ int main() {
 		teams = gc.balanceTeams(teams, gdbSkillComp, 100, 1);
 	}
 
-	std::cout << "\033[4mC, G, A, T: Members...\033[0m" << std::endl;
-	for (auto& team : teams) {
-		std::cout << team->cppSkillSum() << ", " << team->gdbSkillSum() << ", "
-				  << team->algoSkillSum() << ", "
-				  << team->cppSkillSum() + team->gdbSkillSum() + team->algoSkillSum() << ": ";
-		for (auto& member : team->members) {
+	std::cout << "\033[4mcpp gdb alg sum: Team # | Members...\033[0m" << std::endl;
+	for (int i = 0; i < teams.size(); i++) {
+		std::cout << std::setw(2) << teams[i]->cppSkillSum() << ", " << std::setw(2)
+				  << teams[i]->gdbSkillSum() << ", " << std::setw(2) << teams[i]->algoSkillSum()
+				  << ", " << std::setw(3)
+				  << teams[i]->cppSkillSum() + teams[i]->gdbSkillSum() + teams[i]->algoSkillSum()
+				  << ": Team " << i + 1 << " | ";
+		for (auto& member : teams[i]->members) {
 			std::cout << member->username << " ";
 		}
 		std::cout << std::endl;
