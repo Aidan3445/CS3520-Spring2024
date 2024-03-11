@@ -14,6 +14,13 @@ struct ProjectTeam {
 	// constructor
 	ProjectTeam(int minSize, int maxSize) : minSize(minSize), maxSize(maxSize) {}
 
+	// destructor
+	~ProjectTeam() {
+		for (auto& member : members) {
+			delete member;
+		}
+	}
+
 	// get the sum of the skill levels of the team in a particular area
 	int cppSkillSum() const;
 	int gdbSkillSum() const;

@@ -110,5 +110,11 @@ int main() {
 
 	gc.writeTeamsToCSV("data/Teams.csv", teams);
 
+
+	// free memory
+	for (auto& team : teams) {
+		delete team;
+	}
+
 	return 0;
 }

@@ -36,6 +36,7 @@ struct StudentPref {
 	}
 
 	// read student preferences from a CSV line
+	// constructor
 	StudentPref(std::string line) {
 		// first entry: username
 		std::string username = line.substr(0, line.find(','));
