@@ -1,0 +1,34 @@
++--------------------------------------+
+|         Student                      |<-------------------------------+
+|--------------------------------------|                                |
+| - name: string                       |                                |
+| - studentEmail: string               |                                |
+| - year: string                       |                                |
+| - team: ProjectTeam*                 |----+                           |
+|--------------------------------------|    |                           |
+| + Student()                          |    |                           |
+| + Student(name: string,              |    |                           |
+|           studentEmail: string,      |    |                           |
+|           year: string)              |    |                           |
++--------------------------------------+    |                           |
+                                            |                           |
+                                            |                           |
+                                            V                           |
++-------------------------------------------------------------+         |
+|      ProjectTeam                                            |         |
+|-------------------------------------------------------------|         |
+| - teamName: string                                          |         |
+| - teamID: int                                               |         |
+| - projectTitle: string                                      |         |
+| - members: vector<Student*>                                 |---------+
+|-------------------------------------------------------------|
+| + ProjectTeam()                                             |
+| + ProjectTeam(teamName: string,                             |
+|           teamID: int,                                      |
+|           projectTitle: string)                             |
+| + ~ProjectTeam()                                            |
+| + operator-(removeCount: const int&) : ProjectTeam          |
+| + operator+(newMember: Student&) : ProjectTeam              |
+| + operator+(newTeam: const ProjectTeam&) : ProjectTeam      |
+| + operator/(splitInto: const int&) : vector<ProjectTeam*>   |
++-------------------------------------------------------------+
