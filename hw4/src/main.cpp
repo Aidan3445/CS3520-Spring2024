@@ -37,13 +37,21 @@ int main() {
 		for (int i = 0; i < files.size(); i++) {
 			std::cout << i + 1 << ". " << files[i] << std::endl;
 		}
+		std::cout << "4. Enter your own file" << std::endl;
 		std::cin >> fileChoice;
+		if (fileChoice == 4) {
+			std::cout << "Enter the file path: ";
+			std::string filePath;
+			std::cin >> filePath;
+			files.push_back(filePath);
+			fileChoice = files.size();
+		}
 		if (fileChoice < 1 || fileChoice > files.size()) {
 			std::cerr << "Invalid choice, try again" << std::endl;
 		}
 	} while (fileChoice < 1 || fileChoice > files.size());
 
-	GroupCreator gc(files[fileChoice], minGroupSize, maxGroupSize);
+	GroupCreator gc(files[fileChoice - 1], minGroupSize, maxGroupSize);
 	// read student preferences from a CSV file
 	std::vector<StudentPref*> students;
 	try {
