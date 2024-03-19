@@ -25,13 +25,15 @@ std::vector<StudentPref*> GroupCreator::readStudentPrefs() {
 
 	// validate that number of students is compatible with group sizes specified
 	// this algebra uses a sort of greedy algorithm to calculate if teams are possible
-	// first make max number of teams using groups of the smallest size
-	int n = students.size() / groupMinSize;	 // using integer floor division
+	// first make max number of teams using groups of the largest size
+	int n = students.size() / groupMaxSize;	 // using integer floor division
 											 // get the number of students left over
-	int r = students.size() % groupMinSize;
-	// we know r < groupMinSize, so we need to know if there are enough spots on the
-	// teams already made to fit the remaining students
-	if (r > n * (groupMaxSize - groupMinSize)) {
+	int r = students.size() % groupMaxSize;
+	// we know r < groupMaxSize, so we need to know if there are enough students in the max sized
+	// groups to fill the last group to at least the minimum size
+	int movable = n * (groupMaxSize - groupMinSize);
+	int needed = groupMinSize - r;
+	if (movable < needed && r != 0) {
 		std::cerr << "Error: cannot make teams of size " << groupMinSize << " --> " << groupMaxSize
 				  << " with " << students.size() << " students" << std::endl;
 		throw std::runtime_error("Invalid group sizes for number of students");
@@ -67,6 +69,9 @@ void GroupCreator::writeTeamsToCSV(std::string filename, std::vector<ProjectTeam
 
 	// close the file
 	file.close();
+
+	// print the filename
+	std::cout << "Successfully wrote teams to " << filename << std::endl;
 }
 
 // create teams based on student preferences

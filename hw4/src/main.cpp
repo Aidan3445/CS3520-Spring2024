@@ -1,6 +1,8 @@
 #include "../include/Comparator.hpp"
 #include "../include/GroupCreator.hpp"
 #include <iomanip>
+#include <string>
+#include <vector>
 
 namespace utils {
 std::string toLower(std::string str) {
@@ -12,9 +14,44 @@ std::string toLower(std::string str) {
 }  // namespace utils
 
 int main() {
-	GroupCreator gc("data/Assignment4 Roster Pref3.csv", 5, 6);
+	// choose group sizes
+	int minGroupSize, maxGroupSize;
+	do {
+		std::cout << "Enter the minimum group size: ";
+		std::cin >> minGroupSize;
+		std::cout << "Enter the maximum group size: ";
+		std::cin >> maxGroupSize;
+
+		if (minGroupSize < 1 || maxGroupSize < 1 || minGroupSize > maxGroupSize) {
+			std::cerr << "Invalid group sizes, try again" << std::endl;
+		}
+	} while (minGroupSize < 1 || maxGroupSize < 1 || minGroupSize > maxGroupSize);
+
+	// choose file to read from
+	std::vector<std::string> files = {"data/Assignment4 Roster Pref1.csv",
+									  "data/Assignment4 Roster Pref2.csv",
+									  "data/Assignment4 Roster Pref3.csv"};
+	int fileChoice;
+	do {
+		std::cout << "Choose a file to read from:" << std::endl;
+		for (int i = 0; i < files.size(); i++) {
+			std::cout << i + 1 << ". " << files[i] << std::endl;
+		}
+		std::cin >> fileChoice;
+		if (fileChoice < 1 || fileChoice > files.size()) {
+			std::cerr << "Invalid choice, try again" << std::endl;
+		}
+	} while (fileChoice < 1 || fileChoice > files.size());
+
+	GroupCreator gc(files[fileChoice], minGroupSize, maxGroupSize);
 	// read student preferences from a CSV file
-	std::vector<StudentPref*> students = gc.readStudentPrefs();
+	std::vector<StudentPref*> students;
+	try {
+		students = gc.readStudentPrefs();
+	} catch (std::runtime_error& e) {
+		std::cerr << e.what() << std::endl;
+		return 1;
+	}
 	// map the students to their preferences
 	for (auto& student : students) {
 		for (auto& partnerUsername : student->preferredPartnersUsernames) {
