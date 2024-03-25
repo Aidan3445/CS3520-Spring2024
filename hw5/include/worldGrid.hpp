@@ -21,7 +21,7 @@ class WorldGrid {
 	WorldGrid(int width, int height);
 	~WorldGrid();
 	// get the 8-neighbors of a bug
-	Bug*** getAdjacencies(int x, int y) const;
+	Bug*** getAdjacencies(Bug* bug) const;
 	// move a bug using its move function
 	void moveBug(int x, int y);
 

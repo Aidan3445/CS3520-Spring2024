@@ -14,7 +14,7 @@ class Bug {
 	// the time step when the bug last moved or ate
 	int lastAction;
 	// symbol to represent the bug in the grid
-	char symbol;
+	const char symbol;
 
 	// constructor
 	Bug(int starveTime, char symbol);
@@ -26,6 +26,25 @@ class Bug {
 	virtual std::pair<int, int> move(WorldGrid* world) = 0;
 	// for easy printing of the bug
 	friend std::ostream& operator<<(std::ostream& out, const Bug& bug);
+};
+
+// breedable bug class for doodlebugs and queen ants
+class Breedable {
+  protected:
+	// number of time steps before a bug breeds
+	const int breedTime;
+	// the time step when the bug last bred
+	int lastBreed;
+
+	// constructor
+	Breedable(int breedTime);
+
+  public:
+	// determine if the bug breeds
+	virtual bool breed(WorldGrid* world) const = 0;
+
+	// bugs can access the lastBreed variable
+	// friend class Bug;
 };
 
 #endif

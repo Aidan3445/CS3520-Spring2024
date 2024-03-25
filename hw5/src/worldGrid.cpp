@@ -38,7 +38,12 @@ std::pair<int, int> WorldGrid::getBugPosition(Bug* bug) const {
 }
 
 // get the 8-neighbors of a bug
-Bug*** WorldGrid::getAdjacencies(int x, int y) const {
+Bug*** WorldGrid::getAdjacencies(Bug* bug) const {
+	// get the position of the bug
+	std::pair<int, int> position = this->getBugPosition(bug);
+	int x = position.first;
+	int y = position.second;
+
 	// create a 2D array of Bug pointers
 	Bug*** adjacencies = new Bug**[3];
 	for (int i = 0; i < 3; i++) {
@@ -98,12 +103,32 @@ void WorldGrid::moveBug(int x, int y) {
 		return;
 	}
 
-	// get the new position of the bug
+	// get the direction the bug wants to move
 	std::pair<int, int> direction = bug->move(this);
 
-	int newX = direction.first;
-	int newY = direction.second;
+	int newX = x + direction.first;
+	int newY = y + direction.second;
 
+	// check if bounce needs to be applied
+	if (newX < 0 || newX >= this->width) {
+		// a bounce essentilly undoes the move in the x direction
+		// and then applies the move again in the y direction
+		newX -= direction.first;
+		newY += direction.second;
+	}
+	if (newY < 0 || newY >= this->height) {
+		// a bounce essentilly undoes the move in the y direction
+		// and then applies the move again in the x direction
+		newY += direction.first;
+		newX -= direction.second;
+	}
+
+	// if the new position is not empty, skip
+	if (this->grid[newX][newY] != nullptr) {
+		return;
+	}
+
+    // otherwise, update the bug's position
 	this->grid[x][y] = nullptr;
 	this->grid[newX][newY] = bug;
 }
