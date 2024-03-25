@@ -1,6 +1,7 @@
 #ifndef WORLDGRID_HPP
 #define WORLDGRID_HPP
-#include "Bug.hpp"
+#include "bug.hpp"
+#include <utility>
 
 class WorldGrid {
   private:
@@ -10,23 +11,29 @@ class WorldGrid {
 	// 2D array of Bug pointers
 	Bug*** grid;
 	// time step counter
-	int time;
+	int time = 0;
+
+	// get the position of a bug
+	std::pair<int, int> getBugPosition(Bug* bug) const;
 
   public:
 	// constructor and destructor
 	WorldGrid(int width, int height);
 	~WorldGrid();
 	// get the 8-neighbors of a bug
-	Bug*** getAdjacencies(Bug* bug) const;
+	Bug*** getAdjacencies(int x, int y) const;
 	// move a bug using its move function
-	void moveBug(Bug* bug);
+	void moveBug(int x, int y);
 
 	// spawn/add a bug to the grid
-	WorldGrid& operator+(const Bug* bug);
+	WorldGrid& operator+(Bug* bug);
 	// remove a bug from the grid
-	WorldGrid& operator-(const Bug* bug);
+	WorldGrid& operator-(Bug* bug);
 	// increment the time step
 	WorldGrid& operator++();
+
+	// for easy printing
+	friend std::ostream& operator<<(std::ostream& out, const WorldGrid& grid);
 };
 
 #endif

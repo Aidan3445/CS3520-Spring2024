@@ -1,18 +1,17 @@
 #ifndef BREEDBUG_HPP
 #define BREEDBUG_HPP
 
-#include "Bug.hpp"
+#include "bug.hpp"
 
 class BreedableBug : public Bug {
-  private:
+  protected:
 	// number of time steps before a bug breeds
 	const int breedTime;
 	// the time step when the bug last bred
 	int lastBreed;
 
-  protected:
 	// constructor
-	BreedableBug(int breedTime, int starveTime, char symbol);
+	BreedableBug(int starveTime, int breedTime, char symbol);
 
   public:
 	virtual bool breed(WorldGrid* world) const = 0;
