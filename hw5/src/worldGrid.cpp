@@ -2,25 +2,19 @@
 
 // constructor
 WorldGrid::WorldGrid(int width, int height) : width(width), height(height) {
-	// create the grid
-	this->grid = new Bug**[width];
+	// initialize the grid
+	this->grid = std::vector<std::vector<std::unique_ptr<Bug>>>(width);
+
 	for (int i = 0; i < width; i++) {
-		this->grid[i] = new Bug*[height];
-		for (int j = 0; j < height; j++) {
-			// initialize the grid with nullptr
-			this->grid[i][j] = nullptr;
-		}
+		// Create a vector of unique_ptr<Bug>, initialized to nullptr, for each row
+		std::vector<std::unique_ptr<Bug>> row(height);
+		// Insert the row into the grid
+		this->grid[i] = std::move(row);
 	}
 }
 
-// destructor
-WorldGrid::~WorldGrid() {
-	// delete the grid
-	for (int i = 0; i < this->width; i++) {
-		delete[] this->grid[i];
-	}
-	delete[] this->grid;
-}
+// destructor - can use default because of smart pointers
+WorldGrid::~WorldGrid() = default;
 
 // get the position of a bug
 std::pair<int, int> WorldGrid::getBugPosition(Bug* bug) const {
@@ -28,7 +22,7 @@ std::pair<int, int> WorldGrid::getBugPosition(Bug* bug) const {
 	for (int i = 0; i < this->width; i++) {
 		for (int j = 0; j < this->height; j++) {
 			// if the bug is found, return its position
-			if (this->grid[i][j] == bug) {
+			if (this->grid[i][j].get() == bug) {
 				return std::make_pair(i, j);
 			}
 		}
@@ -60,32 +54,29 @@ Bug*** WorldGrid::getAdjacencies(Bug* bug) const {
 			int newX = x + i;
 			int newY = y + j;
 
-			// if the position is the bug itself, place nullptr
-			if (i == 0 && j == 0) {
-				adjacencies[newX][newY] = nullptr;
-				continue;
-			}
-
 			// check if bounce needs to be applied
-			if (newX < 0 || newX >= this->width) {
-				// a bounce essentilly undoes the move in the x direction
-				// and then applies the move again in the y direction
-				newX -= i;
-				newY += j;
+			// if the bug is at an edge and moving out set the direction to 0
+			// also double the other direction to reflect the bounce
+			if ((x == 0 && i == -1) || (x == this->width - 1 && i == 1)) {
+				i = 0;
+				j *= 2;
 			}
-			if (newY < 0 || newY >= this->height) {
-				// a bounce essentilly undoes the move in the y direction
-				// and then applies the move again in the x direction
-				newY += i;
-				newX -= j;
+			if ((y == 0 && j == -1) || (y == this->height - 1 && j == 1)) {
+				j = 0;
+				i *= 2;
 			}
 			// note that because of the bounce:
 			// - the position is guaranteed to be within the grid
 			// - there may be duplicates in the 3x3 neighborhood
 
-
 			// set the adjacency
-			adjacencies[i + 1][j + 1] = this->grid[x + i][y + j];
+			// if the new pos is itself or nullptr, set to nullptr
+			if (this->grid[newX][newY] == nullptr || (newX == x && newY == y)) {
+				adjacencies[i + 1][j + 1] = nullptr;
+			} else {
+				// set the adjacency to the bug at the new position
+				adjacencies[i + 1][j + 1] = this->grid[newX][newY].get();
+			}
 		}
 	}
 
@@ -94,43 +85,57 @@ Bug*** WorldGrid::getAdjacencies(Bug* bug) const {
 }
 
 // move a bug on their turn and handle breeding/starving
-void WorldGrid::moveBug(int x, int y) {
+std::pair<int, int> WorldGrid::moveBug(int x, int y) {
 	// get the bug
-	Bug* bug = this->grid[x][y];
+	Bug* bug = this->grid[x][y].get();
 
 	// if the bug is nullptr, skip
 	if (bug == nullptr) {
-		return;
+		return std::make_pair(x, y);
 	}
+
 
 	// get the direction the bug wants to move
 	std::pair<int, int> direction = bug->move(this);
+	std::cout << "Bug " << this->grid[x][y].get() << " at (" << x << ", " << y
+			  << ") moving in direction (" << direction.first << ", " << direction.second << ")"
+			  << std::endl;
+
+
+	// check if bounce needs to be applied
+	// if the bug is at an edge and moving out set the direction to 0
+	// also double the other direction to reflect the bounce
+	if ((x == 0 && direction.first == -1) || (x == this->width - 1 && direction.first == 1)) {
+		direction.first = 0;
+		direction.second *= 2;
+	}
+	if ((y == 0 && direction.second == -1) || (y == this->height - 1 && direction.second == 1)) {
+		direction.second = 0;
+		direction.first *= 2;
+	}
 
 	int newX = x + direction.first;
 	int newY = y + direction.second;
 
-	// check if bounce needs to be applied
-	if (newX < 0 || newX >= this->width) {
-		// a bounce essentilly undoes the move in the x direction
-		// and then applies the move again in the y direction
-		newX -= direction.first;
-		newY += direction.second;
+	// in certain edge cases the bug may be off the grid after the bounce
+	// correct this by setting the position to the edge of the grid
+	if (newX < 0) {
+		newX = 0;
+	} else if (newX >= this->width) {
+		newX = this->width - 1;
 	}
-	if (newY < 0 || newY >= this->height) {
-		// a bounce essentilly undoes the move in the y direction
-		// and then applies the move again in the x direction
-		newY += direction.first;
-		newX -= direction.second;
-	}
-
-	// if the new position is not empty, skip
-	if (this->grid[newX][newY] != nullptr) {
-		return;
+	if (newY < 0) {
+		newY = 0;
+	} else if (newY >= this->height) {
+		newY = this->height - 1;
 	}
 
-    // otherwise, update the bug's position
-	this->grid[x][y] = nullptr;
-	this->grid[newX][newY] = bug;
+
+	std::cout << "Bug " << this->grid[x][y].get() << " at (" << x << ", " << y << ") moving to ("
+			  << newX << ", " << newY << ")" << std::endl;
+
+	// remove the bug new position
+	return std::make_pair(newX, newY);
 }
 
 // add a bug to the grid
@@ -143,7 +148,9 @@ WorldGrid& WorldGrid::operator+(Bug* bug) {
 	} while (this->grid[x][y] != nullptr);
 
 	// add the bug to the grid
-	this->grid[x][y] = bug;
+	this->grid[x][y] = std::unique_ptr<Bug>(bug);
+
+	std::cout << "Bug added at (" << x << ", " << y << ")" << std::endl;
 
 	// return the grid
 	return *this;
@@ -168,13 +175,61 @@ WorldGrid& WorldGrid::operator++() {
 	// increment the time step
 	this->time++;
 
+	std::vector<Bug*> movedBugs;
+
 	// loop through the grid
-	for (int i = 0; i < this->width; i++) {
-		for (int j = 0; j < this->height; j++) {
+	for (int x = 0; x < this->width; x++) {
+		for (int y = 0; y < this->height; y++) {
+			// if the bug is nullptr or in the movedBugs vector, skip
+			if (this->grid[x][y] == nullptr ||
+				std::find(movedBugs.begin(), movedBugs.end(), this->grid[x][y].get()) !=
+					movedBugs.end()) {
+				continue;
+			}
+
 			// move the bug
-			this->moveBug(i, j);
+			std::pair<int, int> newPosition = this->moveBug(x, y);
+			int newX = newPosition.first;
+			int newY = newPosition.second;
+
+			// check if the new position has a bug already,
+			// we have to check the current grid and the new grid
+			// because we are moving the bugs in the same time step
+			if (!this->grid[x][y].get()->tryMove(this->grid[newX][newY].get())) {
+				// if the bug cannot eat, it will not move
+				newX = x;
+				newY = y;
+				std::cout << "Bug " << this->grid[x][y].get() << " at (" << x << ", " << y
+						  << ") failed to move" << std::endl;
+			}
+
+			// set the new position of the bug
+			this->grid[newX][newY] = std::move(this->grid[x][y]);
+
+			// add the bug to the movedBugs vector
+			movedBugs.push_back(std::move(this->grid[newX][newY].get()));
 		}
 	}
+
+	// loop through the grid and check for starvation
+	for (int x = 0; x < this->width; x++) {
+		for (int y = 0; y < this->height; y++) {
+			// if the bug is nullptr, skip
+			if (this->grid[x][y] == nullptr) {
+				continue;
+			}
+
+			// if the bug is starving, remove it
+			if (this->grid[x][y].get()->starved()) {
+				std::cout << "Bug " << this->grid[x][y].get() << " at (" << x << ", " << y
+						  << ") starved" << std::endl;
+				this->grid[x][y] = nullptr;
+			}
+		}
+	}
+
+	// print the grid
+	std::cout << *this << std::endl;
 
 	// return the grid
 	return *this;
@@ -183,13 +238,16 @@ WorldGrid& WorldGrid::operator++() {
 // for easy printing
 std::ostream& operator<<(std::ostream& out, const WorldGrid& grid) {
 	// loop through the grid
-	for (int i = 0; i < grid.width; i++) {
-		for (int j = 0; j < grid.height; j++) {
+	// we need to loop through the grid in the opposite order
+	// and y is the outer loop because we want to print the grid
+	// with the origin (0, 0) at the bottom left
+	for (int y = grid.height - 1; y >= 0; y--) {
+		for (int x = 0; x < grid.width; x++) {
 			// print the symbol of the bug
-			if (grid.grid[i][j] == nullptr) {
-				out << ' ';
+			if (grid.grid[x][y] == nullptr) {
+				out << " * ";
 			} else {
-				out << grid.grid[i][j];
+				out << ' ' << grid.grid[x][y].get() << ' ';
 			}
 		}
 		out << std::endl;

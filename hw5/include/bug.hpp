@@ -21,11 +21,15 @@ class Bug {
 
   public:
 	// determine if the bug is starving
-	virtual bool starved(int timeStep) const = 0;
+	virtual bool starved() const = 0;
 	// try to move the bug and return the new position
 	virtual std::pair<int, int> move(WorldGrid* world) = 0;
+	// try to move the bug to a new position
+	virtual bool tryMove(Bug* bug) = 0;
+	// reset the last action of the bug
+	void resetLastAction();
 	// for easy printing of the bug
-	friend std::ostream& operator<<(std::ostream& out, const Bug& bug);
+	friend std::ostream& operator<<(std::ostream& out, const Bug* bug);
 };
 
 // breedable bug class for doodlebugs and queen ants
