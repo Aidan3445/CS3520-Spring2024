@@ -1,10 +1,13 @@
 #ifndef BUG_HPP
 #define BUG_HPP
 
-// forward declaration
 #include <iostream>
 #include <utility>
+
+// forward declaration
 class WorldGrid;
+
+enum BugType { ANT, DOODLEBUG };
 
 // bug class for ants and doodlebugs
 class Bug {
@@ -21,11 +24,13 @@ class Bug {
 
   public:
 	// determine if the bug is starving
-	virtual bool starved() const = 0;
-	// try to move the bug and return the new position
-	virtual std::pair<int, int> move(WorldGrid* world) = 0;
+	virtual bool starved() const;
+	// get direction to move the bug
+	virtual std::pair<int, int> moveDirection(WorldGrid* world) = 0;
 	// try to move the bug to a new position
 	virtual bool tryMove(Bug* bug) = 0;
+	// get the type of the bug
+	virtual BugType getType() const = 0;
 	// reset the last action of the bug
 	void resetLastAction();
 	// for easy printing of the bug
@@ -45,7 +50,7 @@ class Breedable {
 
   public:
 	// determine if the bug breeds
-	virtual bool breed(WorldGrid* world) const = 0;
+	virtual bool breed(WorldGrid* world) = 0;
 
 	// bugs can access the lastBreed variable
 	// friend class Bug;
