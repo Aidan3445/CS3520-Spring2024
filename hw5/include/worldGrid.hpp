@@ -1,7 +1,6 @@
 #ifndef WORLDGRID_HPP
 #define WORLDGRID_HPP
-#include "../include/ants.hpp"
-#include "../include/doodleBug.hpp"
+#include "../include/bug.hpp"
 #include <memory>
 #include <utility>
 #include <vector>
@@ -17,14 +16,14 @@ class WorldGrid {
 	int time = 0;
 
 	// get the position of a bug
-	std::pair<int, int> getBugPosition(Bug* bug) const;
+	std::pair<int, int> getBugPosition(const Bug* const bug) const;
 
   public:
 	// constructor and destructor
 	WorldGrid(int width, int height);
 	~WorldGrid();
 	// get the 8-neighbors of a bug
-	Bug*** getAdjacencies(Bug* bug) const;
+	Bug*** getAdjacencies(const Bug* const bug) const;
 	// move a bug using its move function
 	void moveBug(int x, int y);
 

@@ -1,3 +1,4 @@
+#include "../include/ants.hpp"
 #include "../include/worldGrid.hpp"
 
 int main() {
@@ -9,9 +10,10 @@ int main() {
 
 	// create a new ant
 	for (int i = 0; i < 5; i++) {
-		world + std::make_unique<Ant>(5, AntType::MALE);
+		world + std::make_unique<Ant>(5, BugType::MALEANT);
 	}
 
+	// world + std::make_unique<QueenAnt>(5, 30);
 	world + std::make_unique<QueenAnt>(5, 5);
 
 	std::cout << world;

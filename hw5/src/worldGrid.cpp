@@ -1,4 +1,6 @@
 #include "../include/worldGrid.hpp"
+#include "../include/ants.hpp"
+#include "../include/doodleBug.hpp"
 
 // constructor
 WorldGrid::WorldGrid(int width, int height) : width(width), height(height) {
@@ -17,22 +19,23 @@ WorldGrid::WorldGrid(int width, int height) : width(width), height(height) {
 WorldGrid::~WorldGrid() = default;
 
 // get the position of a bug
-std::pair<int, int> WorldGrid::getBugPosition(Bug* bug) const {
+std::pair<int, int> WorldGrid::getBugPosition(const Bug* const bug) const {
 	// loop through the grid
 	for (int i = 0; i < this->width; i++) {
 		for (int j = 0; j < this->height; j++) {
 			// if the bug is found, return its position
-			if (this->grid[i][j].get() == bug) {
+			if (this->grid[i][j] != nullptr && this->grid[i][j].get() == bug) {
 				return std::make_pair(i, j);
 			}
 		}
 	}
-	// if the bug is not found, return (-1, -1)
-	return std::make_pair(-1, -1);
+	// if the bug is not found, throw an exception
+	throw std::invalid_argument("Bug not found in grid");
 }
 
 // get the 8-neighbors of a bug
-Bug*** WorldGrid::getAdjacencies(Bug* bug) const {
+Bug*** WorldGrid::getAdjacencies(const Bug* const bug) const {
+	std::cout << "Getting adjacencies of " << bug << std::endl;
 	// get the position of the bug
 	std::pair<int, int> position = this->getBugPosition(bug);
 	int x = position.first;
@@ -51,30 +54,52 @@ Bug*** WorldGrid::getAdjacencies(Bug* bug) const {
 	// loop through the 3x3 grid around the bug
 	for (int i = -1; i <= 1; i++) {
 		for (int j = -1; j <= 1; j++) {
-			int newX = x + i;
-			int newY = y + j;
+			int dirX = i;
+			int dirY = j;
 
 			// check if bounce needs to be applied
 			// if the bug is at an edge and moving out set the direction to 0
 			// also double the other direction to reflect the bounce
-			if ((x == 0 && i == -1) || (x == this->width - 1 && i == 1)) {
-				i = 0;
-				j *= 2;
+			if ((x == 0 && dirX == -1) || (x == this->width - 1 && dirX == 1)) {
+				dirX = 0;
+				dirY *= 2;
 			}
-			if ((y == 0 && j == -1) || (y == this->height - 1 && j == 1)) {
-				j = 0;
-				i *= 2;
+			if ((y == 0 && dirY == -1) || (y == this->height - 1 && dirY == 1)) {
+				dirY = 0;
+				dirX *= 2;
 			}
 			// note that because of the bounce:
 			// - the position is guaranteed to be within the grid
 			// - there may be duplicates in the 3x3 neighborhood
 
+			int newX = x + i;
+			int newY = y + j;
+
+			// in certain edge cases the bug may be off the grid after the bounce
+			// correct this by setting the position to the edge of the grid
+			if (newX < 0) {
+				newX = 0;
+			} else if (newX >= this->width) {
+				newX = this->width - 1;
+			}
+			if (newY < 0) {
+				newY = 0;
+			} else if (newY >= this->height) {
+				newY = this->height - 1;
+			}
+
+			std::cout << "herhe " << dirX << " " << dirY << " " << bug << std::endl;
+
 			// set the adjacency
 			// if the new pos is itself or nullptr, set to nullptr
 			if (this->grid[newX][newY] == nullptr || (newX == x && newY == y)) {
+				std::cout << "Setting adjacency at (" << i << ", " << j << ") to nullptr"
+						  << std::endl;
 				adjacencies[i + 1][j + 1] = nullptr;
 			} else {
 				// set the adjacency to the bug at the new position
+				std::cout << "Setting adjacency at (" << i << ", " << j << ") to "
+						  << this->grid[newX][newY].get() << std::endl;
 				adjacencies[i + 1][j + 1] = this->grid[newX][newY].get();
 			}
 		}
@@ -203,14 +228,9 @@ WorldGrid& WorldGrid::operator++() {
 			}
 
 			// if the bug is an ant, add it to the ants vector
-			// if (this->grid[x][y].get()->getType() == BugType::ANT) {
-			if (dynamic_cast<Ant*>(this->grid[x][y].get()) != nullptr) {
+			if (this->grid[x][y].get()->getType() != BugType::DOODLEBUG) {
 				ants.push_back(std::make_pair(this->grid[x][y].get(), std::make_pair(x, y)));
-			}
-
-			// if the bug is a doodlebug, add it to the doodleBugs vector
-			// if (this->grid[x][y].get()->getType() == BugType::DOODLEBUG) {
-			if (dynamic_cast<DoodleBug*>(this->grid[x][y].get()) != nullptr) {
+			} else {
 				doodleBugs.push_back(std::make_pair(this->grid[x][y].get(), std::make_pair(x, y)));
 			}
 		}
@@ -238,26 +258,16 @@ WorldGrid& WorldGrid::operator++() {
 
 	// loop through the ants and doodleBugs for breeding
 	for (auto doodleBug : doodleBugs) {
-		// get the position of the bug
-		int x = doodleBug.second.first;
-		int y = doodleBug.second.second;
-		DoodleBug* db = dynamic_cast<DoodleBug*>(doodleBug.first);
-
 		// if the doodleBug can breed, add a new doodleBug to the grid
-		if (db->breed(this)) {
+		if (doodleBug.first->breed(this)) {
 			*this + std::make_unique<DoodleBug>(20, 10);
 		}
 	}
 
 	for (auto ant : ants) {
-		// get the position of the bug
-		int x = ant.second.first;
-		int y = ant.second.second;
-		QueenAnt* a = dynamic_cast<QueenAnt*>(ant.first);
-
 		// if the cast succeeded and the ant can breed, add a new ant to the grid
-		if (a && a->breed(this)) {
-			*this + std::make_unique<Ant>(5, AntType::FEMALE);
+		if (ant.first->breed(this)) {
+			*this + std::make_unique<Ant>(5, BugType::FEMALEANT);
 		}
 	}
 

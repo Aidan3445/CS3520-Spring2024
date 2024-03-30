@@ -11,12 +11,13 @@
 #define upLeft std::make_pair(-1, 1)
 
 // constructor
-DoodleBug::DoodleBug(int starveTime, int breedTime) : Bug(starveTime, 'X'), Breedable(breedTime) {
+DoodleBug::DoodleBug(int starveTime, int breedTime) :
+	Bug(starveTime, breedTime, BugType::DOODLEBUG) {
 	this->previousDirection = std::make_pair(-1, 1);
 }
 
 // determine if the doodlebug can breed
-bool DoodleBug::breed(WorldGrid* world) {
+bool DoodleBug::breed(const WorldGrid* const world) {
 	// skip if its too early to breed
 	if (lastBreed < breedTime) {
 		lastBreed++;
@@ -28,6 +29,8 @@ bool DoodleBug::breed(WorldGrid* world) {
 
 // try to move the doodlebug
 std::pair<int, int> DoodleBug::moveDirection(WorldGrid* world) {
+	std::cout << "DoodleBug moveDirection" << std::endl;
+
 	// get adjacent cells
 	Bug*** adjacent = world->getAdjacencies(this);
 
@@ -35,8 +38,7 @@ std::pair<int, int> DoodleBug::moveDirection(WorldGrid* world) {
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
 			if (adjacent[i][j] != nullptr) {
-				Ant* ant = dynamic_cast<Ant*>(adjacent[i][j]);
-				if (ant) {
+				if (adjacent[i][j]->getType() != BugType::DOODLEBUG) {
 					return std::make_pair(i, j);
 				}
 			}
@@ -77,7 +79,7 @@ std::pair<int, int> DoodleBug::moveDirection(WorldGrid* world) {
 // try to move the doodlebug
 bool DoodleBug::tryMove(Bug* bug) {
 	// doodleBugs only can't eat other doodleBugs
-	if (bug == nullptr || dynamic_cast<Ant*>(bug)) {
+	if (bug == nullptr || bug->getType() != BugType::DOODLEBUG) {
 		resetLastAction();
 		return true;
 	}
@@ -86,6 +88,3 @@ bool DoodleBug::tryMove(Bug* bug) {
 	this->lastAction++;
 	return false;
 }
-
-// get the type of the bug
-BugType DoodleBug::getType() const { return BugType::DOODLEBUG; }
