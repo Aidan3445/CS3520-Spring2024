@@ -23,11 +23,13 @@ class Bug {
 	// the type of the bug
 	const BugType type;
 
+
 	// constructor
 	Bug(int starveTime, BugType type);
 	Bug(int starveTime, int breedTime, BugType type);
 
   public:
+	const int id;
 	// determine if the bug is starving
 	virtual bool starved() const;
 	// determine if the bug breeds

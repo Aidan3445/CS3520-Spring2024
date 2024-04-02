@@ -1,9 +1,13 @@
 #include "../include/bug.hpp"
+#include <cstdlib>
+
+int genID() { return rand() % 4000 + 1000; }
 
 // constructor for bug
-Bug::Bug(int starveTime, BugType type) : starveTime(starveTime), breedTime(0), type(type) {}
+Bug::Bug(int starveTime, BugType type) :
+	starveTime(starveTime), breedTime(0), type(type), id(genID()) {}
 Bug::Bug(int starveTime, int breedTime, BugType type) :
-	starveTime(starveTime), breedTime(breedTime), type(type) {}
+	starveTime(starveTime), breedTime(breedTime), type(type), id(genID()) {}
 
 // determine if the ant is starving
 bool Bug::starved() const { return lastAction >= starveTime; }

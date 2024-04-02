@@ -1,6 +1,7 @@
 #ifndef WORLDGRID_HPP
 #define WORLDGRID_HPP
 #include "../include/bug.hpp"
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -30,7 +31,7 @@ class WorldGrid {
 	// spawn/add a bug to the grid
 	WorldGrid& operator+(std::unique_ptr<Bug> bug);
 	// remove a bug from the grid
-	WorldGrid& operator-(std::unique_ptr<Bug> bug);
+	WorldGrid& operator-(const Bug* const bug);
 	// increment the time step
 	WorldGrid& operator++();
 

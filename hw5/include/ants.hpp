@@ -21,9 +21,20 @@ class Ant : public Bug {
 // female ants have some additional functionality
 // queen ant class
 class QueenAnt : public Ant {
+  protected:
+	const double spawnFemaleChance;
+	const double femaleIsQueenChance;
+	const double queenIsCataglyphisChance;
+	// spawn an ant according to the odds above
+	Ant* spawnAnt();
+
   public:
 	// constructor
-	QueenAnt(int starveTime, int breedTime);
+	QueenAnt(int starveTime,
+			 int breedTime,
+			 double spawnFemalChance,
+			 double femaleIsQueenChance,
+			 double queenIsCataglyphisChance);
 
 	// determine if the queen ant is starving
 	virtual bool starved() const override;
@@ -35,7 +46,10 @@ class QueenAnt : public Ant {
 class CataglyphisAnt : public QueenAnt {
   public:
 	// constructor
-	CataglyphisAnt(int starveTime, int breedTime);
+	CataglyphisAnt(int starveTime,
+				   int breedTime,
+				   double spawnFemaleChance,
+				   double femaleIsQueenChance);
 
 	// determine if the Cataglyphis breeds
 	virtual bool breed(const WorldGrid* const world) override;
