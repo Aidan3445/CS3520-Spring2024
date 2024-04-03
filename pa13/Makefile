@@ -19,5 +19,5 @@ $(EXECUTABLE): $(OBJECTS)
 .PHONY: clean
 
 clean:
-	rm -rf $(BINDIR) $(EXECUTABLE)
+	rm -rf $(BINDIR) $(EXECUTABLE) DebugT-1 DebugT-2 DebugT-3 DebugT-4 DebugT-5 
 
