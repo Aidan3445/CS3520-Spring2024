@@ -15,11 +15,11 @@ class Bug {
 	// number of time steps before a bug starves
 	const unsigned int starveTime;
 	// the time step when the bug last moved or ate
-	unsigned int lastAction;
+	unsigned int lastAction = 0;
 	// number of time steps before a bug breeds
 	const unsigned int breedTime;
 	// the time step when the bug last bred
-	unsigned int lastBreed;
+	unsigned int lastBreed = 0;
 	// the type of the bug
 	const BugType type;
 
@@ -33,7 +33,7 @@ class Bug {
 	// determine if the bug is starving
 	virtual bool starved() const;
 	// determine if the bug breeds
-	virtual bool breed(const WorldGrid* const world) = 0;
+	virtual void breed(WorldGrid* const world) = 0;
 	// get direction to move the bug
 	virtual std::pair<int, int> moveDirection(WorldGrid* world) = 0;
 	// try to move the bug to a new position

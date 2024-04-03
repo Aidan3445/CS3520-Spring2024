@@ -30,10 +30,7 @@ bool Ant::tryMove(Bug* bug) {
 }
 
 // ants that are not queens cannot breed
-bool Ant::breed(const WorldGrid* const world) {
-	// increment lastBreed
-	return false;
-}
+void Ant::breed(WorldGrid* const world) { return; }
 
 
 QueenAnt::QueenAnt(int starveTime,
@@ -46,45 +43,40 @@ QueenAnt::QueenAnt(int starveTime,
 	queenIsCataglyphisChance(queenIsCataglyphisChance) {}
 
 // determine if the queen ant is starving or hasnt bred in 3 breed cycles
-bool QueenAnt::starved() const {
-	// std::cout << "Last action: " << lastAction << " Starve time: " << starveTime << std::endl;
-	return lastAction >= starveTime || lastBreed >= (3 * breedTime);
-}
+bool QueenAnt::starved() const { return lastAction >= starveTime || lastBreed >= (3 * breedTime); }
 
 // determine if the queen ant breeds
-bool QueenAnt::breed(const WorldGrid* const world) {
-	// std::cout << "lastBreed: " << lastBreed << " breedTime: " << breedTime << std::endl;
+void QueenAnt::breed(WorldGrid* const world) {
 	//  call base breed to test for starve time
 	if (lastBreed < breedTime) {
-		// std::cout << "early Exit" << std::endl;
 		lastBreed++;
-		return false;
+		return;
 	}
-	// std::cout << "continue" << std::endl;
 
 	// get the adjacencies of the queen ant
 	Bug*** adjacencies = world->getAdjacencies(this);
-
-	// std::cout << "Adjacencies: " << adjacencies << std::endl;
 
 	// loop through the adjacencies for a male ant
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			// if the adjacent location is a bug and it is a MaleAnt
 			if (adjacencies[i][j] != nullptr && adjacencies[i][j]->getType() == BugType::MALEANT) {
+				// spawn 10 ants
+				for (int i = 0; i < 10; i++) {
+					world->spawnBug(this, spawnAnt());
+				}
 				resetLastBreed();
-				return true;
+				return;
 			}
 		}
 	}
 
 	lastBreed++;
-	// return false
-	return false;
+	return;
 }
 
 // spawn an ant according to the chances specified in the constructor
-Ant* QueenAnt::spawnAnt() {
+std::unique_ptr<Ant> QueenAnt::spawnAnt() {
 	int spawn = rand() % 100000 / 1000;
 	// is the ant female?
 	if (spawn < spawnFemaleChance * 100) {
@@ -94,20 +86,20 @@ Ant* QueenAnt::spawnAnt() {
 			spawn = rand() % 100000 / 1000;
 			// is the queen a Cataglyphis
 			if (spawn < queenIsCataglyphisChance * 100) {
-				return new CataglyphisAnt(this->starveTime,
-										  this->breedTime,
-										  this->spawnFemaleChance,
-										  this->femaleIsQueenChance);
+				return std::make_unique<CataglyphisAnt>(this->starveTime,
+														this->breedTime,
+														this->spawnFemaleChance,
+														this->femaleIsQueenChance);
 			}
-			return new QueenAnt(this->starveTime,
-								this->breedTime,
-								this->spawnFemaleChance,
-								this->femaleIsQueenChance,
-								this->queenIsCataglyphisChance);
+			return std::make_unique<QueenAnt>(this->starveTime,
+											  this->breedTime,
+											  this->spawnFemaleChance,
+											  this->femaleIsQueenChance,
+											  this->queenIsCataglyphisChance);
 		}
-		return new Ant(this->starveTime, this->breedTime, BugType::FEMALEANT);
+		return std::make_unique<Ant>(this->starveTime, this->breedTime, BugType::FEMALEANT);
 	}
-	return new Ant(this->starveTime, this->breedTime, BugType::MALEANT);
+	return std::make_unique<Ant>(this->starveTime, this->breedTime, BugType::MALEANT);
 }
 
 // cataglyphis ant constructor
@@ -120,14 +112,18 @@ CataglyphisAnt::CataglyphisAnt(int starveTime,
 
 // determine if the Cataglyphis breeds
 // Cataglyphis ants can always breed if it has been a full breed cycle
-bool CataglyphisAnt::breed(const WorldGrid* const world) {
+void CataglyphisAnt::breed(WorldGrid* const world) {
 	if (lastBreed < breedTime) {
 		lastBreed++;
-		return false;
+		return;
+	}
+
+	// spawn 10 ants
+	for (int i = 0; i < 10; i++) {
+		world->spawnBug(this, spawnAnt());
 	}
 
 	// reset last breed
 	resetLastBreed();
-
-	return true;
+	return;
 }

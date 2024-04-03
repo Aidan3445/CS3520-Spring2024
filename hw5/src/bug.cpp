@@ -1,5 +1,5 @@
 #include "../include/bug.hpp"
-#include <cstdlib>
+#include "../include/doodleBug.hpp"
 
 int genID() { return rand() % 4000 + 1000; }
 
@@ -34,6 +34,15 @@ char Bug::getCharFromType(BugType bugType) {
 
 // overload the << operator for easy printing of the bug
 std::ostream& operator<<(std::ostream& out, const Bug* bug) {
-	out << bug->getCharFromType(bug->type);
+	// set color based on bug type
+	switch (bug->type) {
+		case BugType::MALEANT: out << "\033[0;32m"; break;
+		case BugType::FEMALEANT: out << "\033[0;33m"; break;
+		case BugType::QUEENANT: out << "\033[0;36m"; break;
+		case BugType::DOODLEBUG: out << "\033[0;31m"; break;
+		default: break;
+	}
+
+	out << Bug::getCharFromType(bug->type) << "\033[0m";
 	return out;
 }

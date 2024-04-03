@@ -13,30 +13,34 @@
 // constructor
 DoodleBug::DoodleBug(int starveTime, int breedTime) :
 	Bug(starveTime, breedTime, BugType::DOODLEBUG) {
-	int x = rand() % 2 - 1;
-	int y = rand() % 2 - 1;
+	int x, y;
+	do {
+		// initialize random previous direction that is not 0, 0
+		x = rand() % 2 - 1;
+		y = rand() % 2 - 1;
+	} while (x == 0 && y == 0);
+
 	// initialize random previous direction
 	this->previousDirection = std::make_pair(x, y);
 }
 
 // determine if the doodlebug can breed
-bool DoodleBug::breed(const WorldGrid* const world) {
+void DoodleBug::breed(WorldGrid* const world) {
 	// skip if its too early to breed
 	if (lastBreed < breedTime) {
 		lastBreed++;
-		return false;
+		return;
 	}
+
+	// spawn a new doodlebug
+	world->spawnBug(this, std::make_unique<DoodleBug>(starveTime, breedTime));
 
 	// reset last breed
 	this->resetLastBreed();
-
-	return true;
 }
 
 // try to move the doodlebug
 std::pair<int, int> DoodleBug::moveDirection(WorldGrid* world) {
-	// std::cout << "DoodleBug moveDirection" << std::endl;
-
 	// get adjacent cells
 	Bug*** adjacent = world->getAdjacencies(this);
 
@@ -45,12 +49,12 @@ std::pair<int, int> DoodleBug::moveDirection(WorldGrid* world) {
 		for (int j = 0; j < 3; j++) {
 			if (adjacent[i][j] != nullptr) {
 				if (adjacent[i][j]->getType() != BugType::DOODLEBUG) {
-					// std::cout << "DoodleBug moveDirection: found ant" << adjacent[i][j]
-					//		  << std::endl;
 					//  eat the ant
 					*world - adjacent[i][j];
 					// reset last action after eating
 					this->resetLastAction();
+					// update previous direction
+					this->previousDirection = std::make_pair(i - 1, j - 1);
 					return std::make_pair(i - 1, j - 1);
 				}
 			}
@@ -61,19 +65,7 @@ std::pair<int, int> DoodleBug::moveDirection(WorldGrid* world) {
 	this->lastAction++;
 
 	// no ant found move in next clockwise direction
-	if (this->previousDirection == upLeft) {
-		this->previousDirection = up;
-		return up;
-	} else if (this->previousDirection == up) {
-		this->previousDirection = upRight;
-		return upRight;
-	} else if (this->previousDirection == upRight) {
-		this->previousDirection = right;
-		return right;
-	} else if (this->previousDirection == right) {
-		this->previousDirection = downRight;
-		return downRight;
-	} else if (this->previousDirection == downRight) {
+	if (this->previousDirection == downRight) {
 		this->previousDirection = down;
 		return down;
 	} else if (this->previousDirection == down) {
@@ -85,6 +77,18 @@ std::pair<int, int> DoodleBug::moveDirection(WorldGrid* world) {
 	} else if (this->previousDirection == left) {
 		this->previousDirection = upLeft;
 		return upLeft;
+	} else if (this->previousDirection == upLeft) {
+		this->previousDirection = up;
+		return up;
+	} else if (this->previousDirection == up) {
+		this->previousDirection = upRight;
+		return upRight;
+	} else if (this->previousDirection == upRight) {
+		this->previousDirection = right;
+		return right;
+	} else if (this->previousDirection == right) {
+		this->previousDirection = downRight;
+		return downRight;
 	}
 
 	// or stay in the same place

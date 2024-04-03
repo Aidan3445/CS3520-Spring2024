@@ -2,6 +2,7 @@
 #define ANTS_HPP
 
 #include "bug.hpp"
+#include <memory>
 
 // ant class
 class Ant : public Bug {
@@ -15,7 +16,7 @@ class Ant : public Bug {
 	// ants cannot eat other bugs
 	virtual bool tryMove(Bug* bug) override;
 	// ants that are not queens cannot breed
-	virtual bool breed(const WorldGrid* const world) override;
+	virtual void breed(WorldGrid* const world) override;
 };
 
 // female ants have some additional functionality
@@ -26,7 +27,7 @@ class QueenAnt : public Ant {
 	const double femaleIsQueenChance;
 	const double queenIsCataglyphisChance;
 	// spawn an ant according to the odds above
-	Ant* spawnAnt();
+	std::unique_ptr<Ant> spawnAnt();
 
   public:
 	// constructor
@@ -39,7 +40,7 @@ class QueenAnt : public Ant {
 	// determine if the queen ant is starving
 	virtual bool starved() const override;
 	// determine if the queen ant breeds
-	virtual bool breed(const WorldGrid* const world) override;
+	virtual void breed(WorldGrid* const world) override;
 };
 
 // Cataglyphis ant class (a type of queen ant)
@@ -52,7 +53,7 @@ class CataglyphisAnt : public QueenAnt {
 				   double femaleIsQueenChance);
 
 	// determine if the Cataglyphis breeds
-	virtual bool breed(const WorldGrid* const world) override;
+	virtual void breed(WorldGrid* const world) override;
 };
 
 #endif
