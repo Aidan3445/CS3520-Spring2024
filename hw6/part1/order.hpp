@@ -1,6 +1,7 @@
-#include "gift.hpp"
-#include "shop.hpp"
 #include <vector>
+
+class Shop;	 // forward declaration
+class Gift;	 // forward declaration
 
 class Order {
   private:
