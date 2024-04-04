@@ -7,6 +7,8 @@ class Coupon {
         string expiration_date;
         double percent_multiplier;
     public:
+        /** Constructor */
+        Coupon(string expiration_date, double percent_multiplier);
         /** Applies the given coupon onto a cost to create a post coupon cost */
         double apply_coupon(const double&);
 };

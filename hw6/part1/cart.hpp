@@ -14,6 +14,8 @@ class Cart {
         vector<Gift> items;
         vector<Coupon> applied_coupons;
     public:
+        /** Constructor */
+        Cart();
         /** Calculates the pre-shipping price */
         double calculate_subtotal();
         /** Creates an order at each shop that that the Gifts in items belong */
