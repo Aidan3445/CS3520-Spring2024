@@ -1,4 +1,4 @@
-#include <iostream>
+#include <string>
 using namespace std;
 
 /** A coupon that reduces the total price of an order. */
