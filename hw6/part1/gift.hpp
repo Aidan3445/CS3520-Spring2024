@@ -1,6 +1,7 @@
 #include <array>
 #include <string>
-class Shop {};	// Forward declaration
+
+class Shop;	 // forward declaration
 
 // Gift classes are used to represent gifts that can be purchased from a shop
 class Gift {
