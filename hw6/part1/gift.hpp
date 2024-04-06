@@ -1,4 +1,5 @@
 #include <array>
+#include <memory>
 #include <string>
 
 class Shop;	 // forward declaration
@@ -10,11 +11,11 @@ class Gift {
 	const std::string name;
 	const std::string description;
 	const double price;
-	const Shop* shop;
+	const std::unique_ptr<Shop> shop;
 
   public:
 	// constructor
-	Gift(std::string name, std::string description, double price, Shop* shop);
+	Gift(std::string name, std::string description, double price, std::unique_ptr<Shop> shop);
 	// getters
 	std::string get_name();
 	std::string get_description();
@@ -35,7 +36,7 @@ class EGift : public Gift {
 	EGift(std::string name,
 		  std::string description,
 		  double price,
-		  Shop* shop,
+		  std::unique_ptr<Shop> shop,
 		  std::string activation_code,
 		  std::string expiration_date);
 	// get code
@@ -57,7 +58,7 @@ class PhysicalGift : public Gift {
 	PhysicalGift(std::string name,
 				 std::string description,
 				 double price,
-				 Shop* shop,
+				 std::unique_ptr<Shop> shop,
 				 double weight,
 				 std::array<double, 3> size);
 	// get weight

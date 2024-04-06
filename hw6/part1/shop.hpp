@@ -10,28 +10,28 @@ class Shop {
   private:
 	// Member variables for the Shop class
 	std::string name;
-	std::map<Gift*, uint> stock;
+	std::map<std::unique_ptr<Gift>, uint> stock;
 	std::vector<std::string> coupon_codes;
 
 	// remove item from the stock
 	// this is called upon order confirmation
-	void remove_stock(Gift* gift);
-	bool has_gift(Gift* gift);
+	void remove_stock(std::unique_ptr<Gift> gift);
+	bool has_gift(std::unique_ptr<Gift> gift);
 
   public:
 	// constructor
 	Shop(std::string name);
 	// getters
 	std::string get_name();
-	std::vector<Gift*> get_items();
+	std::vector<std::unique_ptr<Gift>> get_items();
 	// get the stock of a gift
-	uint get_stock(Gift* gift);
+	uint get_stock(std::unique_ptr<Gift> gift);
 	// add gift to stock
-	void add_stock(Gift* gift, uint quantity);
+	void add_stock(std::unique_ptr<Gift> gift, uint quantity);
 	// test a coupon code
 	Coupon* test_coupon(std::string code);
 	// confirm an order
-	bool confirm_order(Order* order);
+	bool confirm_order(std::unique_ptr<Order> order);
 };
 
 // DigitalShop class is a subclass of the Shop
