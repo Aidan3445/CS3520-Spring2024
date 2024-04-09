@@ -27,14 +27,13 @@ class SuperUltraSecureVault {
 
 		if (item_pair.first) {
 			// remove the item from the vault
-			items.erase(std::remove_if(items.begin(),
-									   items.end(),
-									   [&item_pair](const auto& pair) {
-										   return pair.first.get() == item_pair.first.get();
-									   }),
-						items.end());
+			std::remove_if(items.begin(), items.end(),
+							[&item_pair](const auto& pair) {
+								return pair.first.get() == item_pair.first.get();
+							});
+			items.pop_back(); // Now empty because remove_if will remove 1 element
 			// re-insert the item to the vault
-			insert_item(std::move(item_pair.first));
+			insert_item(std::move(item));
 		} else {
 			// if the item is not in the vault, add it
 			items.push_back({std::move(item), age.get_time()});
