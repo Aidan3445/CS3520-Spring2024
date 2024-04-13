@@ -3,38 +3,60 @@
 
 #include "dateTime.hpp"
 #include "user.hpp"
+#include <vector>
 
-enum LayoutStyle {
-    MEETING, LECTURE, WEDDING, DANCE
-};
+// Enum for the layout style of the event
+enum LayoutStyle { MEETING, LECTURE, WEDDING, DANCE };
 
 class Event {
-    private:
-        // Start time also acts as an ID for this Event
-        DateTime startTime, endTime;
-        LayoutStyle style;
-        std::string organizerID;
+  private:
+	// Start time also acts as an ID for this Event
+	DateTime startTime, endTime;
+	// Layout style of the event
+	const LayoutStyle style;
+	// ID of the user who organized this event
+	const std::string organizerID;
 
-    public:
-        Event(DateTime startTime, DateTime endTime, LayoutStyle style);
-        /** Getters */
-        DateTime getStartTime() const;
-        DateTime getEndTime() const;
-        std::string getOrganizerID() const;
-        LayoutStyle getStyle() const;
+  public:
+	// Constructor
+	Event(DateTime startTime, DateTime endTime, LayoutStyle style);
+
+	// getters
+	DateTime getStartTime() const;
+	DateTime getEndTime() const;
+	std::string getOrganizerID() const;
+	LayoutStyle getStyle() const;
 };
 
 class PublicEvent : public Event {
-    private:
-        std::vector<std::string> guestList;
-        bool openToNonResidents;
+  private:
+	// list of guests who purchased tickets
+	std::vector<std::string> guestList;
+	// can non-residents attend this event?
+	const bool openToNonResidents;
+	// cost of a ticket
+	const int ticketCost;
 
-    public:
-        PublicEvent(DateTime startTime, DateTime endTime, LayoutStyle style, bool openToNonResidents = true);
-        /** Adds a ticket to this event to the given user */
-        void purchaseTicket(User user);
+	// static variable for max number of guests
+	static const int MAX_GUESTS = 25;
+
+  public:
+	PublicEvent(DateTime startTime,
+				DateTime endTime,
+				LayoutStyle style,
+				bool openToNonResidents = true);
+	/** Adds a ticket to this event to the given user */
+	void purchaseTicket(User user);
+
+	// getters
+	bool isOpenToNonResidents() const;
+	int getTicketCost() const;
+
+	// is the user in the guest list?
+	bool isUserInGuestList(const User& user) const;
 };
 
+// PrivateEvent is an alias for Event
 typedef Event PrivateEvent;
 
 #endif
