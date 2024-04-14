@@ -19,7 +19,7 @@ class Event {
 
   public:
 	// Constructor
-	Event(DateTime startTime, DateTime endTime, LayoutStyle style);
+	Event(DateTime startTime, DateTime endTime, LayoutStyle style, std::string organizerID);
 
 	// getters
 	DateTime getStartTime() const;
@@ -44,6 +44,8 @@ class PublicEvent : public Event {
 	PublicEvent(DateTime startTime,
 				DateTime endTime,
 				LayoutStyle style,
+				std::string organizerID,
+				int ticketCost,
 				bool openToNonResidents = true);
 	/** Adds a ticket to this event to the given user */
 	void purchaseTicket(User user);
