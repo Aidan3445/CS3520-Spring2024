@@ -5,8 +5,8 @@
 class Event;
 
 #include "wallet.hpp"
-#include <string>
 #include <memory>
+#include <string>
 
 // Enum for residency status
 enum ResidencyStatus { RESIDENT, NON_RESIDENT, CITY };
@@ -26,7 +26,7 @@ class User {
 
 	// getters
 	std::string myID() const;
-	Wallet myWallet() const;
+	std::shared_ptr<Wallet> myWallet() const;
 	ResidencyStatus myResidency() const;
 };
 

@@ -1,5 +1,6 @@
 #ifndef WALLET_HPP
 #define WALLET_HPP
+#include <stdexcept>
 
 class Wallet {
   private:
@@ -14,12 +15,12 @@ class Wallet {
 	unsigned int getBalance();
 
 	// add money to the wallet
-	void addMoney(unsigned int amount);
+	void deposit(unsigned int amount);
 
 	// remove money from the wallet
 	// this will throw an error and NOT remove any money
 	// if the amount is greater than the balance
-	void removeMoney(unsigned int amount);
+	void withdraw(unsigned int amount);
 };
 
 #endif	// WALLET_HPP
