@@ -52,12 +52,19 @@ std::string DateTime::getDayOfWeek() const {
 	std::string dayOfWeek;
 	switch (t->tm_wday) {
 		case 0: dayOfWeek = "Sunday";
+			break;
 		case 1: dayOfWeek = "Monday";
+			break;
 		case 2: dayOfWeek = "Tuesday";
+			break;
 		case 3: dayOfWeek = "Wednesday";
+			break;
 		case 4: dayOfWeek = "Thursday";
+			break;
 		case 5: dayOfWeek = "Friday";
+			break;
 		case 6: dayOfWeek = "Saturday";
+			break;
 		default: return "Invalid day";
 	}
 
@@ -91,20 +98,30 @@ bool DateTime::sameWeek(const DateTime& d) const {
 }
 
 // operator overloads
-DateTime DateTime::operator+(const DateTime& d) const {
-	return DateTime(getMonth() + d.getMonth(),
-					getDay() + d.getDay(),
-					getYear() + d.getYear(),
-					getHour() + d.getHour(),
-					getMin() + d.getMin());
+DateTime DateTime::add(
+	const unsigned int &month, 
+const unsigned int &day,
+const unsigned int &year,
+const unsigned int &hour,
+const unsigned int &minute) const {
+	return DateTime(getMonth() + month,
+					getDay() + day,
+					getYear() + year,
+					getHour() + hour,
+					getMin() + year);
 }
 
-DateTime DateTime::operator-(const DateTime& d) const {
-	return DateTime(getMonth() - d.getMonth(),
-					getDay() - d.getDay(),
-					getYear() - d.getYear(),
-					getHour() - d.getHour(),
-					getMin() - d.getMin());
+DateTime DateTime::sub(
+	const unsigned int &month, 
+const unsigned int &day,
+const unsigned int &year,
+const unsigned int &hour,
+const unsigned int &minute) const {
+	return DateTime(getMonth() - month,
+					getDay() - day,
+					getYear() - year,
+					getHour() - hour,
+					getMin() - year);
 }
 
 bool DateTime::operator<(const DateTime& d) const { return dateAndTime < d.dateAndTime; }

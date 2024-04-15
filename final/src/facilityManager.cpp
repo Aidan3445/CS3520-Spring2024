@@ -44,7 +44,8 @@ void FacilityManager::addEvent(std::unique_ptr<Event> newEvent) {
 				  [&minutes, &id, &newEvent](const std::unique_ptr<Event>& event) {
 					  if (event.get()->getOrganizer().first == id &&
 						  event.get()->getStartTime().sameWeek(newEvent.get()->getStartTime())) {
-						  DateTime diff = event.get()->getEndTime() - event.get()->getStartTime();
+						  DateTime start = event.get()->getStartTime();
+						  DateTime diff = event.get()->getEndTime().sub(start.getMonth(), start.getDay(), start.getYear(), start.getHour(), start.getMin());
 						  minutes -= diff.getHour() * 60;
 						  minutes -= diff.getMin();
 					  }
@@ -103,11 +104,11 @@ void FacilityManager::printCalendar() const {
 	// print loop
 	do {
 		// print the week
-		std::cout << "Week: " << firstDayOfWeek << " - " << firstDayOfWeek + DateTime(0, 0, 6)
+		std::cout << "Week: " << firstDayOfWeek << " - " << firstDayOfWeek.add(0, 6)
 				  << std::endl;
 		std::cout << "--------------------------------" << std::endl;
 		auto currentEventIt = firstEventOfWeekIt;
-		DateTime dayOfWeek = firstDayOfWeek - DateTime(0, 0, 1);
+		DateTime dayOfWeek = firstDayOfWeek.sub(0, 1);
 		while (currentEventIt != calendar.end() &&
 			   (*currentEventIt).get()->getStartTime().sameWeek(firstDayOfWeek)) {
 			// if this day is different from the previous day, print the day

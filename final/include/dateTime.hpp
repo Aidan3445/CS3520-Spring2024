@@ -38,9 +38,19 @@ class DateTime {
 	// check if the date is within 7 days of the current date
 	bool sameWeek(const DateTime& d) const;
 
+	// add and subtract time
+	DateTime add(const unsigned int &month = 0, 
+const unsigned int &day = 0,
+const unsigned int &year = 0,
+const unsigned int &hour = 0,
+const unsigned int &minute = 0) const;
+	DateTime sub(const unsigned int &month = 0, 
+const unsigned int &day = 0,
+const unsigned int &year = 0,
+const unsigned int &hour = 0,
+const unsigned int &minute = 0) const;
+
 	// operator overloads
-	DateTime operator+(const DateTime& d) const;
-	DateTime operator-(const DateTime& d) const;
 	bool operator<(const DateTime& d) const;
 	bool operator>(const DateTime& d) const;
 	bool operator==(const DateTime& d) const;
