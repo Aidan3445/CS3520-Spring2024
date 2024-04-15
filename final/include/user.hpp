@@ -6,6 +6,7 @@ class Event;
 
 #include "wallet.hpp"
 #include <string>
+#include <memory>
 
 // Enum for residency status
 enum ResidencyStatus { RESIDENT, NON_RESIDENT, CITY };
@@ -17,11 +18,11 @@ class User {
 	// Whether this user is a resident, non-resident, or the city
 	const ResidencyStatus residencyStatus;
 	// wallet for buying tickets and reserving spaces
-	Wallet wallet;
+	std::shared_ptr<Wallet> wallet;
 
   public:
 	// Constructor
-	User(std::string id, ResidencyStatus residencyStatus, Wallet wallet);
+	User(std::string id, ResidencyStatus residencyStatus, unsigned int balance);
 
 	// getters
 	std::string myID() const;
