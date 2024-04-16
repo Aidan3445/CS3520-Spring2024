@@ -45,7 +45,11 @@ void FacilityManager::addEvent(std::unique_ptr<Event> newEvent) {
 					  if (event.get()->getOrganizer().first == id &&
 						  event.get()->getStartTime().sameWeek(newEvent.get()->getStartTime())) {
 						  DateTime start = event.get()->getStartTime();
-						  DateTime diff = event.get()->getEndTime().sub(start.getMonth(), start.getDay(), start.getYear(), start.getHour(), start.getMin());
+						  DateTime diff = event.get()->getEndTime().sub(start.getMonth(),
+																		start.getDay(),
+																		start.getYear(),
+																		start.getHour(),
+																		start.getMin());
 						  minutes -= diff.getHour() * 60;
 						  minutes -= diff.getMin();
 					  }
@@ -104,8 +108,8 @@ void FacilityManager::printCalendar() const {
 	// print loop
 	do {
 		// print the week
-		std::cout << "Week: " << firstDayOfWeek << " - " << firstDayOfWeek.add(0, 6)
-				  << std::endl;
+		std::cout << "Week: " << firstDayOfWeek.getDate() << " - "
+				  << firstDayOfWeek.add(0, 6).getDate() << std::endl;
 		std::cout << "--------------------------------" << std::endl;
 		auto currentEventIt = firstEventOfWeekIt;
 		DateTime dayOfWeek = firstDayOfWeek.sub(0, 1);
@@ -130,11 +134,17 @@ void FacilityManager::printCalendar() const {
 
 		// validate user input
 		do {
-			std::cout << "enter n to see the next week or q to quit: ";
+			std::cout << "Enter n to see the next week or q to quit: ";
 			std::cin >> input;
+			// delete line
+			std::cout << "\033[A\33[2K\r";
 		} while (input != 'q' && input != 'n');
 
 		// update the iterators
+		if (input == 'n') {
+			firstDayOfWeek = (*currentEventIt)->getStartTime().getFirstDayOfWeek();
+			firstEventOfWeekIt = currentEventIt;
+		}
 	} while (input != 'q');
 }
 // print the events

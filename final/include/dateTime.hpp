@@ -32,23 +32,27 @@ class DateTime {
 	DateTime getFirstDayOfWeek() const;
 
 	// string outputs
+	// get the date in the format "MM/DD/YYYY"
+	std::string getDate() const;
+	// get the day of the week
 	std::string getDayOfWeek() const;
+	// get the time in the format "HH:MM"
 	std::string getTime() const;
 
 	// check if the date is within 7 days of the current date
 	bool sameWeek(const DateTime& d) const;
 
 	// add and subtract time
-	DateTime add(const unsigned int &month = 0, 
-const unsigned int &day = 0,
-const unsigned int &year = 0,
-const unsigned int &hour = 0,
-const unsigned int &minute = 0) const;
-	DateTime sub(const unsigned int &month = 0, 
-const unsigned int &day = 0,
-const unsigned int &year = 0,
-const unsigned int &hour = 0,
-const unsigned int &minute = 0) const;
+	DateTime add(const unsigned int& month = 0,
+				 const unsigned int& day = 0,
+				 const unsigned int& year = 0,
+				 const unsigned int& hour = 0,
+				 const unsigned int& minute = 0) const;
+	DateTime sub(const unsigned int& month = 0,
+				 const unsigned int& day = 0,
+				 const unsigned int& year = 0,
+				 const unsigned int& hour = 0,
+				 const unsigned int& minute = 0) const;
 
 	// operator overloads
 	bool operator<(const DateTime& d) const;

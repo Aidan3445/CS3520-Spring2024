@@ -8,7 +8,7 @@
 class FacilityManager {
   private:
 	// the calendar of events
-	std::set<std::unique_ptr<Event>> calendar;
+	std::set<std::unique_ptr<Event>, EventComparator> calendar;
 	// get events and tickets for a user
 	std::vector<std::unique_ptr<Event>> getUserEvents(std::string userID);
 	std::vector<std::unique_ptr<Event>> getUserTickets(std::string userID);

@@ -3,13 +3,15 @@
 #include <sstream>
 
 // Constructor
-Event::Event(DateTime start,
+Event::Event(std::string name,
+			 DateTime start,
 			 DateTime end,
 			 LayoutStyle style,
 			 std::string organizerID,
 			 ResidencyStatus organizerResidency) :
 	style(style),
 	organizer(std::make_pair(organizerID, organizerResidency)) {
+	this->name = name;
 	this->startTime = start;
 	this->endTime = end;
 }
@@ -17,8 +19,8 @@ Event::Event(DateTime start,
 // get details of the event
 std::string Event::getDetails() const {
 	std::stringstream ss;
-	ss << name << ": " << startTime.getTime() << " - " << endTime.getTime()
-	   << " (Organizer: " << organizer.first << ")";
+	ss << name << ": \033[33m" << startTime.getTime() << " - " << endTime.getTime()
+	   << "\033[0m (Organizer: \033[36m" << organizer.first << "\033[0m)";
 	return ss.str();
 }
 
@@ -39,14 +41,15 @@ std::ostream& operator<<(std::ostream& os, const Event& e) {
 bool Event::operator<(const Event& e) const { return startTime < e.startTime; }
 
 // Constructor for PublicEvent
-PublicEvent::PublicEvent(DateTime start,
+PublicEvent::PublicEvent(std::string name,
+						 DateTime start,
 						 DateTime end,
 						 LayoutStyle style,
 						 std::string organizerID,
 						 ResidencyStatus residencyStatus,
 						 int ticketCost,
 						 bool openToNonResidents) :
-	Event(start, end, style, organizerID, residencyStatus),
+	Event(name, start, end, style, organizerID, residencyStatus),
 	ticketCost(ticketCost), openToNonResidents(openToNonResidents) {
 	ticketCost = 0;
 }
@@ -78,9 +81,14 @@ bool PublicEvent::isUserInGuestList(const User& user) const {
 // Dodgeball Tournament: 10:00 - 14:00 (Tickets: $10, Organizer: John Doe)
 std::string PublicEvent::getDetails() const {
 	std::stringstream ss;
-	ss << getName() << ": " << getStartTime().getTime() << " - " << getEndTime().getTime()
-	   << " (Ticket: $" << ticketCost << ", Organizer: " << getOrganizer().first << ")";
+	ss << getName() << ": \033[33m" << getStartTime().getTime() << " - " << getEndTime().getTime()
+	   << "\033[0m (Ticket: \033[32m$" << ticketCost << "\033[0m, Organizer: \033[36m"
+	   << getOrganizer().first << "\033[0m)";
 	return ss.str();
 }
 
 // event compator
+bool EventComparator::operator()(const std::unique_ptr<Event>& e1,
+								 const std::unique_ptr<Event>& e2) const {
+	return e1.get()->getStartTime() < e2.get()->getStartTime();
+}

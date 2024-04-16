@@ -47,29 +47,29 @@ unsigned int DateTime::getMin() const {
 }
 
 // string representations of the date and time
+std::string DateTime::getDate() const {
+	tm* t = localtime(&dateAndTime);
+	std::stringstream ss;
+	ss << getMonth() << '/' << getDay() << '/' << getYear();
+	return ss.str();
+}
+
 std::string DateTime::getDayOfWeek() const {
 	tm* t = localtime(&dateAndTime);
 	std::string dayOfWeek;
 	switch (t->tm_wday) {
-		case 0: dayOfWeek = "Sunday";
-			break;
-		case 1: dayOfWeek = "Monday";
-			break;
-		case 2: dayOfWeek = "Tuesday";
-			break;
-		case 3: dayOfWeek = "Wednesday";
-			break;
-		case 4: dayOfWeek = "Thursday";
-			break;
-		case 5: dayOfWeek = "Friday";
-			break;
-		case 6: dayOfWeek = "Saturday";
-			break;
+		case 0: dayOfWeek = "Sunday"; break;
+		case 1: dayOfWeek = "Monday"; break;
+		case 2: dayOfWeek = "Tuesday"; break;
+		case 3: dayOfWeek = "Wednesday"; break;
+		case 4: dayOfWeek = "Thursday"; break;
+		case 5: dayOfWeek = "Friday"; break;
+		case 6: dayOfWeek = "Saturday"; break;
 		default: return "Invalid day";
 	}
 
 	std::stringstream ss;
-	ss << dayOfWeek << " " << getMonth() << '/' << getDay() << '/' << getYear();
+	ss << dayOfWeek << " " << getDate();
 
 	return ss.str();
 }
@@ -98,30 +98,22 @@ bool DateTime::sameWeek(const DateTime& d) const {
 }
 
 // operator overloads
-DateTime DateTime::add(
-	const unsigned int &month, 
-const unsigned int &day,
-const unsigned int &year,
-const unsigned int &hour,
-const unsigned int &minute) const {
-	return DateTime(getMonth() + month,
-					getDay() + day,
-					getYear() + year,
-					getHour() + hour,
-					getMin() + year);
+DateTime DateTime::add(const unsigned int& month,
+					   const unsigned int& day,
+					   const unsigned int& year,
+					   const unsigned int& hour,
+					   const unsigned int& minute) const {
+	return DateTime(
+		getMonth() + month, getDay() + day, getYear() + year, getHour() + hour, getMin() + year);
 }
 
-DateTime DateTime::sub(
-	const unsigned int &month, 
-const unsigned int &day,
-const unsigned int &year,
-const unsigned int &hour,
-const unsigned int &minute) const {
-	return DateTime(getMonth() - month,
-					getDay() - day,
-					getYear() - year,
-					getHour() - hour,
-					getMin() - year);
+DateTime DateTime::sub(const unsigned int& month,
+					   const unsigned int& day,
+					   const unsigned int& year,
+					   const unsigned int& hour,
+					   const unsigned int& minute) const {
+	return DateTime(
+		getMonth() - month, getDay() - day, getYear() - year, getHour() - hour, getMin() - year);
 }
 
 bool DateTime::operator<(const DateTime& d) const { return dateAndTime < d.dateAndTime; }
@@ -137,6 +129,6 @@ bool DateTime::operator>=(const DateTime& d) const { return dateAndTime >= d.dat
 // friend functions
 std::ostream& operator<<(std::ostream& os, const DateTime& d) {
 	tm* t = localtime(&d.dateAndTime);
-	os << d.getMonth() << '/' << d.getDay() << '/' << d.getYear() << ' ' << d.getTime();
+	os << d.getDate() << " " << d.getTime();
 	return os;
 }

@@ -3,33 +3,48 @@
 #include <memory>
 
 int main() {
-	DateTime d(4, 15, 2024, 14, 23);
-
-	std::cout << d << std::endl;
-
-	DateTime d2(4, 20, 2024, 20, 0);
-
-	std::cout << d2 << std::endl;
-
-	std::cout << d2.sameWeek(d) << std::endl;
-
-	DateTime d3(4, 21, 2024, 20, 0);
-
-	std::cout << d3 << std::endl;
-
-	std::cout << d.sameWeek(d3) << std::endl;
-
-	std::cout << (d3 <= d3) << std::endl;
-
 	FacilityManager fm;
 
-	auto e1 = std::make_unique<Event>(DateTime(4, 15, 2024, 10, 0),
+	auto e1 = std::make_unique<Event>("AI Ethics",
+									  DateTime(4, 15, 2024, 10, 0),
 									  DateTime(4, 15, 2024, 14, 0),
 									  LayoutStyle::LECTURE,
 									  "John Doe",
 									  ResidencyStatus::RESIDENT);
 
-	fm.addEvent(std::move(e1));
+	auto e2 = std::make_unique<PublicEvent>("Dodgeball Tournament",
+											DateTime(1, 1, 2024, 9, 30),
+											DateTime(1, 1, 2024, 14, 0),
+											LayoutStyle::DANCE,
+											"Aidan Weinberg",
+											ResidencyStatus::RESIDENT,
+											5,
+											true);
+
+	auto e3 = std::make_unique<PublicEvent>("Model UN",
+											DateTime(4, 15, 2024, 15, 30),
+											DateTime(4, 15, 2024, 20, 0),
+											LayoutStyle::MEETING,
+											"Jeanie Barr",
+											ResidencyStatus::NON_RESIDENT,
+											150,
+											false);
+
+	auto e4 = std::make_unique<Event>("Mushroom Convention",
+									  DateTime(1, 6, 2024, 9, 30),
+									  DateTime(1, 6, 2024, 14, 0),
+									  LayoutStyle::DANCE,
+									  "Noah Young",
+									  ResidencyStatus::RESIDENT);
+
+	try {
+		fm.addEvent(std::move(e1));
+		fm.addEvent(std::move(e2));
+		fm.addEvent(std::move(e3));
+		fm.addEvent(std::move(e4));
+	} catch (std::runtime_error& e) {
+		std::cout << "\033[41m" << e.what() << "\033[0m" << std::endl;
+	}
 
 	fm.printCalendar();
 }

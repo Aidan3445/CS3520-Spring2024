@@ -26,7 +26,8 @@ class Event {
 
   public:
 	// Constructor
-	Event(DateTime startTime,
+	Event(std::string name,
+		  DateTime startTime,
 		  DateTime endTime,
 		  LayoutStyle style,
 		  std::string organizerID,
@@ -63,7 +64,8 @@ class PublicEvent : public Event {
 	std::string getDetails() const override;
 
   public:
-	PublicEvent(DateTime startTime,
+	PublicEvent(std::string name,
+				DateTime startTime,
 				DateTime endTime,
 				LayoutStyle style,
 				std::string organizerID,
@@ -83,5 +85,10 @@ class PublicEvent : public Event {
 
 // PrivateEvent is an alias for Event
 typedef Event PrivateEvent;
+
+// event comparator
+struct EventComparator {
+	bool operator()(const std::unique_ptr<Event>& e1, const std::unique_ptr<Event>& e2) const;
+};
 
 #endif
