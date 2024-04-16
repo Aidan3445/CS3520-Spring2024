@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS= -I$(IDIR) -g -O0 -std=c++14
+CFLAGS = -I$(INCDIR) -g -O0 -std=c++14
 
 SRCDIR = src
 INCDIR = include
@@ -9,15 +9,22 @@ SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(BINDIR)/%.o,$(SOURCES))
 EXECUTABLE = main
 
+# Make sure the $(BINDIR) exists before compiling anything
 $(shell mkdir -p $(BINDIR))
+
+all: $(EXECUTABLE)
+
 $(BINDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@
 
-.PHONY: clean
+.PHONY: clean debug
 
 clean:
 	rm -rf $(BINDIR) $(EXECUTABLE)
+
+debug: CFLAGS += -DDEBUG 
+debug: $(EXECUTABLE)
 

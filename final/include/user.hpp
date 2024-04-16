@@ -28,6 +28,10 @@ class User {
 	std::string myID() const;
 	std::shared_ptr<Wallet> myWallet() const;
 	ResidencyStatus myResidency() const;
+
+	// convert a string to a residency status and vice versa
+	static ResidencyStatus stringToResidencyStatus(const std::string& residency);
+	static std::string residencyStatusToString(ResidencyStatus residency);
 };
 
 #endif	// USER_HPP

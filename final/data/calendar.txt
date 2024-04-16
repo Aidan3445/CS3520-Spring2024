@@ -1,1 +1,5 @@
-startDate endDate style organizer
+Name;Start Date;Start Time;End Date;End Time;Style;Organizer ID;Organizer Residency;Guest List;Open to Non-Residents;Ticket Cost
+Dodgeball Tournament;1,1,2024;9,30;1,1,2024;14,0;DANCE;Aidan Weinberg;RESIDENT;Carter Wagner,;true;5
+Mushroom Convention;1,6,2024;9,30;1,6,2024;14,0;DANCE;Noah Young;RESIDENT;;;
+Model UN Day 1;4,15,2024;15,30;4,15,2024;20,0;MEETING;Jeanie Barr;NON_RESIDENT;;false;150
+Model UN Day 2;4,16,2024;15,30;4,16,2024;20,0;MEETING;Jeanie Barr;NON_RESIDENT;;false;150

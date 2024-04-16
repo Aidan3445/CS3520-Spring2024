@@ -15,18 +15,23 @@ class DateTime {
 
   public:
 	// constructor
-	DateTime(unsigned int month = 0,
-			 unsigned int day = 0,
-			 unsigned int year = 0,
-			 unsigned int hour = 0,
-			 unsigned int minute = 0);
+	DateTime(int month = 0, int day = 0, int year = 0, int hour = 0, int minute = 0);
+
+	// destructor
+	~DateTime() = default;
+
+	// copy constructor
+	DateTime(const DateTime& d);
+
+	// assignment operator
+	DateTime& operator=(const DateTime& d);
 
 	// getters
-	unsigned int getMonth() const;
-	unsigned int getDay() const;
-	unsigned int getYear() const;
-	unsigned int getHour() const;
-	unsigned int getMin() const;
+	int getMonth() const;
+	int getDay() const;
+	int getYear() const;
+	int getHour() const;
+	int getMin() const;
 
 	// get the first day of the week
 	DateTime getFirstDayOfWeek() const;
@@ -43,16 +48,16 @@ class DateTime {
 	bool sameWeek(const DateTime& d) const;
 
 	// add and subtract time
-	DateTime add(const unsigned int& month = 0,
-				 const unsigned int& day = 0,
-				 const unsigned int& year = 0,
-				 const unsigned int& hour = 0,
-				 const unsigned int& minute = 0) const;
-	DateTime sub(const unsigned int& month = 0,
-				 const unsigned int& day = 0,
-				 const unsigned int& year = 0,
-				 const unsigned int& hour = 0,
-				 const unsigned int& minute = 0) const;
+	DateTime add(const int& month = 0,
+				 const int& day = 0,
+				 const int& year = 0,
+				 const int& hour = 0,
+				 const int& minute = 0) const;
+	DateTime sub(const int& month = 0,
+				 const int& day = 0,
+				 const int& year = 0,
+				 const int& hour = 0,
+				 const int& minute = 0) const;
 
 	// operator overloads
 	bool operator<(const DateTime& d) const;

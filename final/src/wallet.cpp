@@ -14,7 +14,7 @@ void Wallet::deposit(unsigned int amount) { this->balance += amount; }
 // if the amount is greater than the balance
 void Wallet::withdraw(unsigned int amount) {
 	if (amount > this->balance) {
-		throw std::runtime_error("Insufficient funds.");
+		throw std::runtime_error("Insufficient funds");
 	}
 	this->balance -= amount;
 }

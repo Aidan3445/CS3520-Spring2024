@@ -4,6 +4,7 @@
 #include "dateTime.hpp"
 #include "user.hpp"
 #include <algorithm>
+#include <fstream>
 #include <vector>
 
 // Enum for the layout style of the event
@@ -33,6 +34,9 @@ class Event {
 		  std::string organizerID,
 		  ResidencyStatus organizerResidency);
 
+	// Destructor
+	virtual ~Event() = default;
+
 	// getters
 	std::string getName() const;
 	DateTime getStartTime() const;
@@ -40,11 +44,21 @@ class Event {
 	std::pair<std::string, ResidencyStatus> getOrganizer() const;
 	LayoutStyle getStyle() const;
 
+	// is the user in the guest list?
+	virtual bool isUserInGuestList(const std::string id) const;
+
 	// operator overloads for comparison
 	bool operator<(const Event& e) const;
 
+	// write to file
+	virtual void writeToFile(std::ofstream& file) const;
+
 	// print the event
 	friend std::ostream& operator<<(std::ostream& os, const Event& e);
+
+	// convert a string to a layout style and vice versa
+	static LayoutStyle stringToLayoutStyle(const std::string& style);
+	static std::string layoutStyleToString(LayoutStyle style);
 };
 
 class PublicEvent : public Event {
@@ -64,6 +78,7 @@ class PublicEvent : public Event {
 	std::string getDetails() const override;
 
   public:
+	// Constructor
 	PublicEvent(std::string name,
 				DateTime startTime,
 				DateTime endTime,
@@ -72,15 +87,31 @@ class PublicEvent : public Event {
 				ResidencyStatus residencyStatus,
 				int ticketCost,
 				bool openToNonResidents = true);
-	/** Adds a ticket to this event to the given user */
-	void purchaseTicket(User user);
+
+	// additional constructor that sets guest list
+	PublicEvent(std::string name,
+				DateTime startTime,
+				DateTime endTime,
+				LayoutStyle style,
+				std::string organizerID,
+				ResidencyStatus residencyStatus,
+				int ticketCost,
+				std::vector<std::string> guestList,
+				bool openToNonResidents = true);
+
 
 	// getters
 	bool isOpenToNonResidents() const;
 	int getTicketCost() const;
 
+	// write to file
+	void writeToFile(std::ofstream& file) const override;
+
+	// add a ticket to this event for the given user
+	void purchaseTicket(User user);
+
 	// is the user in the guest list?
-	bool isUserInGuestList(const User& user) const;
+	bool isUserInGuestList(const std::string id) const override;
 };
 
 // PrivateEvent is an alias for Event
@@ -88,7 +119,7 @@ typedef Event PrivateEvent;
 
 // event comparator
 struct EventComparator {
-	bool operator()(const std::unique_ptr<Event>& e1, const std::unique_ptr<Event>& e2) const;
+	bool operator()(const std::shared_ptr<Event>& e1, const std::shared_ptr<Event>& e2) const;
 };
 
 #endif

@@ -1,12 +1,12 @@
 #include "../include/dateTime.hpp"
 
+// define color codes
+#define RESET "\033[0m"
+#define WEEK_DAY "\033[1;33m"
+#define DATE_TIME "\033[33m"
 
 // constructor
-DateTime::DateTime(unsigned int month,
-				   unsigned int day,
-				   unsigned int year,
-				   unsigned int hour,
-				   unsigned int minute) {
+DateTime::DateTime(int month, int day, int year, int hour, int minute) {
 	tm t = {0};
 	// months are 0-indexed
 	t.tm_mon = month - 1;
@@ -15,33 +15,48 @@ DateTime::DateTime(unsigned int month,
 	t.tm_year = year - 1900;
 	t.tm_hour = hour;
 	t.tm_min = minute;
+	// disable daylight savings time
+	t.tm_isdst = -1;
 
 	// convert to time_t
 	dateAndTime = mktime(&t);
 }
 
+// copy constructor
+DateTime::DateTime(const DateTime& d) { dateAndTime = d.dateAndTime; }
+
+// assignment operator
+DateTime& DateTime::operator=(const DateTime& d) {
+	if (this == &d) {
+		return *this;
+	}
+
+	dateAndTime = d.dateAndTime;
+	return *this;
+}
+
 // getters
-unsigned int DateTime::getMonth() const {
+int DateTime::getMonth() const {
 	tm* t = localtime(&dateAndTime);
 	return t->tm_mon + 1;
 }
 
-unsigned int DateTime::getDay() const {
+int DateTime::getDay() const {
 	tm* t = localtime(&dateAndTime);
 	return t->tm_mday;
 }
 
-unsigned int DateTime::getYear() const {
+int DateTime::getYear() const {
 	tm* t = localtime(&dateAndTime);
 	return t->tm_year + 1900;
 }
 
-unsigned int DateTime::getHour() const {
+int DateTime::getHour() const {
 	tm* t = localtime(&dateAndTime);
 	return t->tm_hour;
 }
 
-unsigned int DateTime::getMin() const {
+int DateTime::getMin() const {
 	tm* t = localtime(&dateAndTime);
 	return t->tm_min;
 }
@@ -50,7 +65,9 @@ unsigned int DateTime::getMin() const {
 std::string DateTime::getDate() const {
 	tm* t = localtime(&dateAndTime);
 	std::stringstream ss;
-	ss << getMonth() << '/' << getDay() << '/' << getYear();
+	ss << DATE_TIME << std::setfill('0') << std::setw(2) << getMonth() << '/' << std::setfill('0')
+	   << std::setw(2) << getDay() << '/' << std::setfill('0') << std::setw(4) << getYear()
+	   << RESET;
 	return ss.str();
 }
 
@@ -69,7 +86,7 @@ std::string DateTime::getDayOfWeek() const {
 	}
 
 	std::stringstream ss;
-	ss << dayOfWeek << " " << getDate();
+	ss << WEEK_DAY << dayOfWeek << " " << RESET << getDate();
 
 	return ss.str();
 }
@@ -77,8 +94,8 @@ std::string DateTime::getDayOfWeek() const {
 std::string DateTime::getTime() const {
 	tm* t = localtime(&dateAndTime);
 	std::stringstream ss;
-	ss << std::setfill('0') << std::setw(2) << getHour() << ':' << std::setfill('0') << std::setw(2)
-	   << getMin();
+	ss << DATE_TIME << std::setfill('0') << std::setw(2) << getHour() << ':' << std::setfill('0')
+	   << std::setw(2) << getMin() << RESET;
 	return ss.str();
 }
 
@@ -98,22 +115,16 @@ bool DateTime::sameWeek(const DateTime& d) const {
 }
 
 // operator overloads
-DateTime DateTime::add(const unsigned int& month,
-					   const unsigned int& day,
-					   const unsigned int& year,
-					   const unsigned int& hour,
-					   const unsigned int& minute) const {
+DateTime DateTime::add(
+	const int& month, const int& day, const int& year, const int& hour, const int& minute) const {
 	return DateTime(
-		getMonth() + month, getDay() + day, getYear() + year, getHour() + hour, getMin() + year);
+		getMonth() + month, getDay() + day, getYear() + year, getHour() + hour, getMin() + minute);
 }
 
-DateTime DateTime::sub(const unsigned int& month,
-					   const unsigned int& day,
-					   const unsigned int& year,
-					   const unsigned int& hour,
-					   const unsigned int& minute) const {
+DateTime DateTime::sub(
+	const int& month, const int& day, const int& year, const int& hour, const int& minute) const {
 	return DateTime(
-		getMonth() - month, getDay() - day, getYear() - year, getHour() - hour, getMin() - year);
+		getMonth() - month, getDay() - day, getYear() - year, getHour() - hour, getMin() - minute);
 }
 
 bool DateTime::operator<(const DateTime& d) const { return dateAndTime < d.dateAndTime; }
