@@ -1,5 +1,5 @@
 #include "../include/facilityManager.hpp"
-#include "../include/colorCodes.hpp"
+#include "../include/utility.hpp"
 
 // get events for a user
 std::set<std::shared_ptr<Event>, EventComparator>
@@ -163,6 +163,7 @@ void printEvents(const std::set<std::shared_ptr<Event>, EventComparator>& events
 		do {
 			std::cout << "Enter n to see the next week or q to quit: ";
 			std::cin >> input;
+			std::cin.ignore();
 			// delete line
 			std::cout << CLEAR_LINE;
 		} while (input != 'q' && input != 'n');

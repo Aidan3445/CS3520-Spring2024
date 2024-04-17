@@ -7,6 +7,7 @@ class Event;
 #include "wallet.hpp"
 #include <memory>
 #include <string>
+#include <fstream>
 
 // Enum for residency status
 enum ResidencyStatus { RESIDENT, NON_RESIDENT, CITY };
@@ -28,6 +29,9 @@ class User {
 	std::string myID() const;
 	std::shared_ptr<Wallet> myWallet() const;
 	ResidencyStatus myResidency() const;
+
+	// write to file
+	virtual void writeToFile(std::ofstream& file) const;
 
 	// convert a string to a residency status and vice versa
 	static ResidencyStatus stringToResidencyStatus(const std::string& residency);

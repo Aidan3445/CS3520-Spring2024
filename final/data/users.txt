@@ -1,2 +1,5 @@
 Id Balance Residency
 CITY 500 CITY
+Noah 0 NON_RESIDENT
+Aidan 0 RESIDENT
+aidan 0 RESIDENT

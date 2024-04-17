@@ -1,6 +1,7 @@
 #ifndef DATE_TIME_HPP
 #define DATE_TIME_HPP
 
+#include "utility.hpp"
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -69,6 +70,8 @@ class DateTime {
 	// friend functions
 	friend std::ostream& operator<<(std::ostream& os, const DateTime& d);
 	friend std::istream& operator>>(std::istream& is, const DateTime& d);
+
+	static DateTime readDateTime(const std::string& dateTitle);
 };
 
 #endif	// DATE_TIME_HPP

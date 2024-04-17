@@ -35,3 +35,7 @@ std::string User::residencyStatusToString(ResidencyStatus residency) {
 		default: throw std::invalid_argument("Invalid residency status");
 	}
 }
+
+void User::writeToFile(std::ofstream& file) const {
+	file << myID() << " " << myWallet().get()->getBalance() << " " << residencyStatusToString(myResidency());
+}

@@ -1,9 +1,5 @@
 #include "../include/dateTime.hpp"
 
-// define color codes
-#define RESET "\033[0m"
-#define WEEK_DAY "\033[1;33m"
-#define DATE_TIME "\033[33m"
 
 // constructor
 DateTime::DateTime(int month, int day, int year, int hour, int minute) {
@@ -142,4 +138,68 @@ std::ostream& operator<<(std::ostream& os, const DateTime& d) {
 	tm* t = localtime(&d.dateAndTime);
 	os << d.getDate() << " " << d.getTime();
 	return os;
+}
+
+DateTime DateTime::readDateTime(const std::string& dateTitle)
+{
+	bool confirmed = false;
+	DateTime example(10, 23, 2010, 14, 20);
+    unsigned int month;
+	unsigned int day;
+	unsigned int year;
+	unsigned int hour;
+	unsigned int min;
+	char input;
+	DateTime startTime;
+	std::cout << "Enter an invalid character at any time to quit" << std::endl;
+    while (!confirmed)
+    {
+        try
+        {
+            std::cout << "What is the " << dateTitle << " date of this event? (ex. " << example.getDate() << ")" << std::endl;
+            std::string line;
+            std::getline(std::cin, line);
+            month = stoi(util::next(line, '/'));
+            util::shift(line, '/');
+            day = stoi(util::next(line, '/'));
+            util::shift(line, '/');
+            year = stoi(line);
+
+            std::cout << "What is the " << dateTitle << " time of this event? (ex. " << example.getTime() << ")" << std::endl;
+
+			std::getline(std::cin, line);
+            util::shift(line, ' ');
+            hour = stoi(util::next(line, ':'));
+            util::shift(line, ':');
+            min = stoi(line);
+
+            startTime = DateTime(month, day, year, hour, min);
+			
+			std::cout << "Is this the correct " << dateTitle << " time? " << startTime << std::endl;
+			do
+            {
+                std::cout << "type [a] to accept or [t] to try again" << std::endl;
+                std::cin >> input;
+				std::cin.ignore();
+            } while (input != 'a' && input != 't');
+			confirmed = input == 'a';
+        }
+        catch (std::runtime_error &error)
+        {
+            std::cout << ERROR << "Invalid " << dateTitle << " time" << RESET << std::endl;
+            do
+            {
+                std::cout << "type [c] to try again or [q] to quit" << std::endl;
+                std::cin >> input;
+				std::cin.ignore();
+            } while (input != 'c' && input != 'q');
+            if (input == 'q')
+            {
+				// No date was read
+                throw std::exception();
+            }
+        }
+    }
+	// Returns the read DateTime
+	return startTime;
 }
