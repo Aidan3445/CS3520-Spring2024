@@ -18,8 +18,8 @@ class Event {
 	DateTime startTime, endTime;
 	// Layout style of the event
 	const LayoutStyle style;
-	// ID of the user who organized this event and their residency status
-	const std::pair<std::string, ResidencyStatus> organizer;
+	// ID of the user who organized this event
+	const std::string organizer;
 
   protected:
 	// virtual helper for printing event details
@@ -31,8 +31,7 @@ class Event {
 		  DateTime startTime,
 		  DateTime endTime,
 		  LayoutStyle style,
-		  std::string organizerID,
-		  ResidencyStatus organizerResidency);
+		  std::string organizerID);
 
 	// Destructor
 	virtual ~Event() = default;
@@ -41,7 +40,7 @@ class Event {
 	std::string getName() const;
 	DateTime getStartTime() const;
 	DateTime getEndTime() const;
-	std::pair<std::string, ResidencyStatus> getOrganizer() const;
+	std::string getOrganizer() const;
 	LayoutStyle getStyle() const;
 
 	// is the user in the guest list?
@@ -84,7 +83,6 @@ class PublicEvent : public Event {
 				DateTime endTime,
 				LayoutStyle style,
 				std::string organizerID,
-				ResidencyStatus residencyStatus,
 				int ticketCost,
 				bool openToNonResidents = true);
 
@@ -94,7 +92,6 @@ class PublicEvent : public Event {
 				DateTime endTime,
 				LayoutStyle style,
 				std::string organizerID,
-				ResidencyStatus residencyStatus,
 				int ticketCost,
 				std::vector<std::string> guestList,
 				bool openToNonResidents = true);
@@ -108,7 +105,7 @@ class PublicEvent : public Event {
 	void writeToFile(std::ofstream& file) const override;
 
 	// add a ticket to this event for the given user
-	void purchaseTicket(User user);
+	void purchaseTicket(User& user);
 
 	// is the user in the guest list?
 	bool isUserInGuestList(const std::string id) const override;

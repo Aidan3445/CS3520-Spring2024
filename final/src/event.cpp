@@ -1,18 +1,11 @@
 #include "../include/event.hpp"
 #include "../include/utility.hpp"
-#include <algorithm>
-#include <utility>
 
 // Constructor
-Event::Event(std::string name,
-			 DateTime start,
-			 DateTime end,
-			 LayoutStyle style,
-			 std::string organizerID,
-			 ResidencyStatus organizerResidency) :
+Event::Event(
+	std::string name, DateTime start, DateTime end, LayoutStyle style, std::string organizerID) :
 	name(name),
-	startTime(start), endTime(end), style(style),
-	organizer(std::make_pair(organizerID, organizerResidency)) {
+	startTime(start), endTime(end), style(style), organizer(organizerID) {
 	// ensure time is before end time and within 9:00-21:00
 	if (start >= end) {
 		throw std::invalid_argument("Start time must be before end time");
@@ -30,7 +23,7 @@ Event::Event(std::string name,
 std::string Event::getDetails() const {
 	std::stringstream ss;
 	ss << EVENT_NAME << getName() << RESET << ": " << getStartTime().getTime() << " - "
-	   << getEndTime().getTime() << " (Organizer: " << USER << getOrganizer().first << RESET << ")";
+	   << getEndTime().getTime() << " (Organizer: " << USER << getOrganizer() << RESET << ")";
 	return ss.str();
 }
 
@@ -38,7 +31,7 @@ std::string Event::getDetails() const {
 std::string Event::getName() const { return name; }
 DateTime Event::getStartTime() const { return startTime; }
 DateTime Event::getEndTime() const { return endTime; }
-std::pair<std::string, ResidencyStatus> Event::getOrganizer() const { return organizer; }
+std::string Event::getOrganizer() const { return organizer; }
 LayoutStyle Event::getStyle() const { return style; }
 
 // write to file
@@ -52,8 +45,7 @@ void writeCommonData(std::ofstream& file, const Event* e) {
 	file << date.getMonth() << "," << date.getDay() << "," << date.getYear() << ";";
 	file << date.getHour() << "," << date.getMin() << ";";
 	file << Event::layoutStyleToString(e->getStyle()) << ";";
-	file << e->getOrganizer().first << ";";
-	file << User::residencyStatusToString(e->getOrganizer().second);
+	file << e->getOrganizer();
 }
 
 void Event::writeToFile(std::ofstream& file) const {
@@ -80,10 +72,9 @@ PublicEvent::PublicEvent(std::string name,
 						 DateTime end,
 						 LayoutStyle style,
 						 std::string organizerID,
-						 ResidencyStatus residencyStatus,
 						 int ticketCost,
 						 bool openToNonResidents) :
-	Event(name, start, end, style, organizerID, residencyStatus),
+	Event(name, start, end, style, organizerID),
 	ticketCost(ticketCost), openToNonResidents(openToNonResidents) {
 	ticketCost = 0;
 }
@@ -94,15 +85,14 @@ PublicEvent::PublicEvent(std::string name,
 						 DateTime end,
 						 LayoutStyle style,
 						 std::string organizerID,
-						 ResidencyStatus residencyStatus,
 						 int ticketCost,
 						 std::vector<std::string> guestList,
 						 bool openToNonResidents) :
-	Event(name, start, end, style, organizerID, residencyStatus),
+	Event(name, start, end, style, organizerID),
 	ticketCost(ticketCost), openToNonResidents(openToNonResidents), guestList(guestList) {}
 
 // Adds a ticket to this event to the given user
-void PublicEvent::purchaseTicket(User user) {
+void PublicEvent::purchaseTicket(User& user) {
 	if (guestList.size() < MAX_GUESTS) {
 		try {
 			std::shared_ptr<Wallet> userWallet = user.myWallet();
@@ -154,7 +144,7 @@ std::string PublicEvent::getDetails() const {
 	std::stringstream ss;
 	ss << EVENT_NAME << getName() << RESET << ": " << getStartTime().getTime() << " - "
 	   << getEndTime().getTime() << " (Ticket: " << DOLLARS << ticketCost << RESET
-	   << ", Organizer: " << USER << getOrganizer().first << RESET << ")";
+	   << ", Organizer: " << USER << getOrganizer() << RESET << ")";
 	return ss.str();
 }
 

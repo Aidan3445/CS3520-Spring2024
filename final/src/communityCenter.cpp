@@ -1,15 +1,18 @@
 #include "../include/communityCenter.hpp"
 #include "../include/utility.hpp"
-#include <fstream>
-#include <string>
-#include <regex>
-#include "communityCenter.hpp"
+#include <utility>
 
 // helper for updating user text file
-void updateUserfile(const User &user);
+void updateUserfile(const User& user);
 
 // Constructor
 CommunityCenter::CommunityCenter() {
+	this->currentUser = nullptr;
+	initUser();
+
+
+	std::cout << "Welcome " << currentUser->myID() << std::endl;
+
 	// read events from file and store in events in manager
 	std::ifstream calendarFile("./data/calendar.txt");
 	if (!calendarFile.is_open()) {
@@ -65,8 +68,6 @@ CommunityCenter::CommunityCenter() {
 			// extract organizer ID and residency
 			std::string organizerID = util::next(line);
 			util::shift(line);
-			ResidencyStatus residency = User::stringToResidencyStatus(util::next(line));
-			util::shift(line);
 
 			// extract guest list
 			std::string guestList = util::next(line);
@@ -91,23 +92,15 @@ CommunityCenter::CommunityCenter() {
 				int cost = std::stoi(line);
 
 				// create a public event
-				event = std::make_shared<PublicEvent>(name,
-													  start,
-													  end,
-													  layoutStyle,
-													  organizerID,
-													  residency,
-													  cost,
-													  guests,
-													  openToNonResidents);
+				event = std::make_shared<PublicEvent>(
+					name, start, end, layoutStyle, organizerID, cost, guests, openToNonResidents);
 			} catch (std::exception&) {
 				// create a private event
-				event =
-					std::make_shared<Event>(name, start, end, layoutStyle, organizerID, residency);
+				event = std::make_shared<Event>(name, start, end, layoutStyle, organizerID);
 			}
 
 			// add the event to the manager
-			this->manager.addEvent(event);
+			this->manager.addEvent(event, currentUser.get()->hourLimit());
 		}
 
 	} catch (std::exception& e) { std::cout << ERROR << e.what() << RESET << std::endl; }
@@ -150,13 +143,11 @@ void CommunityCenter::run() {
 	// print the welcome message
 	std::cout << "Welcome to the Community Center!" << std::endl;
 
-	login();
-
 	// run the main menu
 	this->mainMenu();
 }
 
-void CommunityCenter::login() {
+void CommunityCenter::initUser() {
 	std::string username = " ";
 	while (username.find(" ") != -1) {
 		std::cout << "What's your username? (no spaces allowed)" << std::endl;
@@ -186,16 +177,31 @@ void CommunityCenter::login() {
 				// extract balance
 				unsigned int balance = std::stoi(util::next(line, ' '));
 				util::shift(line, ' ');
-				ResidencyStatus residency = User::stringToResidencyStatus(util::next(line, ' '));
-				
-				this->currentUser = std::unique_ptr<User>(new User(name, residency, balance));
+				std::string residency = util::next(line, ' ');
+
+				std::cout << "Welcome back " << username << std::endl;
+				std::cout << "Your current balance is " << balance << std::endl;
+				std::cout << name << " is a " << residency << std::endl;
+
+				if (residency.compare("CITY") == 0) {
+					this->currentUser = std::unique_ptr<User>(new City(username, balance));
+				} else if (residency.compare("RESIDENT") == 0) {
+					this->currentUser = std::unique_ptr<User>(new Resident(username, balance));
+				} else if (residency.compare("NON_RESIDENT") == 0) {
+					this->currentUser = std::unique_ptr<User>(new NonResident(username, balance));
+				} else {
+					throw std::runtime_error("Invalid residency status");
+				}
+
+				std::cout << "Your hourly rate is " << currentUser->hourlyRate() << std::endl;
+
 				break;
 			}
 		}
 
 		// close the file
 		usersFile.close();
-	
+
 		if (this->currentUser.get() == NULL) {
 			// No user was found, so creating new user
 			std::cout << "Username not found, please add yourself to the system" << std::endl;
@@ -203,83 +209,190 @@ void CommunityCenter::login() {
 			char selected;
 			while (selected != 'r' && selected != 'n') {
 				std::cout << "What is your Residency Status?\n"
-						<< "type [r] for Resident\n"
-						<< "type [n] for Non-Resident" << std::endl;
+						  << HEADER << "   [r]" << RESET << "  for Resident\n"
+						  << HEADER << "   [n]" << RESET << "  for Non-Resident" << std::endl;
 				std::cin >> selected;
 				std::cin.ignore();
 			}
-			ResidencyStatus residency = selected == 'r' ? ResidencyStatus::RESIDENT : ResidencyStatus::NON_RESIDENT;
-			this->currentUser = std::unique_ptr<User>(new User(username, residency, 0));
+			if (selected == 'r') {
+				this->currentUser = std::unique_ptr<User>(new Resident(username, 0));
+			} else {
+				this->currentUser = std::unique_ptr<User>(new NonResident(username, 0));
+			}
 		}
 
 	} catch (std::exception& e) { std::cout << ERROR << e.what() << RESET << std::endl; }
-	
 }
 
 void CommunityCenter::mainMenu() {
 	bool running = true;
 	while (running) {
 		std::cout << "What would you like to do?\n"
-				<< "   [v]  View Calendar\n"
-				<< "   [b]  Buy Ticket\n"
-				<< "   [s]  Schedule Event\n"
-				<< "   [q]  Quit" << std::endl;
+				  << HEADER << "   [v]" << RESET << "  View Calendar\n"
+				  << HEADER << "   [b]" << RESET << "  Buy Ticket\n"
+				  << HEADER << "   [s]" << RESET << "  Schedule Event\n"
+				  << HEADER << "   [w]" << RESET << "  Access Wallet\n"
+				  << HEADER << "   [q]" << RESET << "  Quit" << std::endl;
 		std::string input;
 		getline(std::cin, input);
 		char chosen = input[0];
 
 		switch (chosen) {
-			case 'v':
-				this->manager.printCalendar();
-				break;
-			case 'b':
-				buyTicketMenu();
-				break;
-			case 's':
-				createEventMenu();
-				break;
+			case 'v': this->manager.printCalendar(); break;
+			case 'b': buyTicketMenu(); break;
+			case 's': createEventMenu(); break;
+			case 'w': currentUser->myWallet()->menu(); break;
 			case 'q':
 				std::cout << "Quitting now" << std::endl;
 				running = false;
 				break;
-			default:
-				std::cout << "Invalid Input" << std::endl;
+			default: std::cout << "Invalid Input" << std::endl;
 		}
 	}
 }
 
 void CommunityCenter::buyTicketMenu() {
+	std::cout << HEADER << "Buying Ticket" << RESET << std::endl;
+	DateTime eventTime;
 
+	std::cout << "Enter the start and end time of the event you would like to purchase a ticket for"
+			  << std::endl;
+
+	std::pair<DateTime, DateTime> eventTimes = DateTime::readEventTimes();
 }
 
 void CommunityCenter::createEventMenu() {
 	try {
-    	DateTime startTime = DateTime::readDateTime("start");
-		DateTime endTime = DateTime::readDateTime("end");
-	}
-	catch(std::exception& e) {
-		// Does nothing, since user exited
+		std::cout << HEADER << "Creating Event" << RESET << std::endl;
+		char inputChar;
+
+		// get event name
+		std::string name;
+		std::cout << "What is the name of the event?" << std::endl;
+		std::getline(std::cin, name);
+
+		// get event style
+		LayoutStyle style;
+		do {
+			std::cout << "Select a layout style for the event:" << std::endl;
+			std::cout << HEADER << "   [m]" << RESET << "  Meeting" << std::endl;
+			std::cout << HEADER << "   [l]" << RESET << "  Lecture" << std::endl;
+			std::cout << HEADER << "   [w]" << RESET << "  Wedding" << std::endl;
+			std::cout << HEADER << "   [d]" << RESET << "  Dance" << std::endl;
+			std::cin >> inputChar;
+			std::cin.ignore();
+		} while (inputChar != 'm' && inputChar != 'l' && inputChar != 'w' && inputChar != 'd');
+
+		// get event public/private
+		bool isPublic = false;
+		do {
+			std::cout << "What is the style of the event?\n"
+					  << HEADER << "   [p]" << RESET << "  Public\n"
+					  << HEADER << "   [r]" << RESET << "  Private" << std::endl;
+			std::cin >> inputChar;
+			std::cin.ignore();
+		} while (inputChar != 'p' && inputChar != 'r');
+		isPublic = inputChar == 'p';
+
+		// if public event get more info
+		unsigned int cost;
+		bool openToNonResidents;
+		if (isPublic) {
+			// get event cost
+			std::cout << "What is the cost of the event?" << std::endl;
+			std::cin >> cost;
+			std::cin.ignore();
+
+			// get event guest list
+			std::string guestList;
+			std::cout << "Who is on the guest list? (comma separated)" << std::endl;
+			std::getline(std::cin, guestList);
+
+			// get event non-resident flag
+			do {
+				std::cout << "Is the event open to non-residents?\n"
+						  << HEADER << "   [y]" << RESET << "  Yes\n"
+						  << HEADER << "   [n]" << RESET << "  No" << std::endl;
+				std::cin >> inputChar;
+			} while (inputChar != 'y' && inputChar != 'n');
+
+			openToNonResidents = inputChar == 'y';
+		}
+
+		// get event times
+		std::pair<DateTime, DateTime> eventTimes = DateTime::readEventTimes();
+		DateTime startTime = eventTimes.first;
+		DateTime endTime = eventTimes.second;
+
+		std::cout << "Event times: " << startTime << " - " << endTime << std::endl;
+
+		// create event
+		std::shared_ptr<Event> event;
+		if (isPublic) {
+			event = std::make_shared<PublicEvent>(
+				name, startTime, endTime, style, currentUser->myID(), cost, openToNonResidents);
+		} else {
+			event = std::make_shared<Event>(name, startTime, endTime, style, currentUser->myID());
+		}
+
+		// print out event confirmation
+		std::cout << "Confirm Event Details:" << std::endl << *event << std::endl;
+		do {
+			std::cout << "Does this look right?\n"
+					  << HEADER << "   [y]" << RESET << "  Yes\n"
+					  << HEADER << "   [n]" << RESET << "  No" << std::endl;
+			std::cin >> inputChar;
+		} while (inputChar != 'y' && inputChar != 'n');
+
+		if (inputChar == 'n') {
+			throw;
+		}
+
+		// get money from user
+		int duration =
+			(endTime.getHour() - startTime.getHour()) * 60 + endTime.getMin() - startTime.getMin();
+		double eventRate = duration / 60 * currentUser->hourlyRate();
+
+		// withdraw money from user
+		try {
+			currentUser->myWallet()->withdraw(eventRate);
+		} catch (std::exception& e) {
+			std::cout << ERROR << e.what() << RESET << std::endl;
+			throw;
+		}
+
+		// add event to manager
+		try {
+			this->manager.addEvent(event, currentUser->hourLimit());
+		} catch (std::exception& e) {
+			std::cout << ERROR << e.what() << RESET << std::endl;
+
+			// refund user
+			std::cout << "Refunding" << std::endl;
+			currentUser->myWallet()->deposit(eventRate);
+			throw;
+		}
+
+	} catch (std::exception& e) {
+		std::cout << ERROR << "Event creation cancelled" << RESET << std::endl;
 		return;
 	}
 }
 
-void updateUserfile(const User &user)
-{
-    const char* inFileName = "./data/users.txt";
+void updateUserfile(const User& user) {
+	const char* inFileName = "./data/users.txt";
 	const char* outileName = "./data/temp-users.txt";
 
 	// write events to file
 	std::ifstream usersFileInput(inFileName);
 	if (!usersFileInput.is_open()) {
-		std::cout << ERROR << "Could not open users file: ./data/users.txt" << RESET
-				  << std::endl;
+		std::cout << ERROR << "Could not open users file: ./data/users.txt" << RESET << std::endl;
 		return;
 	}
 
 	std::ofstream usersFileOutput(outileName);
 	if (!usersFileInput.is_open()) {
-		std::cout << ERROR << "Could not open users file: ./data/users.txt" << RESET
-				  << std::endl;
+		std::cout << ERROR << "Could not open users file: ./data/users.txt" << RESET << std::endl;
 		return;
 	}
 
@@ -300,8 +413,7 @@ void updateUserfile(const User &user)
 			if (name.compare(user.myID()) == 0) {
 				user.writeToFile(usersFileOutput);
 				userNotFound = false;
-			}
-			else {
+			} else {
 				usersFileOutput << line;
 			}
 		}

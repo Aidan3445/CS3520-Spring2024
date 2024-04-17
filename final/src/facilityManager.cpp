@@ -11,7 +11,7 @@ std::set<std::shared_ptr<Event>, EventComparator>
 #include <algorithm>
 				  calendar.end(),
 				  [&userEvents, &userID](const std::shared_ptr<Event>& event) {
-					  if (event.get()->getOrganizer().first == userID) {
+					  if (event.get()->getOrganizer() == userID) {
 						  userEvents.insert(event);
 					  }
 				  });
@@ -47,7 +47,7 @@ std::set<std::shared_ptr<Event>, EventComparator>& FacilityManager::getCalendar(
 // - this event will cause user to have more than the allowed number of hours in a week
 //          - 24 hours/week for residents and non-residents
 //          - 48 hours/week for the city
-void FacilityManager::addEvent(const std::shared_ptr<Event>& newEvent) {
+void FacilityManager::addEvent(const std::shared_ptr<Event>& newEvent, const int& hourlyLimit) {
 	// check if the event time is taken
 	if (std::find_if(
 			calendar.begin(), calendar.end(), [&newEvent](const std::shared_ptr<Event>& event) {
@@ -70,19 +70,14 @@ void FacilityManager::addEvent(const std::shared_ptr<Event>& newEvent) {
 	// check if the user has more than the allowed number of hours in a week
 	// 24 hours/week for residents and non-residents
 	// 48 hours/week for the city
-	std::string id = newEvent.get()->getOrganizer().first;
+	std::string id = newEvent.get()->getOrganizer();
 
-	int minutes;
-	if (newEvent.get()->getOrganizer().second == ResidencyStatus::CITY) {
-		minutes = 48 * 60;
-	} else {
-		minutes = 24 * 60;
-	}
+	int minutes = 60 * hourlyLimit;
 
 	std::for_each(calendar.begin(),
 				  calendar.end(),
 				  [&minutes, &id, &newEvent](const std::shared_ptr<Event>& event) {
-					  if (event.get()->getOrganizer().first == id &&
+					  if (event.get()->getOrganizer() == id &&
 						  event.get()->getStartTime().sameWeek(newEvent.get()->getStartTime())) {
 						  DateTime start = event.get()->getStartTime();
 						  DateTime diff = event.get()->getEndTime().sub(start.getMonth(),
@@ -161,19 +156,21 @@ void printEvents(const std::set<std::shared_ptr<Event>, EventComparator>& events
 
 		// validate user input
 		do {
-			std::cout << "Enter n to see the next week or q to quit: ";
+			std::cout << "Would you like to see next week" << std::endl;
+			std::cout << HEADER << "   [n]" << RESET << "  Next week" << std::endl;
+			std::cout << HEADER << "   [e]" << RESET << "  Exit" << std::endl;
 			std::cin >> input;
 			std::cin.ignore();
 			// delete line
 			std::cout << CLEAR_LINE;
-		} while (input != 'q' && input != 'n');
+		} while (input != 'e' && input != 'n');
 
 		// update the iterators
 		if (input == 'n') {
 			firstDayOfWeek = (*currentEventIt)->getStartTime().getFirstDayOfWeek();
 			firstEventOfWeekIt = currentEventIt;
 		}
-	} while (input != 'q');
+	} while (input != 'e');
 }
 
 // print the calendar

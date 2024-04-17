@@ -2,8 +2,8 @@
 #define COMMUNITY_CENTER_HPP
 
 #include "facilityManager.hpp"
-#include <unordered_map>
-#include <algorithm>
+#include <fstream>
+
 class CommunityCenter {
   private:
 	// the facility manager for this community center
@@ -12,7 +12,7 @@ class CommunityCenter {
 	std::unique_ptr<User> currentUser;
 
 	// login as a user
-	void login();
+	void initUser();
 
 	// main menu for the community center
 	void mainMenu();
@@ -21,21 +21,29 @@ class CommunityCenter {
 	void buyTicketMenu();
 
 	// create an event using user input
-    void createEventMenu();
+	void createEventMenu();
 
-    void readDateTime(bool confirmed, DateTime &example, unsigned int &month, unsigned int &day, unsigned int &year, unsigned int &hour, unsigned int &min, DateTime &startTime, bool &retFlag);
+	void readDateTime(bool confirmed,
+					  DateTime& example,
+					  unsigned int& month,
+					  unsigned int& day,
+					  unsigned int& year,
+					  unsigned int& hour,
+					  unsigned int& min,
+					  DateTime& startTime,
+					  bool& retFlag);
 
-public:
-    // constructor
-    //  reads files and initializes the facility manager
-    CommunityCenter();
+  public:
+	// constructor
+	//  reads files and initializes the facility manager
+	CommunityCenter();
 
-    // destructor
-    //  writes files and cleans up
-    ~CommunityCenter();
+	// destructor
+	//  writes files and cleans up
+	~CommunityCenter();
 
-    // run the community center
-    void run();
+	// run the community center
+	void run();
 };
 
 #endif	// COMMUNITY_CENTER_HPP

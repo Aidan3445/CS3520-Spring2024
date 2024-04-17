@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -I$(INCDIR) -g -O0 -std=c++14
+CFLAGS = -I$(INCDIR) -g -O0 -std=c++17
 
 SRCDIR = src
 INCDIR = include

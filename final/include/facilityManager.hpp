@@ -20,8 +20,12 @@ class FacilityManager {
 	// get all events
 	std::set<std::shared_ptr<Event>, EventComparator>& getCalendar();
 
+	// get single event from the calendar
+	std::shared_ptr<Event> getEvent(const DateTime& startingFrom);
+
 	// add an event to the calendar
-	void addEvent(const std::shared_ptr<Event>& newEvent);	// throws error if event cannot be added
+	void addEvent(const std::shared_ptr<Event>& newEvent,
+				  const int& hourlyLimit);	// throws error if event cannot be added
 	// remove an event from the calendar
 	void removeEvent(const DateTime& startingFrom);	 // throws error if event not found
 	// printing information

@@ -71,7 +71,7 @@ class DateTime {
 	friend std::ostream& operator<<(std::ostream& os, const DateTime& d);
 	friend std::istream& operator>>(std::istream& is, const DateTime& d);
 
-	static DateTime readDateTime(const std::string& dateTitle);
+	static std::pair<DateTime, DateTime> readEventTimes();
 };
 
 #endif	// DATE_TIME_HPP

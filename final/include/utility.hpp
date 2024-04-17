@@ -2,7 +2,6 @@
 #define UTIL_HPP
 
 #include <string>
-#include "user.hpp"
 
 // Color codes for text
 #define HEADER "\033[1m"
@@ -17,24 +16,24 @@
 #define CLEAR_LINE "\033[A\33[2K\r"
 
 namespace util {
-    // helper to remove spaces
-    std::string removeSpaces(const std::string& str);
+// helper to remove spaces
+std::string removeSpaces(const std::string& str);
 
-    // helper to get the next field
-    std::string next(const std::string& line, const char& divider);
+// helper to get the next field
+std::string next(const std::string& line, const char& divider);
 
-    std::string nextIgnoreSpaces(const std::string& line, const char& divider);
+std::string nextIgnoreSpaces(const std::string& line, const char& divider);
 
-    std::string next(const std::string& line);
-    // helper to get the next element in a list
-    std::string nextEl(std::string& line, const char& divider);
+std::string next(const std::string& line);
+// helper to get the next element in a list
+std::string nextEl(std::string& line, const char& divider);
 
-    std::string nextEl(std::string& line);
-    // helper to shift the line
-    void shift(std::string& line, const char& divider);
-    void shift(std::string& line);
-    // helper to shift the line for elements
-    void shiftEl(std::string& line);
-}
+std::string nextEl(std::string& line);
+// helper to shift the line
+void shift(std::string& line, const char& divider);
+void shift(std::string& line);
+// helper to shift the line for elements
+void shiftEl(std::string& line);
+}  // namespace util
 
 #endif	// UTIL_HPP
