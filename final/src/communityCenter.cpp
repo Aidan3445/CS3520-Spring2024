@@ -231,6 +231,8 @@ void CommunityCenter::mainMenu() {
 				  << HEADER << "   [v]" << RESET << "  View Calendar\n"
 				  << HEADER << "   [b]" << RESET << "  Buy Ticket\n"
 				  << HEADER << "   [s]" << RESET << "  Schedule Event\n"
+				  << HEADER << "   [e]" << RESET << "  View Scheduled Events\n"
+				  << HEADER << "   [t]" << RESET << "  View Tickets\n"
 				  << HEADER << "   [w]" << RESET << "  Access Wallet\n"
 				  << HEADER << "   [q]" << RESET << "  Quit" << std::endl;
 		std::string input;
@@ -241,6 +243,8 @@ void CommunityCenter::mainMenu() {
 			case 'v': this->manager.printCalendar(); break;
 			case 'b': buyTicketMenu(); break;
 			case 's': createEventMenu(); break;
+			case 'e': this->manager.printUserEvents(currentUser->myID()); break;
+			case 't': this->manager.printUserTickets(currentUser->myID()); break;
 			case 'w': currentUser->myWallet()->menu(); break;
 			case 'q':
 				std::cout << "Quitting now" << std::endl;
@@ -259,6 +263,18 @@ void CommunityCenter::buyTicketMenu() {
 			  << std::endl;
 
 	std::pair<DateTime, DateTime> eventTimes = DateTime::readEventTimes();
+
+	// find the event
+	std::shared_ptr<Event> event;
+	try {
+		event = this->manager.getEvent(eventTimes.first);
+	} catch (std::exception& e) {
+		std::cout << ERROR << e.what() << RESET << std::endl;
+		return;
+	}
+
+	// purchase ticket
+	event.get()->purchaseTicket(*currentUser.get());
 }
 
 void CommunityCenter::createEventMenu() {

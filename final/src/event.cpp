@@ -48,10 +48,16 @@ void writeCommonData(std::ofstream& file, const Event* e) {
 	file << e->getOrganizer();
 }
 
+// write to file
 void Event::writeToFile(std::ofstream& file) const {
 	writeCommonData(file, this);
 	// empty guest list, open to non-residents, ticket cost
 	file << ";;;";
+}
+
+// add a ticket to this event for the given user
+void Event::purchaseTicket(User& user) {
+	std::cout << ERROR << "This event does not have tickets" << RESET << std::endl;
 }
 
 // private events dont have a guest list of ticket purchases
@@ -93,24 +99,30 @@ PublicEvent::PublicEvent(std::string name,
 
 // Adds a ticket to this event to the given user
 void PublicEvent::purchaseTicket(User& user) {
-	if (guestList.size() < MAX_GUESTS) {
-		try {
-			std::shared_ptr<Wallet> userWallet = user.myWallet();
-			userWallet.get()->withdraw(ticketCost);
-			guestList.push_back(user.myID());
-			std::cout << USER << user.myID() << RESET << " has purchased a ticket to " << EVENT_NAME
-					  << getName() << RESET << std::endl;
-			std::cout << "Remaining balance: " << DOLLARS << userWallet.get()->getBalance() << RESET
-					  << std::endl
-					  << std::endl;
-		} catch (std::runtime_error& e) {
-			std::cout << ERROR << e.what() << RESET << " - Ticket cost: " << DOLLARS << ticketCost
-					  << RESET << ", Balance: " << DOLLARS << user.myWallet().get()->getBalance()
-					  << RESET << std::endl
-					  << std::endl;
-		}
-	} else {
+	if (guestList.size() >= MAX_GUESTS) {
 		std::cout << ERROR << "Event is full" << RESET << std::endl;
+		return;
+	}
+
+	if (!isOpenToNonResidents() && (user.residency() == "NON_RESIDENT")) {
+		std::cout << ERROR << "Event is not open to non-residents" << RESET << std::endl;
+		return;
+	}
+
+	try {
+		std::shared_ptr<Wallet> userWallet = user.myWallet();
+		userWallet.get()->withdraw(ticketCost);
+		guestList.push_back(user.myID());
+		std::cout << USER << user.myID() << RESET << " has purchased a ticket to " << EVENT_NAME
+				  << getName() << RESET << std::endl;
+		std::cout << "Remaining balance: " << DOLLARS << userWallet.get()->getBalance() << RESET
+				  << std::endl
+				  << std::endl;
+	} catch (std::runtime_error& e) {
+		std::cout << ERROR << e.what() << RESET << " - Ticket cost: " << DOLLARS << ticketCost
+				  << RESET << ", Balance: " << DOLLARS << user.myWallet().get()->getBalance()
+				  << RESET << std::endl
+				  << std::endl;
 	}
 }
 

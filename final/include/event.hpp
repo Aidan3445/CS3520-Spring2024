@@ -43,6 +43,9 @@ class Event {
 	std::string getOrganizer() const;
 	LayoutStyle getStyle() const;
 
+	// add a ticket to this event for the given user
+	virtual void purchaseTicket(User& user);
+
 	// is the user in the guest list?
 	virtual bool isUserInGuestList(const std::string id) const;
 
@@ -105,7 +108,7 @@ class PublicEvent : public Event {
 	void writeToFile(std::ofstream& file) const override;
 
 	// add a ticket to this event for the given user
-	void purchaseTicket(User& user);
+	void purchaseTicket(User& user) override;
 
 	// is the user in the guest list?
 	bool isUserInGuestList(const std::string id) const override;
