@@ -40,6 +40,19 @@ std::set<std::shared_ptr<Event>, EventComparator>& FacilityManager::getCalendar(
 	return calendar;
 }
 
+// get single event from the calendar
+std::shared_ptr<Event> FacilityManager::getEvent(const DateTime& startingFrom) {
+	auto it = std::find_if(
+		calendar.begin(), calendar.end(), [&startingFrom](const std::shared_ptr<Event>& event) {
+			return event.get()->getStartTime() == startingFrom;
+		});
+
+	if (it == calendar.end()) {
+		throw std::runtime_error("Event not found.");
+	}
+	return *it;
+}
+
 // add event to the calendar
 // throws an error if the event can't be added for any reason below:
 // - the event time is taken
