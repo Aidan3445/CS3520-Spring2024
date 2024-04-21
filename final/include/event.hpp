@@ -58,6 +58,8 @@ class Event {
 	// convert a string to a layout style and vice versa
 	static LayoutStyle stringToLayoutStyle(const std::string& style);
 	static std::string layoutStyleToString(LayoutStyle style);
+
+	double eventRate(const double& hourlyRate);
 };
 
 class PublicEvent : public Event {

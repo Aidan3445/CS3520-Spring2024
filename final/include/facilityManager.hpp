@@ -4,6 +4,7 @@
 #include "event.hpp"
 #include <memory>
 #include <set>
+#include <algorithm>
 
 class FacilityManager {
   private:
@@ -19,6 +20,7 @@ class FacilityManager {
 
 	// get all events
 	std::set<std::shared_ptr<Event>, EventComparator>& getCalendar();
+	std::set<std::shared_ptr<Event>> getAllEventsBetween(std::pair<DateTime, DateTime> interval);
 
 	// get single event from the calendar
 	std::shared_ptr<Event> getEvent(const DateTime& startingFrom);

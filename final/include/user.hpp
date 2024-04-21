@@ -36,6 +36,8 @@ class User {
 
 	// get the hour limit for the user type
 	virtual int hourLimit() const = 0;
+
+	virtual ~User() = default;
 };
 
 // City User
@@ -52,6 +54,8 @@ class City : public User {
 
 	// get the hour limit for the user type
 	int hourLimit() const override;
+
+	virtual ~City() = default;
 };
 
 // Resident User
@@ -68,6 +72,8 @@ class Resident : public User {
 
 	// get the hour limit for the user type
 	int hourLimit() const override;
+
+	virtual ~Resident() = default;
 };
 
 class NonResident : public Resident {
@@ -80,6 +86,8 @@ class NonResident : public Resident {
 
 	// get hourly rate for the user type
 	int hourlyRate() const override;
+
+	virtual ~NonResident() = default;
 };
 
 #endif	// USER_HPP

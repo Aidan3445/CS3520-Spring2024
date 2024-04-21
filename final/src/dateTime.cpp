@@ -213,3 +213,62 @@ std::pair<DateTime, DateTime> DateTime::readEventTimes() {
 	// Returns the read DateTime
 	return std::make_pair(startTime, endTime);
 }
+
+DateTime DateTime::readStartTime() {
+	bool confirmed = false;
+	DateTime example(10, 23, 2010, 14, 20);
+	unsigned int month;
+	unsigned int day;
+	unsigned int year;
+	unsigned int startHour;
+	unsigned int startMin;
+	char input;
+	DateTime startTime;
+	std::cout << "Enter an invalid character at any time to quit" << std::endl;
+	while (!confirmed) {
+		try {
+			std::cout << "What is the start date of this event? (ex. " << example.getDate() << ")"
+					  << std::endl;
+			std::string line;
+			std::getline(std::cin, line);
+			month = stoi(util::next(line, '/'));
+			util::shift(line, '/');
+			day = stoi(util::next(line, '/'));
+			util::shift(line, '/');
+			year = stoi(line);
+
+			std::cout << "What is the start time of this event? (ex. " << example.getTime() << ")"
+					  << std::endl;
+
+			std::getline(std::cin, line);
+			util::shift(line, ' ');
+			startHour = stoi(util::next(line, ':'));
+			util::shift(line, ':');
+			startMin = stoi(line);
+
+			// create times
+			startTime = DateTime(month, day, year, startHour, startMin);
+
+			std::cout << "Is this the correct time? " << startTime << std::endl;
+			do {
+				std::cout << "type [a] to accept or [t] to try again" << std::endl;
+				std::cin >> input;
+				std::cin.ignore();
+			} while (input != 'a' && input != 't');
+			confirmed = input == 'a';
+		} catch (std::runtime_error& error) {
+			std::cout << ERROR << "Invalid time" << RESET << std::endl;
+			do {
+				std::cout << "type [c] to try again or [q] to quit" << std::endl;
+				std::cin >> input;
+				std::cin.ignore();
+			} while (input != 'c' && input != 'q');
+			if (input == 'q') {
+				// No date was read
+				throw std::exception();
+			}
+		}
+	}
+	// Returns the read DateTime
+	return startTime;
+}

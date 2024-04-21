@@ -8,7 +8,6 @@ std::set<std::shared_ptr<Event>, EventComparator>
 
 	// iterate through the calendar and add the events to the userEvents set
 	std::for_each(calendar.begin(),
-#include <algorithm>
 				  calendar.end(),
 				  [&userEvents, &userID](const std::shared_ptr<Event>& event) {
 					  if (event.get()->getOrganizer() == userID) {
@@ -113,6 +112,17 @@ void FacilityManager::removeEvent(const DateTime& startingFrom) {
 	calendar.erase(it);
 }
 
+std::shared_ptr<Event> FacilityManager::getEvent(const DateTime& startingFrom) {
+	auto it = std::find_if(calendar.begin(), calendar.end(),
+							[&startingFrom](std::shared_ptr<Event> e) {
+								return e.get()->getStartTime() == startingFrom;
+							});
+	if (it == calendar.end()) {
+		throw std::runtime_error("No event starts at the given time");
+	}
+	return *it;
+}
+
 // helper to print events in a set
 void printEvents(const std::set<std::shared_ptr<Event>, EventComparator>& events) {
 	// if the events is empty, print a message and return
@@ -191,4 +201,15 @@ void FacilityManager::printUserTickets(const std::string& id) {
 	std::cout << HEADER << "Tickets purchased by " << id << RESET << std::endl;
 	std::set<std::shared_ptr<Event>, EventComparator> userTickets = getUserTickets(id);
 	printEvents(userTickets);
+}
+
+std::set<std::shared_ptr<Event>> FacilityManager::getAllEventsBetween(std::pair<DateTime, DateTime> interval) {
+	std::set<std::shared_ptr<Event>> events;
+	for_each(calendar.begin(), calendar.end(),
+			 [&events, &interval](std::shared_ptr<Event> e) {
+				if (interval.first <= e.get()->getStartTime() && e.get()->getStartTime() <= interval.second) {
+					events.insert(e);
+				}
+			 });
+	return events;
 }

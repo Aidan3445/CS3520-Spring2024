@@ -179,3 +179,9 @@ std::string Event::layoutStyleToString(LayoutStyle style) {
 		default: throw std::invalid_argument("Invalid layout style");
 	}
 }
+
+double Event::eventRate(const double& hourlyRate) {
+	int duration =
+		(endTime.getHour() - startTime.getHour()) * 60 + endTime.getMin() - startTime.getMin();
+	return duration / 60 * hourlyRate;
+}
