@@ -395,9 +395,11 @@ void CommunityCenter::createEventMenu() {
 
 		// withdraw money from user
 		try {
-			currentUser->myWallet()->withdraw(eventRate);
+			// Withdraws an extra $10 as a standard service charge
+			int fee = eventRate + 10;
+			currentUser->myWallet()->withdraw(fee);
 
-			std::cout << "Charged " << DOLLARS << eventRate << RESET << std::endl;
+			std::cout << "Charged " << DOLLARS << fee << RESET << std::endl;
 		} catch (std::exception& e) {
 			std::cout << ERROR << e.what() << RESET << std::endl;
 			throw;
@@ -489,9 +491,10 @@ void CommunityCenter::cancelEvent(const std::shared_ptr<Event>& event) {
 
 	// Refund Organizer
 	double eventRate = event.get()->eventRate(eventOrganizer->hourlyRate());
+	// Changes the refund if it was made within 7 days of the event or prior to 7 days of the event
+	double refund = (event.get()->getStartTime().withinSevenDays(DateTime::now()) ? 0.99 : 1) * eventRate;
 	try {
-		eventOrganizer.get()->myWallet().get()->deposit(0.99 * eventRate);
-		std::cout << "Refunded " << DOLLARS << eventRate << RESET << std::endl;
+		eventOrganizer.get()->myWallet().get()->deposit(refund);
 	} catch (std::exception& e) {
 		std::cout << ERROR << "Account balance cap reached" << RESET << std::endl;
 		std::cout << "Remaining refunding directl to " << USER << eventOrganizerID
@@ -501,7 +504,7 @@ void CommunityCenter::cancelEvent(const std::shared_ptr<Event>& event) {
 
 	manager.removeEvent(event.get()->getStartTime());
 
-	std::cout << "You have been refunded " << DOLLARS << 0.99 * eventRate << RESET << std::endl;
+	std::cout << "You have been refunded " << DOLLARS << refund << RESET << std::endl;
 
 	if (userIsEventOrganizer) {
 		this->currentUser = std::move(eventOrganizer);
