@@ -27,8 +27,18 @@ std::set<std::shared_ptr<Event>, EventComparator>
 	std::for_each(calendar.begin(),
 				  calendar.end(),
 				  [&userTickets, &userID](const std::shared_ptr<Event>& event) {
-					  if (event.get()->isUserInGuestList(userID)) {
-						  userTickets.insert(event);
+					  int count = event.get()->userInGuestListCount(userID);
+					  for (int i = 0; i < count; i++) {
+						  if (i == 0) {
+							userTickets.insert(event);
+						  }
+						  else {
+							// Makes a temp copy of the event with a different name to show that you have multiple tickets
+							Event getEvent = *event.get();
+							userTickets.insert(std::shared_ptr<Event>(
+								new Event(getEvent.getName() + std::to_string(i+1), getEvent.getStartTime(),
+										  getEvent.getEndTime(), getEvent.getStyle(), getEvent.getOrganizer())));
+						  }
 					  }
 				  });
 
@@ -125,17 +135,6 @@ void FacilityManager::removeEvent(const DateTime& startingFrom) {
 	calendar.erase(it);
 }
 
-std::shared_ptr<Event> FacilityManager::getEvent(const DateTime& startingFrom) {
-	auto it = std::find_if(calendar.begin(), calendar.end(),
-							[&startingFrom](std::shared_ptr<Event> e) {
-								return e.get()->getStartTime() == startingFrom;
-							});
-	if (it == calendar.end()) {
-		throw std::runtime_error("No event starts at the given time");
-	}
-	return *it;
-}
-
 // helper to print events in a set
 void printEvents(const std::set<std::shared_ptr<Event>, EventComparator>& events) {
 	// if the events is empty, print a message and return
@@ -220,8 +219,10 @@ std::set<std::shared_ptr<Event>> FacilityManager::getAllEventsBetween(std::pair<
 	std::set<std::shared_ptr<Event>> events;
 	for_each(calendar.begin(), calendar.end(),
 			 [&events, &interval](std::shared_ptr<Event> e) {
-				if (interval.first <= e.get()->getStartTime() && e.get()->getStartTime() <= interval.second) {
-					events.insert(e);
+				if ((e.get()->getStartTime() <= interval.first && interval.first <= e.get()->getStartTime()) ||
+					(e.get()->getStartTime() <= interval.second && interval.second <= e.get()->getStartTime()) ||
+					(interval.first <= e.get()->getStartTime() && e.get()->getStartTime() <= interval.second)) {
+						events.insert(e);
 				}
 			 });
 	return events;

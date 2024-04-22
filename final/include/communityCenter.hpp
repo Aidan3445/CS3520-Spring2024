@@ -23,19 +23,20 @@ class CommunityCenter {
 	// create an event using user input
 	void createEventMenu();
 
+	// the menu used for getting an event or ticket
+	std::shared_ptr<Event> getEventMenu();
+
+	// caneling an event
 	void cancelEventMenu();
 	void cancelEvent(const std::shared_ptr<Event>& event);
+	void removeAllTicketsFrom(const std::shared_ptr<Event>& event);
 	void cancelAllEventsBetween(const std::pair<DateTime, DateTime> interval);
 
-	void readDateTime(bool confirmed,
-					  DateTime& example,
-					  unsigned int& month,
-					  unsigned int& day,
-					  unsigned int& year,
-					  unsigned int& hour,
-					  unsigned int& min,
-					  DateTime& startTime,
-					  bool& retFlag);
+	// canceling a ticket
+	void cancelTicketMenu();
+	
+	// adds users from an event's wishlist to that event, if possible
+	void addWishlistToEvent(std::shared_ptr<Event>& event);
 
   public:
 	// constructor

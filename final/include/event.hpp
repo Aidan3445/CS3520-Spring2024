@@ -45,9 +45,16 @@ class Event {
 
 	// add a ticket to this event for the given user
 	virtual void purchaseTicket(User& user);
+	virtual void purchaseTicket(User& user, const bool& showMessages);
 
-	// is the user in the guest list?
-	virtual bool isUserInGuestList(const std::string id) const;
+	// removes a ticket to this event for the given user
+	virtual void removeTicket(User& user);
+
+	// gets a copy of all guests attending this event
+	virtual std::vector<std::string> guests() const;
+
+	// the number of times the user is in the guest list
+	virtual int userInGuestListCount(const std::string id) const;
 
 	// operator overloads for comparison
 	bool operator<(const Event& e) const;
@@ -62,13 +69,21 @@ class Event {
 	static LayoutStyle stringToLayoutStyle(const std::string& style);
 	static std::string layoutStyleToString(LayoutStyle style);
 
-	double eventRate(const double& hourlyRate);
+	double eventRate(const double& hourlyRate) const;
+
+	// Returns true if the event is full and false otherwise
+	virtual bool full() const;
+
+	// Gets the next user ID on the wishlist or throws a runtime exception if no users are on the wishlist
+	virtual std::string nextOnWishList() const;
 };
 
 class PublicEvent : public Event {
   private:
 	// list of guests who purchased tickets
 	std::vector<std::string> guestList;
+	// list of guests who want tickets
+	std::vector<std::string> wishList;
 	// can non-residents attend this event?
 	const bool openToNonResidents;
 	// cost of a ticket
@@ -91,7 +106,7 @@ class PublicEvent : public Event {
 				int ticketCost,
 				bool openToNonResidents = true);
 
-	// additional constructor that sets guest list
+	// additional constructor that sets guest list and wish list
 	PublicEvent(std::string name,
 				DateTime startTime,
 				DateTime endTime,
@@ -99,6 +114,7 @@ class PublicEvent : public Event {
 				std::string organizerID,
 				int ticketCost,
 				std::vector<std::string> guestList,
+				std::vector<std::string> wishList,
 				bool openToNonResidents = true);
 
 
@@ -110,10 +126,23 @@ class PublicEvent : public Event {
 	void writeToFile(std::ofstream& file) const override;
 
 	// add a ticket to this event for the given user
-	void purchaseTicket(User& user) override;
+	virtual void purchaseTicket(User& user) override;
+	virtual void purchaseTicket(User& user, const bool& showMessages) override;
 
-	// is the user in the guest list?
-	bool isUserInGuestList(const std::string id) const override;
+	// removes a ticket to this event for the given user
+	virtual void removeTicket(User& user) override;
+
+	// gets a copy of all guests attending this event
+	virtual std::vector<std::string> guests() const override;
+
+	// the number of times the user is in the guest list
+	int userInGuestListCount(const std::string id) const override;
+
+	// Returns true if the event is full and false otherwise
+	virtual bool full() const override;
+
+	// Gets the next user ID on the wishlist or throws a runtime exception if no users are on the wishlist
+	virtual std::string nextOnWishList() const override;
 };
 
 // PrivateEvent is an alias for Event

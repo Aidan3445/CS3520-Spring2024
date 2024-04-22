@@ -46,6 +46,9 @@ class DateTime {
 	std::string getTime() const;
 
 	// check if the date is within 7 days of the current date
+	bool withinSevenDays(const DateTime& d) const;
+
+	// check if the date is in the same week as the given date
 	bool sameWeek(const DateTime& d) const;
 
 	// add and subtract time
@@ -73,6 +76,7 @@ class DateTime {
 
 	static std::pair<DateTime, DateTime> readEventTimes();
 	static DateTime readStartTime();
+	static DateTime now();
 };
 
 #endif	// DATE_TIME_HPP
