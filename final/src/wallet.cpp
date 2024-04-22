@@ -7,7 +7,15 @@ Wallet::Wallet() { this->balance = 0; }
 double Wallet::getBalance() { return this->balance; }
 
 // add money to the wallet
-void Wallet::deposit(const double& amount) { this->balance += amount; }
+void Wallet::deposit(const double& amount) {
+	// limit to $10,000.00 in the wallet at any time
+	if (this->balance + amount > 10000) {
+		throw std::runtime_error("Wallet cannot contain more than $10,000.00");
+		return;
+	}
+
+	this->balance += amount;
+}
 
 // remove money from the wallet
 // this will throw an error and NOT remove any money
@@ -40,7 +48,12 @@ void Wallet::menu() {
 				std::cout << "How much would you like to deposit?" << std::endl;
 				double depositAmount;
 				std::cin >> depositAmount;
-				this->deposit(depositAmount);
+				try {
+					this->deposit(depositAmount);
+				} catch (std::runtime_error& e) {
+					std::cout << ERROR << e.what() << RESET << std::endl;
+					break;
+				}
 				std::cout << "Deposited " << DOLLARS << depositAmount << RESET << std::endl;
 				break;
 			case 'w':

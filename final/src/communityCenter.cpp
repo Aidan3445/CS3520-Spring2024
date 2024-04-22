@@ -158,7 +158,7 @@ CommunityCenter::~CommunityCenter() {
 // run the community center program
 void CommunityCenter::run() {
 	// print the welcome message
-	std::cout << "Welcome to the Community Center!" << std::endl;
+	std::cout << HEADER << "Welcome to the Community Center!" << RESET << std::endl;
 
 	// run the main menu
 	this->mainMenu();
@@ -187,7 +187,7 @@ std::unique_ptr<User> findUser(std::string username) {
 
 			if (name.compare(username) == 0) {
 				// extract balance
-				unsigned int balance = std::stoi(util::next(line, ' '));
+				double balance = std::stod(util::next(line, ' '));
 				util::shift(line, ' ');
 				std::string residency = util::next(line, ' ');
 
@@ -414,8 +414,13 @@ void CommunityCenter::createEventMenu() {
 			std::cout << ERROR << e.what() << RESET << std::endl;
 
 			// refund user
-			currentUser->myWallet()->deposit(eventRate);
-			std::cout << "Refunded " << DOLLARS << eventRate << RESET << std::endl;
+			try {
+				currentUser->myWallet()->deposit(eventRate);
+				std::cout << "Refunded " << DOLLARS << eventRate << RESET << std::endl;
+			} catch (std::exception& e) {
+				std::cout << ERROR << "Account balance cap reached" << RESET << std::endl;
+				std::cout << "Remaining refunding directl to your bank account." << std::endl;
+			}
 			throw;
 		}
 
@@ -484,7 +489,14 @@ void CommunityCenter::cancelEvent(const std::shared_ptr<Event>& event) {
 
 	// Refund Organizer
 	double eventRate = event.get()->eventRate(eventOrganizer->hourlyRate());
-	eventOrganizer.get()->myWallet().get()->deposit(0.99 * eventRate);
+	try {
+		eventOrganizer.get()->myWallet().get()->deposit(0.99 * eventRate);
+		std::cout << "Refunded " << DOLLARS << eventRate << RESET << std::endl;
+	} catch (std::exception& e) {
+		std::cout << ERROR << "Account balance cap reached" << RESET << std::endl;
+		std::cout << "Remaining refunding directl to " << USER << eventOrganizerID
+				  << " bank account." << std::endl;
+	}
 	updateUserfile(*eventOrganizer.get());
 
 	manager.removeEvent(event.get()->getStartTime());
