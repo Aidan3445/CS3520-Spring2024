@@ -79,13 +79,13 @@ CommunityCenter::CommunityCenter() {
 			}
 			util::shift(line);
 
-			// extract wish list
-			std::string wishList = util::next(line);
-			std::vector<std::string> wishedGuests;
-			std::string wishedGuest;
-			std::stringstream wishedSS(wishList);
-			while (std::getline(wishedSS, wishedGuest, ',')) {
-				wishedGuests.push_back(wishedGuest);
+			// extract waitlist list
+			std::string waitlist = util::next(line);
+			std::vector<std::string> waitlistedGuests;
+			std::string waitlistedGuest;
+			std::stringstream waitlistedSS(waitlist);
+			while (std::getline(waitlistedSS, waitlistedGuest, ',')) {
+				waitlistedGuests.push_back(waitlistedGuest);
 			}
 			util::shift(line);
 
@@ -102,8 +102,15 @@ CommunityCenter::CommunityCenter() {
 				int cost = std::stoi(line);
 
 				// create a public event
-				event = std::make_shared<PublicEvent>(
-					name, start, end, layoutStyle, organizerID, cost, guests, wishedGuests, openToNonResidents);
+				event = std::make_shared<PublicEvent>(name,
+													  start,
+													  end,
+													  layoutStyle,
+													  organizerID,
+													  cost,
+													  guests,
+													  waitlistedGuests,
+													  openToNonResidents);
 			} catch (std::exception&) {
 				// create a private event
 				event = std::make_shared<Event>(name, start, end, layoutStyle, organizerID);
@@ -221,8 +228,8 @@ void CommunityCenter::initUser() {
 		char selected;
 		while (selected != 'r' && selected != 'n') {
 			std::cout << "What is your Residency Status?\n"
-						<< HEADER << "   [r]" << RESET << "  for Resident\n"
-						<< HEADER << "   [n]" << RESET << "  for Non-Resident" << std::endl;
+					  << HEADER << "   [r]" << RESET << "  for Resident\n"
+					  << HEADER << "   [n]" << RESET << "  for Non-Resident" << std::endl;
 			std::cin >> selected;
 			std::cin.ignore();
 		}
@@ -231,10 +238,10 @@ void CommunityCenter::initUser() {
 		} else {
 			this->currentUser = std::unique_ptr<User>(new NonResident(username, 0));
 		}
-	}
-	else {
+	} else {
 		std::cout << "Welcome back " << username << std::endl;
-		std::cout << "Your current balance is " << this->currentUser.get()->myWallet().get()->getBalance() << std::endl;
+		std::cout << "Your current balance is "
+				  << this->currentUser.get()->myWallet().get()->getBalance() << std::endl;
 		std::cout << "You are a " << this->currentUser.get()->residency() << std::endl;
 	}
 }
@@ -291,7 +298,6 @@ void CommunityCenter::buyTicketMenu() {
 	}
 
 	// purchase ticket
-	std::cout << "PurchaseTicket" << std::endl; // DEBUG
 	event.get()->purchaseTicket(*currentUser.get());
 }
 
@@ -390,6 +396,8 @@ void CommunityCenter::createEventMenu() {
 		// withdraw money from user
 		try {
 			currentUser->myWallet()->withdraw(eventRate);
+
+			std::cout << "Charged " << DOLLARS << eventRate << RESET << std::endl;
 		} catch (std::exception& e) {
 			std::cout << ERROR << e.what() << RESET << std::endl;
 			throw;
@@ -397,8 +405,8 @@ void CommunityCenter::createEventMenu() {
 
 		// add event to manager
 		try {
-			if (currentUser->residency().compare("CITY") == 0 && !startTime.withinSevenDays(DateTime::now())) {
-				std::cout << "CITY cancel" << std::endl; // DEBUG
+			if (currentUser->residency().compare("CITY") == 0 &&
+				!startTime.withinSevenDays(DateTime::now())) {
 				cancelAllEventsBetween(eventTimes);
 			}
 			this->manager.addEvent(event, currentUser->hourLimit());
@@ -406,13 +414,12 @@ void CommunityCenter::createEventMenu() {
 			std::cout << ERROR << e.what() << RESET << std::endl;
 
 			// refund user
-			std::cout << "Refunding" << std::endl;
 			currentUser->myWallet()->deposit(eventRate);
+			std::cout << "Refunded " << DOLLARS << eventRate << RESET << std::endl;
 			throw;
 		}
 
 	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl; // DEBUG
 		std::cout << ERROR << "Event creation cancelled" << RESET << std::endl;
 		return;
 	}
@@ -424,13 +431,14 @@ void CommunityCenter::cancelEventMenu() {
 	try {
 		// Grabs the event
 		std::shared_ptr<Event> event = getEventMenu();
-	
+
 		// Checks if you are the organizer
 		std::string organizerID = event.get()->getOrganizer();
 		std::string userID = currentUser.get()->myID();
 		if (organizerID.compare(userID) != 0) {
 			std::cout << "You are not the creator of this event"
-					<< "Please type in the user ID of this event's organizer to cancel it" << std::endl;
+					  << "Please type in the user ID of this event's organizer to cancel it"
+					  << std::endl;
 			std::string inputtedID;
 			std::cin >> inputtedID;
 			std::cin.ignore();
@@ -443,8 +451,7 @@ void CommunityCenter::cancelEventMenu() {
 		// cancels the event
 		cancelEvent(event);
 		std::cout << ERROR << "Your event has been canceled" << RESET << std::endl;
-	}
-	catch(std::runtime_error& e) {
+	} catch (std::runtime_error& e) {
 		std::cout << ERROR << "Could not cancel your event" << RESET << std::endl;
 	}
 }
@@ -454,8 +461,7 @@ std::shared_ptr<Event> CommunityCenter::getEventMenu() {
 	std::shared_ptr<Event> event;
 	try {
 		event = manager.getEvent(eventStart);
-	}
-	catch (std::runtime_error e) {
+	} catch (std::runtime_error e) {
 		// No event exists
 		std::cout << ERROR << "No event starts at the given time" << RESET << std::endl;
 		std::cout << "Returning to the start menu" << std::endl;
@@ -467,13 +473,12 @@ std::shared_ptr<Event> CommunityCenter::getEventMenu() {
 void CommunityCenter::cancelEvent(const std::shared_ptr<Event>& event) {
 	std::string eventOrganizerID = event.get()->getOrganizer();
 	std::unique_ptr<User> eventOrganizer;
-	
+
 	bool userIsEventOrganizer = eventOrganizerID.compare(this->currentUser.get()->myID()) == 0;
 	removeAllTicketsFrom(event);
 	if (userIsEventOrganizer) {
 		eventOrganizer = std::move(currentUser);
-	}
-	else {
+	} else {
 		eventOrganizer = findUser(eventOrganizerID);
 	}
 
@@ -484,6 +489,8 @@ void CommunityCenter::cancelEvent(const std::shared_ptr<Event>& event) {
 
 	manager.removeEvent(event.get()->getStartTime());
 
+	std::cout << "You have been refunded " << DOLLARS << 0.99 * eventRate << RESET << std::endl;
+
 	if (userIsEventOrganizer) {
 		this->currentUser = std::move(eventOrganizer);
 	}
@@ -491,49 +498,44 @@ void CommunityCenter::cancelEvent(const std::shared_ptr<Event>& event) {
 
 void CommunityCenter::removeAllTicketsFrom(const std::shared_ptr<Event>& event) {
 	std::vector<std::string> guestIDs = event.get()->guests();
-	std::for_each(guestIDs.begin(), guestIDs.end(), 
-				[this, &event](const std::string& id) {
-					if (id.compare(currentUser.get()->myID()) == 0) {
-						event.get()->removeTicket(*currentUser.get());
-					}
-					else {
-						std::unique_ptr<User> user = findUser(id);
-						event.get()->removeTicket(*user.get());
-						updateUserfile(*user.get());
-					}
-				});
+	std::for_each(guestIDs.begin(), guestIDs.end(), [this, &event](const std::string& id) {
+		if (id.compare(currentUser.get()->myID()) == 0) {
+			event.get()->removeTicket(*currentUser.get());
+		} else {
+			std::unique_ptr<User> user = findUser(id);
+			event.get()->removeTicket(*user.get());
+			updateUserfile(*user.get());
+		}
+	});
 }
 
 void CommunityCenter::cancelAllEventsBetween(const std::pair<DateTime, DateTime> interval) {
 	std::set<std::shared_ptr<Event>> eventsBetween = manager.getAllEventsBetween(interval);
-	for_each(eventsBetween.begin(), eventsBetween.end(),
-			 [this](std::shared_ptr<Event> e) {
-				cancelEvent(e);
-			 });
+	for_each(eventsBetween.begin(), eventsBetween.end(), [this](std::shared_ptr<Event> e) {
+		cancelEvent(e);
+	});
 }
 
-void CommunityCenter::addWishlistToEvent(std::shared_ptr<Event>& event) {
+void CommunityCenter::addWaitlistToEvent(std::shared_ptr<Event>& event) {
 	while (!event.get()->full()) {
-		std::string wishedUserID;
+		std::string waitlistedUserID;
 		try {
-			wishedUserID = event.get()->nextOnWishList();
-		}
-		catch (std::runtime_error& e) {
-			// no wishlist users exist
+			waitlistedUserID = event.get()->nextOnWaitlist();
+		} catch (std::runtime_error& e) {
+			// no waitlist users exist
 			return;
 		}
-		bool isCurUser = currentUser.get()->myID().compare(wishedUserID) == 0;
-		std::unique_ptr<User> wishedUser;
+		bool isCurUser = currentUser.get()->myID().compare(waitlistedUserID) == 0;
+		std::unique_ptr<User> waitlistedUser;
 		if (isCurUser) {
-			wishedUser = std::move(currentUser);
+			waitlistedUser = std::move(currentUser);
+		} else {
+			waitlistedUser = findUser(waitlistedUserID);
 		}
-		else {
-			wishedUser = findUser(wishedUserID);
-		}
-		event.get()->purchaseTicket(*wishedUser.get(), false);
-		updateUserfile(*wishedUser.get());
+		event.get()->purchaseTicket(*waitlistedUser.get(), false);
+		updateUserfile(*waitlistedUser.get());
 		if (isCurUser) {
-			currentUser = std::move(wishedUser);
+			currentUser = std::move(waitlistedUser);
 		}
 	}
 }
@@ -543,10 +545,9 @@ void CommunityCenter::cancelTicketMenu() {
 	try {
 		std::shared_ptr<Event> event = getEventMenu();
 		event.get()->removeTicket(*currentUser.get());
-		addWishlistToEvent(event);
+		addWaitlistToEvent(event);
 		std::cout << ERROR << "Your ticket has been canceled" << RESET << std::endl;
-	}
-	catch(...) {
+	} catch (...) {
 		// catches all exceptions
 		std::cout << ERROR << "Could not cancel your ticket" << RESET << std::endl;
 	}

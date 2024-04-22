@@ -12,13 +12,13 @@ class CommunityCenter {
 	std::unique_ptr<User> currentUser;
 
 	// login as a user
-    void initUser();
+	void initUser();
 
-    // main menu for the community center
-    void mainMenu();
+	// main menu for the community center
+	void mainMenu();
 
-    // menu for buying a ticket
-    void buyTicketMenu();
+	// menu for buying a ticket
+	void buyTicketMenu();
 
 	// create an event using user input
 	void createEventMenu();
@@ -34,9 +34,9 @@ class CommunityCenter {
 
 	// canceling a ticket
 	void cancelTicketMenu();
-	
-	// adds users from an event's wishlist to that event, if possible
-	void addWishlistToEvent(std::shared_ptr<Event>& event);
+
+	// adds users from an event's waitlist to that event, if possible
+	void addWaitlistToEvent(std::shared_ptr<Event>& event);
 
   public:
 	// constructor

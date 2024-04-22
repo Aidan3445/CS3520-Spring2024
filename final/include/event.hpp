@@ -74,8 +74,9 @@ class Event {
 	// Returns true if the event is full and false otherwise
 	virtual bool full() const;
 
-	// Gets the next user ID on the wishlist or throws a runtime exception if no users are on the wishlist
-	virtual std::string nextOnWishList() const;
+	// Gets the next user ID on the wishlist or throws a runtime exception if no users are on the
+	// wishlist
+	virtual std::string nextOnWaitlist() const;
 };
 
 class PublicEvent : public Event {
@@ -83,7 +84,7 @@ class PublicEvent : public Event {
 	// list of guests who purchased tickets
 	std::vector<std::string> guestList;
 	// list of guests who want tickets
-	std::vector<std::string> wishList;
+	std::vector<std::string> waitlist;
 	// can non-residents attend this event?
 	const bool openToNonResidents;
 	// cost of a ticket
@@ -141,8 +142,9 @@ class PublicEvent : public Event {
 	// Returns true if the event is full and false otherwise
 	virtual bool full() const override;
 
-	// Gets the next user ID on the wishlist or throws a runtime exception if no users are on the wishlist
-	virtual std::string nextOnWishList() const override;
+	// Gets the next user ID on the wishlist or throws a runtime exception if no users are on the
+	// wishlist
+	virtual std::string nextOnWaitlist() const override;
 };
 
 // PrivateEvent is an alias for Event

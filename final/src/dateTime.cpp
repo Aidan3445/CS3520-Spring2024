@@ -106,9 +106,11 @@ DateTime DateTime::getFirstDayOfWeek() const {
 
 // check if the date is within 7 days of the current date
 bool DateTime::withinSevenDays(const DateTime& d) const {
-	// Assuming both d and this are valud DateTimes, which they should be due to the validation in the constructor,
-	// we just need to confirm that the time between both days is less than 7 and both dates are in the same month and year
-	return getYear() == d.getYear() && getMonth() == d.getMonth() && (abs(getDay() - d.getDay()) < 7);
+	// Assuming both d and this are valud DateTimes, which they should be due to the validation in
+	// the constructor, we just need to confirm that the time between both days is less than 7 and
+	// both dates are in the same month and year
+	return getYear() == d.getYear() && getMonth() == d.getMonth() &&
+		   (abs(getDay() - d.getDay()) < 7);
 }
 
 // check if the date is in the same week as the given date

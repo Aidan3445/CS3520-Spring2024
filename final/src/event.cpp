@@ -56,9 +56,7 @@ void Event::writeToFile(std::ofstream& file) const {
 }
 
 // add a ticket to this event for the given user
-void Event::purchaseTicket(User& user) {
-	purchaseTicket(user, true);
-}
+void Event::purchaseTicket(User& user) { purchaseTicket(user, true); }
 
 void Event::purchaseTicket(User& user, const bool& showMessages) {
 	if (showMessages) {
@@ -73,9 +71,7 @@ void Event::removeTicket(User& user) {
 }
 
 // gets a copy of all guests attending this event
-std::vector<std::string> Event::guests() const {
-	return std::vector<std::string>();
-}
+std::vector<std::string> Event::guests() const { return std::vector<std::string>(); }
 
 // private events dont have a guest list of ticket purchases
 int Event::userInGuestListCount(const std::string id) const { return 0; }
@@ -113,21 +109,18 @@ PublicEvent::PublicEvent(std::string name,
 						 std::vector<std::string> wishList,
 						 bool openToNonResidents) :
 	Event(name, start, end, style, organizerID),
-	ticketCost(ticketCost), openToNonResidents(openToNonResidents), guestList(guestList), wishList(wishList) {}
+	ticketCost(ticketCost), openToNonResidents(openToNonResidents), guestList(guestList),
+	waitlist(wishList) {}
 
 // Adds a ticket to this event to the given user
-void PublicEvent::purchaseTicket(User& user) {
-	purchaseTicket(user, true);
-}
+void PublicEvent::purchaseTicket(User& user) { purchaseTicket(user, true); }
 
 void PublicEvent::purchaseTicket(User& user, const bool& showMessages) {
 	if (full()) {
 		if (showMessages) {
 			std::cout << ERROR << "Event is full, adding you to the waitlist" << RESET << std::endl;
 		}
-		std::cout << "Inserting to wishList, size = " << wishList.size() << std::endl; // DEBUG
-		wishList.insert(wishList.begin(), user.myID());
-		std::cout << "Inserted to wishList, size = " << wishList.size() << std::endl; // DEBUG
+		waitlist.insert(waitlist.begin(), user.myID());
 		return;
 	}
 
@@ -143,37 +136,35 @@ void PublicEvent::purchaseTicket(User& user, const bool& showMessages) {
 		userWallet.get()->withdraw(ticketCost);
 		guestList.push_back(user.myID());
 		try {
-			if (user.myID().compare(nextOnWishList()) == 0) {
+			if (user.myID().compare(nextOnWaitlist()) == 0) {
 				// This was a wishlist user
-				wishList.pop_back();
+				waitlist.pop_back();
 			}
-		}
-		catch (...) {
+		} catch (...) {
 			// Does nothing, wishlist is empty
 		}
 		if (showMessages) {
 			std::cout << USER << user.myID() << RESET << " has purchased a ticket to " << EVENT_NAME
-					<< getName() << RESET << std::endl;
+					  << getName() << RESET << std::endl;
 			std::cout << "Remaining balance: " << DOLLARS << userWallet.get()->getBalance() << RESET
-					<< std::endl
-					<< std::endl;
+					  << std::endl
+					  << std::endl;
 		}
 	} catch (std::runtime_error& e) {
 		if (showMessages) {
 			std::cout << ERROR << e.what() << RESET << " - Ticket cost: " << DOLLARS << ticketCost
-					<< RESET << ", Balance: " << DOLLARS << user.myWallet().get()->getBalance()
-					<< RESET << std::endl
-					<< std::endl;
+					  << RESET << ", Balance: " << DOLLARS << user.myWallet().get()->getBalance()
+					  << RESET << std::endl
+					  << std::endl;
 		}
 	}
 }
 
 // removes a ticket to this event for the given user
 void PublicEvent::removeTicket(User& user) {
-	auto it = std::find_if(guestList.begin(), guestList.end(),
-				[&user](std::string id) {
-					return user.myID().compare(id) == 0;
-				});
+	auto it = std::find_if(guestList.begin(), guestList.end(), [&user](std::string id) {
+		return user.myID().compare(id) == 0;
+	});
 	if (it == guestList.end()) {
 		throw std::runtime_error("User does not have a ticket");
 	}
@@ -184,9 +175,7 @@ void PublicEvent::removeTicket(User& user) {
 }
 
 // gets a copy of all guests attending this event
-std::vector<std::string> PublicEvent::guests() const {
-	return guestList;
-}
+std::vector<std::string> PublicEvent::guests() const { return guestList; }
 
 // Getters
 bool PublicEvent::isOpenToNonResidents() const { return openToNonResidents; }
@@ -203,7 +192,7 @@ void PublicEvent::writeToFile(std::ofstream& file) const {
 		file << guest << ",";
 	});
 	file << ";";
-	std::for_each(wishList.begin(), wishList.end(), [&file](const std::string& guest) {
+	std::for_each(waitlist.begin(), waitlist.end(), [&file](const std::string& guest) {
 		file << guest << ",";
 	});
 	file << ";";
@@ -211,8 +200,7 @@ void PublicEvent::writeToFile(std::ofstream& file) const {
 	file << ticketCost;
 }
 
-int PublicEvent::userInGuestListCount(const std::string id) const 
-{
+int PublicEvent::userInGuestListCount(const std::string id) const {
 	return std::count_if(guestList.begin(), guestList.end(), [&id](std::string other) {
 		return id.compare(other) == 0;
 	});
@@ -269,24 +257,19 @@ double Event::eventRate(const double& hourlyRate) const {
 	return duration / 60 * hourlyRate;
 }
 
-bool Event::full() const {
-	return true;
-}
+bool Event::full() const { return true; }
 
-std::string Event::nextOnWishList() const {
+std::string Event::nextOnWaitlist() const {
 	throw std::runtime_error("No wishlist exists for this event");
 }
 
-bool PublicEvent::full() const {
-	std::cout << "Full?" << std::endl; // DEBUG
-	return guestList.size() >= MAX_GUESTS;
-}
+bool PublicEvent::full() const { return guestList.size() >= MAX_GUESTS; }
 
-std::string PublicEvent::nextOnWishList() const {
-	// Note: One is only removed from the wishlist if 
+std::string PublicEvent::nextOnWaitlist() const {
+	// Note: One is only removed from the wishlist if
 	// they buy a ticket while at the front of the list
-	if (wishList.size() <= 0) {
+	if (waitlist.size() <= 0) {
 		throw std::runtime_error("No users in wishlist");
 	}
-	return wishList.back();
+	return waitlist.back();
 }
