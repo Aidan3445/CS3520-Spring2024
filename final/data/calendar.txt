@@ -5,3 +5,4 @@ Model UN Day 1;4,15,2024;15,30;4,15,2024;20,0;MEETING;Jeanie Barr;;;false;150
 Model UN Day 2;4,16,2024;15,30;4,16,2024;20,0;MEETING;Jeanie Barr;;;false;150
 1;4,26,2024;9,0;4,26,2024;11,0;LECTURE;Noah;;;true;100
 A2;10,2,2024;9,0;10,2,2024;11,0;LECTURE;CITY;;;true;100
+*;1,2,2030;11,0;1,2,2030;14,0;LECTURE;Noah;Noah,Noah,Noah,Noah,Noah,Noah,Noah,Noah,Noah,;;true;100
