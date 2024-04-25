@@ -1,0 +1,2 @@
+alias main="make clean && make && clear && clear && ./main"
+alias debug="make clean && make debug && clear && clear && gdb -tui ./main"
